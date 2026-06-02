@@ -1,7 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, Zap, CheckCircle, Gift, Sparkles } from "lucide-react";
+import {
+  trackEvent,
+  getUTMParams,
+  getABTestVariant,
+  getHeadlineVariant,
+} from "@/lib/analytics";
 
 export default function Home() {
   const [domain, setDomain] = useState("");
@@ -12,6 +18,31 @@ export default function Home() {
   const [selectedMockup, setSelectedMockup] = useState(0);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [error, setError] = useState("");
+  const [abVariant, setAbVariant] = useState("A");
+  const [headlineText, setHeadlineText] = useState({
+    headline: "",
+    subheadline: "",
+  });
+
+  useEffect(() => {
+    const variant = getABTestVariant();
+    setAbVariant(variant);
+    const headline = getHeadlineVariant(variant);
+    setHeadlineText(headline);
+
+    const utmParams = getUTMParams();
+    trackEvent({
+      eventType: "headline_variant_seen",
+      abVariant: variant,
+      utmSource: utmParams.source,
+      utmMedium: utmParams.medium,
+      utmCampaign: utmParams.campaign,
+      eventData: {
+        variant,
+        pathname: window.location.pathname,
+      },
+    });
+  }, []);
 
   const mockups = [
     {
@@ -52,6 +83,8 @@ export default function Home() {
       return;
     }
 
+    const utmParams = getUTMParams();
+
     try {
       const res = await fetch("/api/pilot-inquiry", {
         method: "POST",
@@ -66,6 +99,20 @@ export default function Home() {
         setLoading(false);
         return;
       }
+
+      // Track domain submission event
+      await trackEvent({
+        eventType: "domain_submitted",
+        abVariant,
+        utmSource: utmParams.source,
+        utmMedium: utmParams.medium,
+        utmCampaign: utmParams.campaign,
+        eventData: {
+          domain,
+          email,
+          company_name: companyName,
+        },
+      });
 
       setSubmitted(true);
       setDomain("");
@@ -121,10 +168,11 @@ export default function Home() {
       <section className="relative px-4 py-20 md:py-32">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-accent to-purple-400 bg-clip-text text-transparent">
-            From Domain to Branded Drops in Minutes
+            {headlineText.headline || "From Domain to Branded Drops in Minutes"}
           </h1>
           <p className="text-xl md:text-2xl text-text-muted mb-8 max-w-2xl mx-auto">
-            Submit your company domain and see exactly how your brand would look on apparel—in minutes, not weeks.
+            {headlineText.subheadline ||
+              "Submit your company domain and see exactly how your brand would look on apparel—in minutes, not weeks."}
           </p>
 
           {/* Form */}
@@ -214,7 +262,21 @@ export default function Home() {
                 {mockups.map((mockup, idx) => (
                   <button
                     key={idx}
-                    onClick={() => setSelectedMockup(idx)}
+                    onClick={() => {
+                      setSelectedMockup(idx);
+                      const utmParams = getUTMParams();
+                      trackEvent({
+                        eventType: "mockup_viewed",
+                        abVariant,
+                        utmSource: utmParams.source,
+                        utmMedium: utmParams.medium,
+                        utmCampaign: utmParams.campaign,
+                        eventData: {
+                          mockup_index: idx,
+                          brand: mockup.brand,
+                        },
+                      });
+                    }}
                     className={`w-full p-6 rounded-lg border-2 transition text-left ${
                       selectedMockup === idx
                         ? "bg-accent/20 border-accent"
@@ -333,11 +395,39 @@ export default function Home() {
           <div className="flex flex-col md:flex-row gap-4 justify-center">
             <a
               href="/pilot-checkout"
+              onClick={() => {
+                const utmParams = getUTMParams();
+                trackEvent({
+                  eventType: "storefront_clicked",
+                  abVariant,
+                  utmSource: utmParams.source,
+                  utmMedium: utmParams.medium,
+                  utmCampaign: utmParams.campaign,
+                  eventData: {
+                    cta: "pilot_checkout",
+                  },
+                });
+              }}
               className="px-8 py-4 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition"
             >
               Request a Pilot ($4,800)
             </a>
-            <button className="px-8 py-4 bg-surface border-2 border-accent text-accent font-semibold rounded-lg hover:bg-accent/10 transition">
+            <button
+              onClick={() => {
+                const utmParams = getUTMParams();
+                trackEvent({
+                  eventType: "storefront_clicked",
+                  abVariant,
+                  utmSource: utmParams.source,
+                  utmMedium: utmParams.medium,
+                  utmCampaign: utmParams.campaign,
+                  eventData: {
+                    cta: "generate_report",
+                  },
+                });
+              }}
+              className="px-8 py-4 bg-surface border-2 border-accent text-accent font-semibold rounded-lg hover:bg-accent/10 transition"
+            >
               Generate your first report
             </button>
           </div>
@@ -357,9 +447,24 @@ export default function Home() {
                 className="bg-surface border border-border rounded-lg overflow-hidden"
               >
                 <button
-                  onClick={() =>
-                    setExpandedFaq(expandedFaq === idx ? null : idx)
-                  }
+                  onClick={() => {
+                    const isOpening = expandedFaq !== idx;
+                    setExpandedFaq(isOpening ? idx : null);
+                    if (isOpening) {
+                      const utmParams = getUTMParams();
+                      trackEvent({
+                        eventType: "faq_opened",
+                        abVariant,
+                        utmSource: utmParams.source,
+                        utmMedium: utmParams.medium,
+                        utmCampaign: utmParams.campaign,
+                        eventData: {
+                          question: faq.question,
+                          index: idx,
+                        },
+                      });
+                    }
+                  }}
                   className="w-full px-6 py-4 flex items-center justify-between hover:bg-surface/80 transition"
                 >
                   <h3 className="font-semibold text-lg text-left">
