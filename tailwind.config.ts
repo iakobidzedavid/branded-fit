@@ -16,6 +16,7 @@ const config: Config = {
         "text-muted": "#8fa3b8",
         accent: "#a855f7",
         danger: "#ef4444",
+        "status-shipped": "#10b981",
       },
       backgroundColor: {
         default: "#0d1f33",
