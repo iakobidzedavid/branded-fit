@@ -335,7 +335,7 @@ export default function Home() {
               href="/pilot-checkout"
               className="px-8 py-4 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition"
             >
-              Start a Pilot ($4,800)
+              Request a Pilot ($4,800)
             </a>
             <button className="px-8 py-4 bg-surface border-2 border-accent text-accent font-semibold rounded-lg hover:bg-accent/10 transition">
               Generate your first report
