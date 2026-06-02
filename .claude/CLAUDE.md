@@ -14,16 +14,32 @@ Use these exact paths when creating or modifying files.
 
 ```
 branded-fit/
+  .env.example
+  .gitignore
   README.md
+  next-env.d.ts
   next.config.ts
+  package-lock.json
   package.json
+  postcss.config.js
+  tailwind.config.ts
   tsconfig.json
+  tsconfig.tsbuildinfo
+  .claude/
+    CLAUDE.md
+    blueprint.md
+    settings.json
+    agents/
   documents/
     .gitkeep
+    2026-06-02_landing_page_implementation.md
   src/
     app/
+      globals.css
       layout.tsx
       page.tsx
+      api/
+      pilot-checkout/
 ```
 
 BEFORE writing any code, use Read and Glob tools to understand existing files.
