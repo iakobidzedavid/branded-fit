@@ -1,0 +1,60 @@
+{
+  "view_type": "report",
+  "headline": "Step 21 Assumptions De-Risk Framework: 4 experiments designed to validate brand fidelity, 10-min provisioning, $24K WTP, warm-intro conversion",
+  "primary_stat": {
+    "label": "Experiments Designed",
+    "value": 4
+  },
+  "highlights": [
+    "✅ Experiment A1 (Brand Fidelity): Blind evaluation framework for 50 domains vs. SwagUp baseline; target ≥8.0/10, ≥70% win rate; 7-day execution",
+    "✅ Experiment A2 (10-Minute Provisioning): End-to-end latency tracking for 10 Step-9 prospects; target ≤8 min median, ≥80% SLA pass; 3-day execution; bottleneck identification built-in",
+    "✅ Experiment A3 ($24K WTP): Pricing acceptance survey across 10–15 People Ops professionals; target ≥60% acceptance, <20% hard rejection; 5-day execution; contingency Essentials tier at $12K",
+    "✅ Experiment A4 (Warm-Intro Conversion ABM): Founder-led outreach to 10 named prospects; target ≥2 pilots, ≥40% open rate, ≥30% reply, ≥15% demo request; 14-day execution; objection log built-in",
+    "📊 Supabase `experiments` table schema designed with JSONB result logging, RLS policies, audit trail, and sample data inserts (all 4 experiments pre-populated with realistic results)",
+    "🎯 Interactive Experiments Dashboard page (`/experiments`) built with real-time status tracking, per-experiment deep dives, conversion funnel visualization, and decision gate indicators",
+    "📋 Execution Playbook: Day-by-day operational guide with owner assignments, success metrics, contingency workflows, objection handling, and aggregate decision tree (GREEN/YELLOW/RED lights)",
+    "🔄 Pass/Fail Decision Tree: Explicit go/no-go criteria for Step 22 (MVBP Scale) and Step 23 (Pilot Onboarding); conditional paths for 3/4 PASS, 2/4 PASS scenarios with specific iteration roadmaps",
+    "⚡ Zero external cost model: All 4 experiments leverage internal MVBP, community goodwill, founder time; no paid incentives except $25 gift cards for A1 evaluators (stretch: could use platform credits instead)",
+    "📈 Integration with existing codebase: Landing page, command console, Supabase schema; experiments page uses Recharts for real-time funnel/status visualization; no breaking changes to existing architecture"
+  ],
+  "links": [
+    {
+      "label": "Step 21 Assumptions Report (Full Doc)",
+      "url": "documents/step-21-assumptions-report.md"
+    },
+    {
+      "label": "Execution Playbook (Day-by-Day Guide)",
+      "url": "documents/step-21-execution-playbook.md"
+    },
+    {
+      "label": "Supabase Schema & Sample Data",
+      "url": "documents/supabase-experiments-schema.sql"
+    },
+    {
+      "label": "Experiments Dashboard Page",
+      "url": "src/app/experiments/page.tsx"
+    }
+  ],
+  "next_actions": [
+    {
+      "label": "1. Create Supabase `experiments` table",
+      "task_template": "Copy supabase-experiments-schema.sql to Supabase SQL editor and run to create table, indexes, audit trail, and sample data"
+    },
+    {
+      "label": "2. Deploy experiments dashboard",
+      "task_template": "Push src/app/experiments/page.tsx to GitHub; verify build passes and page loads at /experiments route"
+    },
+    {
+      "label": "3. Day 1 kickoff: Confirm experiment ownership & timelines",
+      "task_template": "CEO + Product Lead + Developer + Outreach to review execution playbook; assign owners; confirm warm paths for A4; set daily standup 9 AM"
+    },
+    {
+      "label": "4. Day 1–2: A1 domain collection, A2 logging setup, A3 survey design, A4 warm-intro prep",
+      "task_template": "Execute Experiment Prep phase in parallel; use playbook checklists; log blockers in daily standup"
+    },
+    {
+      "label": "5. Day 14–16: Aggregate results & decision gate meeting",
+      "task_template": "Tally all 4 experiment results; determine PASS/FAIL/CONDITIONAL status; apply decision tree (GREEN/YELLOW/RED) to determine Step 22 readiness"
+    }
+  ]
+}
