@@ -32,14 +32,25 @@ branded-fit/
     agents/
   documents/
     .gitkeep
+    2026-06-02_ab_testing_guide.md
+    2026-06-02_analytics_implementation_guide.md
+    2026-06-02_analytics_schema_migration.md
     2026-06-02_landing_page_implementation.md
+    2026-06-02_pipeline_implementation.md
+    2026-06-02_weekly_reporting_setup.md
   src/
     app/
       globals.css
       layout.tsx
       page.tsx
+      analytics/
       api/
+      command-console/
       pilot-checkout/
+    lib/
+      analytics.ts
+      orchestration-state.ts
+      supabase.ts
 ```
 
 BEFORE writing any code, use Read and Glob tools to understand existing files.
