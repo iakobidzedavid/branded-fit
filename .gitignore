@@ -1,0 +1,16 @@
+
+# Dependencies & build output (never commit — exceeds GitHub file limits)
+node_modules/
+.next/
+out/
+build/
+dist/
+.vercel/
+
+# Agent debug logs (may contain auth tokens)
+.claude-debug-*.log
+*.debug.log
+
+# Build-time skill packs (installed into .claude/skills/ at clone;
+# these are tooling for the coding agent, not product code)
+.claude/skills/
