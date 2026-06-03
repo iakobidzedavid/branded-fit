@@ -207,3 +207,74 @@ export async function getBrandExtraction(
     return null;
   }
 }
+
+export type ProductVariant = {
+  color: string;
+  size: string;
+};
+
+export type ProductPricing = {
+  basePrice: number;
+  markup: number;
+  finalPrice: number;
+};
+
+export type Product = {
+  id?: string;
+  domain: string;
+  sku: string;
+  product_name: string;
+  mockup_image_url: string;
+  variants: ProductVariant[];
+  pricing: ProductPricing;
+  created_at?: string;
+};
+
+export async function storeProduct(product: Product): Promise<boolean> {
+  try {
+    const client = getSupabase();
+    const { error } = await client.from("products").insert([
+      {
+        domain: product.domain,
+        sku: product.sku,
+        product_name: product.product_name,
+        mockup_image_url: product.mockup_image_url,
+        variants: product.variants,
+        pricing: product.pricing,
+        created_at: new Date().toISOString(),
+      },
+    ]);
+
+    if (error) {
+      console.error("Error storing product:", error);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error("Error in storeProduct:", err);
+    return false;
+  }
+}
+
+export async function getProductsByDomain(
+  domain: string
+): Promise<Product[] | null> {
+  try {
+    const client = getSupabase();
+    const { data, error } = await client
+      .from("products")
+      .select("*")
+      .eq("domain", domain);
+
+    if (error) {
+      console.error("Error fetching products:", error);
+      return null;
+    }
+
+    return data || [];
+  } catch (err) {
+    console.error("Error in getProductsByDomain:", err);
+    return null;
+  }
+}
