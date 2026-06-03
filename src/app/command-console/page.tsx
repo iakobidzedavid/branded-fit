@@ -1,219 +1,252 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
-  Loader,
-  CheckCircle,
+  Check,
   AlertCircle,
+  Loader,
   Clock,
-  ExternalLink,
-  Download,
+  DownloadCloud,
   Users,
+  ExternalLink,
 } from "lucide-react";
 
-type PipelineStatus = "pending" | "in_progress" | "completed" | "failed";
-
-interface Pipeline {
-  name: string;
-  status: PipelineStatus;
+interface PipelineStatus {
+  status: "pending" | "in_progress" | "completed" | "failed";
   message: string;
 }
 
 interface OrchestrationState {
-  domain: string;
-  error?: string;
-  pipeline1: Pipeline;
-  pipeline2: Pipeline;
-  pipeline3: Pipeline;
-  storefront?: {
-    url: string;
-    productCount: number;
-  };
+  status: "pending" | "in_progress" | "completed" | "failed";
+  pipeline1: PipelineStatus;
+  pipeline2: PipelineStatus;
+  pipeline3: PipelineStatus;
+  timestamp: number;
+  storefront?: { url: string; productCount: number };
+}
+
+const CORPORATE_TLDS = new Set([
+  "com",
+  "io",
+  "co",
+  "org",
+  "net",
+  "dev",
+  "app",
+  "ai",
+  "tech",
+  "inc",
+  "company",
+]);
+
+function isCorporateTLD(domain: string): boolean {
+  const parts = domain.toLowerCase().split(".");
+  if (parts.length < 2) return false;
+  const tld = parts[parts.length - 1];
+  return CORPORATE_TLDS.has(tld);
 }
 
 export default function CommandConsole() {
   const [domain, setDomain] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [validated, setValidated] = useState(false);
-  const [orchestration, setOrchestration] = useState<OrchestrationState | null>(
-    null
-  );
   const [validationError, setValidationError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [orchestrationState, setOrchestrationState] =
+    useState<OrchestrationState | null>(null);
+  const [pollingError, setPollingError] = useState("");
+  const [completedAt, setCompletedAt] = useState<number | null>(null);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const validateDomain = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setValidationError("");
-    setValidated(false);
+  useEffect(() => {
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
+  }, []);
 
-    if (!domain.trim()) {
-      setValidationError("Please enter a domain");
-      return;
+  const validateDomain = (value: string): boolean => {
+    if (!value) {
+      setValidationError("Domain is required");
+      return false;
     }
 
-    try {
-      const res = await fetch("/api/validate-domain", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ domain }),
-      });
+    const cleanDomain = value.toLowerCase().trim();
+    const domainRegex =
+      /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
 
-      const data = await res.json();
+    if (!domainRegex.test(cleanDomain)) {
+      setValidationError("Invalid domain format");
+      return false;
+    }
 
-      if (!res.ok) {
-        setValidationError(data.message || "Invalid domain");
-        return;
-      }
+    if (!isCorporateTLD(cleanDomain)) {
+      setValidationError(
+        "Only corporate domains (.com, .io, .co, .org, etc.) are supported"
+      );
+      return false;
+    }
 
-      setValidated(true);
-    } catch (err) {
-      setValidationError("Validation failed. Try again.");
+    setValidationError("");
+    return true;
+  };
+
+  const handleDomainChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setDomain(value);
+    if (value) {
+      validateDomain(value);
+    } else {
+      setValidationError("");
     }
   };
 
-  const submitOrchestration = async () => {
-    setLoading(true);
+  const pollStatus = async (cleanDomain: string) => {
+    try {
+      const res = await fetch(
+        `/api/pipeline-status?domain=${encodeURIComponent(cleanDomain)}`
+      );
+      const data = await res.json();
+
+      if (data.orchestration) {
+        setOrchestrationState(data.orchestration);
+        setPollingError("");
+
+        if (
+          data.orchestration.status === "completed" ||
+          data.orchestration.status === "failed"
+        ) {
+          setCompletedAt(Date.now());
+          if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Polling error:", error);
+      setPollingError("Failed to fetch status updates");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateDomain(domain)) {
+      return;
+    }
+
+    const cleanDomain = domain.toLowerCase().trim();
+    setIsSubmitting(true);
     setValidationError("");
+    setPollingError("");
+    setCompletedAt(null);
 
     try {
       const res = await fetch("/api/orchestrate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ domain }),
+        body: JSON.stringify({ domain: cleanDomain }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setValidationError(data.message || "Orchestration failed");
-        setLoading(false);
+        setValidationError(data.message || "Failed to start orchestration");
+        setIsSubmitting(false);
         return;
       }
 
-      setOrchestration({
-        domain,
-        pipeline1: { name: "Brand Intelligence", status: "in_progress", message: "Extracting brand assets..." },
-        pipeline2: { name: "Mockup Generation", status: "pending", message: "Waiting..." },
-        pipeline3: { name: "Shopify Provisioning", status: "pending", message: "Waiting..." },
-      });
+      setOrchestrationState(data.orchestration);
 
-      pollPipelineStatus();
-    } catch (err) {
-      setValidationError("Failed to start orchestration");
-      setLoading(false);
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+
+      pollingIntervalRef.current = setInterval(() => {
+        pollStatus(cleanDomain);
+      }, 2000);
+
+      await pollStatus(cleanDomain);
+    } catch (error) {
+      console.error("Submit error:", error);
+      setValidationError("Failed to submit domain");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const pollPipelineStatus = async () => {
-    const maxAttempts = 120;
-    let attempts = 0;
-
-    const poll = async () => {
-      if (attempts >= maxAttempts) {
-        setOrchestration((prev) =>
-          prev ? { ...prev, error: "Orchestration timed out after 10 minutes" } : null
-        );
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const res = await fetch(`/api/pipeline-status?domain=${domain}`);
-        const data = await res.json();
-
-        if (data.status === "completed" || data.status === "failed") {
-          setOrchestration(data.orchestration);
-          setLoading(false);
-          return;
-        }
-
-        setOrchestration(data.orchestration);
-        attempts++;
-        setTimeout(poll, 5000);
-      } catch (err) {
-        attempts++;
-        setTimeout(poll, 5000);
-      }
-    };
-
-    poll();
-  };
-
-  const retryOrchestration = async () => {
-    if (!orchestration) return;
-    setOrchestration(null);
-    setValidated(false);
-    await submitOrchestration();
-  };
-
-  const openStorefront = () => {
-    if (orchestration?.storefront?.url) {
-      window.open(orchestration.storefront.url, "_blank");
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "completed":
+        return <Check className="w-5 h-5 text-emerald-400" />;
+      case "in_progress":
+        return <Loader className="w-5 h-5 text-accent animate-spin" />;
+      case "failed":
+        return <AlertCircle className="w-5 h-5 text-danger" />;
+      default:
+        return <Clock className="w-5 h-5 text-text-muted" />;
     }
   };
 
-  const PipelineCard = ({ pipeline }: { pipeline: Pipeline }) => {
-    const statusColors = {
-      pending: "border-color-border",
-      in_progress: "border-accent",
-      completed: "border-status-shipped",
-      failed: "border-danger",
-    };
+  const getStatusBorder = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "border-emerald-400";
+      case "in_progress":
+        return "border-accent";
+      case "failed":
+        return "border-danger";
+      default:
+        return "border-border";
+    }
+  };
 
-    const statusIcons = {
-      pending: <Clock size={20} className="text-text-muted" />,
-      in_progress: <Loader size={20} className="animate-spin text-accent" />,
-      completed: <CheckCircle size={20} className="text-status-shipped" />,
-      failed: <AlertCircle size={20} className="text-danger" />,
-    };
-
-    const statusLabels = {
-      pending: "Pending",
-      in_progress: "Processing...",
-      completed: "Complete",
-      failed: "Failed",
-    };
-
-    return (
-      <div
-        className={`p-6 bg-surface border-2 ${statusColors[pipeline.status]} rounded-lg flex items-start gap-4`}
-      >
-        <div className="mt-1">{statusIcons[pipeline.status]}</div>
-        <div className="flex-1">
-          <h3 className="font-semibold text-lg mb-1">{pipeline.name}</h3>
-          <p className="text-text-muted text-sm">{pipeline.message}</p>
-        </div>
-      </div>
-    );
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "Complete";
+      case "in_progress":
+        return "Processing...";
+      case "failed":
+        return "Failed";
+      default:
+        return "Pending";
+    }
   };
 
   return (
-    <div className="min-h-screen bg-bg text-text">
+    <div className="min-h-screen bg-bg text-text flex flex-col">
       {/* Header */}
-      <section className="bg-surface border-b border-border">
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <h1 className="text-3xl md:text-4xl font-bold">Command Console</h1>
-          <p className="text-text-muted mt-2">
-            Submit your domain and watch your store come to life
+      <div className="bg-surface border-b border-border px-4 py-6">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Command Console</h1>
+          <p className="text-text-muted">
+            Submit your domain and watch your brand transform into a live
+            storefront
           </p>
         </div>
-      </section>
+      </div>
 
-      <section className="max-w-6xl mx-auto px-4 py-12">
-        {!orchestration ? (
-          <div className="space-y-8">
-            {/* Domain Input Section */}
-            <div className="bg-surface rounded-lg border border-border p-8">
-              <h2 className="text-2xl font-bold mb-6">Enter Your Domain</h2>
-
-              <form onSubmit={validateDomain} className="space-y-4">
+      {/* Main Content */}
+      <div className="flex-1 px-4 py-8 md:py-12">
+        <div className="max-w-4xl mx-auto">
+          {!orchestrationState ? (
+            // Input Section
+            <div className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
+                  <label className="block text-sm font-medium text-text mb-2">
+                    Domain
+                  </label>
                   <input
                     type="text"
-                    placeholder="your-company.com"
+                    placeholder="Enter your domain (e.g., ramp.com)"
                     value={domain}
-                    onChange={(e) => setDomain(e.target.value)}
-                    disabled={loading || validated}
-                    className="w-full px-6 py-4 bg-bg border-2 border-border text-text placeholder-text-muted rounded-lg focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                    onChange={handleDomainChange}
+                    disabled={isSubmitting}
+                    className={`w-full px-6 py-4 bg-surface border-2 text-text placeholder-text-muted rounded-lg focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-50 disabled:cursor-not-allowed transition ${
+                      validationError ? "border-danger" : "border-border"
+                    }`}
                   />
                   {validationError && (
                     <p className="text-danger text-sm mt-2">{validationError}</p>
@@ -222,107 +255,200 @@ export default function CommandConsole() {
 
                 <button
                   type="submit"
-                  disabled={loading || validated}
+                  disabled={isSubmitting || !domain || !!validationError}
                   className="w-full px-8 py-4 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 disabled:opacity-60 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
                 >
-                  {loading ? "Validating..." : validated ? "Domain Validated ✓" : "Validate Domain"}
+                  {isSubmitting ? (
+                    <>
+                      <Loader className="w-5 h-5 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    "Generate Brand Drop"
+                  )}
                 </button>
               </form>
+            </div>
+          ) : (
+            // Status Panel Section
+            <div className="space-y-8">
+              {/* Pipeline Status Cards */}
+              <div className="space-y-4">
+                <h2 className="text-xl font-bold">Pipeline Progress</h2>
 
-              {validated && !loading && (
-                <button
-                  onClick={submitOrchestration}
-                  disabled={loading}
-                  className="w-full mt-4 px-8 py-4 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 disabled:opacity-60 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+                {/* Pipeline 1: Brand Intelligence */}
+                <div
+                  className={`bg-surface border-2 rounded-lg p-6 transition ${getStatusBorder(
+                    orchestrationState.pipeline1.status
+                  )}`}
                 >
-                  {loading ? "Processing..." : "Start Orchestration"}
-                </button>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-8">
-            {/* Status Panel */}
-            <div className="bg-surface rounded-lg border border-border p-8">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-bold">Pipeline Progress</h2>
-                <p className="text-text-muted text-sm">Domain: {orchestration.domain}</p>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      {getStatusIcon(orchestrationState.pipeline1.status)}
+                      <div>
+                        <h3 className="font-semibold text-lg">
+                          Brand Intelligence
+                        </h3>
+                        <p className="text-text-muted text-sm">
+                          {orchestrationState.pipeline1.message}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-xs bg-surface rounded px-2 py-1">
+                      {getStatusLabel(orchestrationState.pipeline1.status)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Pipeline 2: Visual Mockup Engine */}
+                <div
+                  className={`bg-surface border-2 rounded-lg p-6 transition ${getStatusBorder(
+                    orchestrationState.pipeline2.status
+                  )}`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      {getStatusIcon(orchestrationState.pipeline2.status)}
+                      <div>
+                        <h3 className="font-semibold text-lg">
+                          Visual Mockup Engine
+                        </h3>
+                        <p className="text-text-muted text-sm">
+                          {orchestrationState.pipeline2.message}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-xs bg-surface rounded px-2 py-1">
+                      {getStatusLabel(orchestrationState.pipeline2.status)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Pipeline 3: Infrastructure Provisioning */}
+                <div
+                  className={`bg-surface border-2 rounded-lg p-6 transition ${getStatusBorder(
+                    orchestrationState.pipeline3.status
+                  )}`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      {getStatusIcon(orchestrationState.pipeline3.status)}
+                      <div>
+                        <h3 className="font-semibold text-lg">
+                          Infrastructure Provisioning
+                        </h3>
+                        <p className="text-text-muted text-sm">
+                          {orchestrationState.pipeline3.message}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-xs bg-surface rounded px-2 py-1">
+                      {getStatusLabel(orchestrationState.pipeline3.status)}
+                    </span>
+                  </div>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <PipelineCard pipeline={orchestration.pipeline1} />
-                <PipelineCard pipeline={orchestration.pipeline2} />
-                <PipelineCard pipeline={orchestration.pipeline3} />
-              </div>
+              {/* Success State */}
+              {orchestrationState.status === "completed" &&
+                orchestrationState.storefront && (
+                  <div className="bg-emerald-900/20 border-2 border-emerald-400/50 rounded-lg p-8">
+                    <div className="flex items-start gap-4 mb-6">
+                      <Check className="w-6 h-6 text-emerald-400 flex-shrink-0 mt-1" />
+                      <div>
+                        <h3 className="text-xl font-bold text-emerald-300 mb-1">
+                          Brand Drop Ready!
+                        </h3>
+                        <p className="text-text-muted">
+                          Your storefront is live with{" "}
+                          {orchestrationState.storefront.productCount} products
+                        </p>
+                      </div>
+                    </div>
 
-              {orchestration.error && (
-                <div className="mt-6 p-4 bg-danger/20 border-2 border-danger rounded-lg flex items-start gap-3">
-                  <AlertCircle size={24} className="text-danger flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-danger">{orchestration.error}</p>
-                    <button
-                      onClick={retryOrchestration}
-                      className="text-accent hover:underline text-sm mt-2"
-                    >
-                      Try again
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+                    <div className="bg-surface/50 rounded p-4 mb-6">
+                      <p className="text-text-muted text-xs mb-2">
+                        Storefront URL
+                      </p>
+                      <div className="flex items-center justify-between gap-4">
+                        <p className="text-accent break-all">
+                          {orchestrationState.storefront.url}
+                        </p>
+                        <a
+                          href={orchestrationState.storefront.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-accent text-white px-4 py-2 rounded flex items-center gap-2 whitespace-nowrap hover:bg-purple-600 transition"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          View Store
+                        </a>
+                      </div>
+                    </div>
 
-            {/* Success Card */}
-            {orchestration.storefront && (
-              <div className="bg-surface rounded-lg border border-status-shipped p-8">
-                <div className="flex items-start gap-4 mb-6">
-                  <CheckCircle size={32} className="text-status-shipped flex-shrink-0" />
-                  <div>
-                    <h2 className="text-2xl font-bold mb-2">Store Created Successfully!</h2>
-                    <p className="text-text-muted">Your Shopify store is ready</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <button
+                        onClick={() => {
+                          window.open(
+                            `/api/download-assets?domain=${domain}`,
+                            "_blank"
+                          );
+                        }}
+                        className="bg-surface border-2 border-accent text-accent px-4 py-3 rounded flex items-center justify-center gap-2 hover:bg-accent/10 transition"
+                      >
+                        <DownloadCloud className="w-4 h-4" />
+                        Download Assets
+                      </button>
+                      <button
+                        onClick={() => {
+                          // TODO: Implement invite team modal
+                        }}
+                        className="bg-surface border-2 border-accent text-accent px-4 py-3 rounded flex items-center justify-center gap-2 hover:bg-accent/10 transition"
+                      >
+                        <Users className="w-4 h-4" />
+                        Invite Team
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                  <div className="bg-bg rounded-lg p-4">
-                    <p className="text-text-muted text-sm mb-1">Storefront URL</p>
-                    <p className="font-mono text-sm break-all text-accent">
-                      {orchestration.storefront.url}
-                    </p>
+              {/* Error State */}
+              {orchestrationState.status === "failed" && (
+                <div className="bg-red-900/20 border-2 border-danger/50 rounded-lg p-8">
+                  <div className="flex items-start gap-4 mb-6">
+                    <AlertCircle className="w-6 h-6 text-danger flex-shrink-0 mt-1" />
+                    <div>
+                      <h3 className="text-xl font-bold text-danger mb-1">
+                        Orchestration Failed
+                      </h3>
+                      <p className="text-text-muted">
+                        One or more pipelines encountered an error. Please try
+                        again.
+                      </p>
+                    </div>
                   </div>
-                  <div className="bg-bg rounded-lg p-4">
-                    <p className="text-text-muted text-sm mb-1">Products Generated</p>
-                    <p className="text-2xl font-bold">
-                      {orchestration.storefront.productCount}
-                    </p>
-                  </div>
-                  <div className="bg-bg rounded-lg p-4">
-                    <p className="text-text-muted text-sm mb-1">Status</p>
-                    <p className="font-semibold text-status-shipped">Active (Draft Mode)</p>
-                  </div>
-                </div>
 
-                <div className="flex flex-col md:flex-row gap-4">
                   <button
-                    onClick={openStorefront}
-                    className="flex-1 px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition flex items-center justify-center gap-2"
+                    onClick={() => {
+                      setOrchestrationState(null);
+                      setDomain("");
+                    }}
+                    className="bg-danger text-white px-6 py-2 rounded hover:bg-red-600 transition"
                   >
-                    <ExternalLink size={20} />
-                    View Storefront
-                  </button>
-                  <button className="flex-1 px-6 py-3 bg-surface border-2 border-accent text-accent font-semibold rounded-lg hover:bg-accent/10 transition flex items-center justify-center gap-2">
-                    <Download size={20} />
-                    Download Assets
-                  </button>
-                  <button className="flex-1 px-6 py-3 bg-surface border-2 border-accent text-accent font-semibold rounded-lg hover:bg-accent/10 transition flex items-center justify-center gap-2">
-                    <Users size={20} />
-                    Invite Team
+                    Try Again
                   </button>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-      </section>
+              )}
+
+              {pollingError && (
+                <div className="bg-yellow-900/20 border-2 border-yellow-600/50 rounded-lg p-4">
+                  <p className="text-yellow-200">{pollingError}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
