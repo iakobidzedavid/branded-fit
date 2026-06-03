@@ -366,3 +366,102 @@ export async function updateStorefrontStatus(
     return false;
   }
 }
+
+export async function createProvisioningStore(
+  domain: string
+): Promise<{ storeId: string; status: string } | null> {
+  try {
+    const client = getSupabase();
+    const { data, error } = await client
+      .from("stores")
+      .insert([
+        {
+          domain,
+          status: "provisioning",
+          created_at: new Date().toISOString(),
+        },
+      ])
+      .select("id, status");
+
+    if (error) {
+      console.error("Error creating provisioning store:", error);
+      return null;
+    }
+
+    const record = data?.[0];
+    if (!record) return null;
+
+    return {
+      storeId: record.id,
+      status: record.status,
+    };
+  } catch (err) {
+    console.error("Error in createProvisioningStore:", err);
+    return null;
+  }
+}
+
+export async function getStoreById(
+  storeId: string
+): Promise<{
+  id: string;
+  domain: string;
+  status: string;
+  brand_data: any;
+  products_count: number;
+  created_at: string;
+} | null> {
+  try {
+    const client = getSupabase();
+    const { data, error } = await client
+      .from("stores")
+      .select("id, domain, status, brand_data, products_count, created_at")
+      .eq("id", storeId)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      console.error("Error fetching store:", error);
+      return null;
+    }
+
+    return data || null;
+  } catch (err) {
+    console.error("Error in getStoreById:", err);
+    return null;
+  }
+}
+
+export async function updateStoreStatus(
+  storeId: string,
+  status: string,
+  updates?: Partial<{
+    brand_data: any;
+    products_count: number;
+    shopify_url: string;
+  }>
+): Promise<boolean> {
+  try {
+    const client = getSupabase();
+    const updateData: any = { status };
+
+    if (updates?.brand_data) updateData.brand_data = updates.brand_data;
+    if (updates?.products_count !== undefined)
+      updateData.products_count = updates.products_count;
+    if (updates?.shopify_url) updateData.shopify_url = updates.shopify_url;
+
+    const { error } = await client
+      .from("stores")
+      .update(updateData)
+      .eq("id", storeId);
+
+    if (error) {
+      console.error("Error updating store status:", error);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error("Error in updateStoreStatus:", err);
+    return false;
+  }
+}

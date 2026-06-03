@@ -1,86 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createStore, updateStoreWithShopifyUrl } from "@/lib/supabase";
-import { BrandAssets } from "@/lib/supabase";
-import { orchestrationStore, OrchestrationState } from "@/lib/orchestration-state";
+import { createProvisioningStore } from "@/lib/supabase";
 
-async function runPipeline1(domain: string): Promise<BrandAssets | null> {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_VERCEL_URL || "http://localhost:3000"}/api/brandfetch`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ domain }),
-      }
-    );
+const CORPORATE_TLDS = new Set([
+  "com",
+  "io",
+  "co",
+  "org",
+  "net",
+  "dev",
+  "app",
+  "ai",
+  "tech",
+  "inc",
+  "company",
+]);
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || "Pipeline 1 failed");
+function isCorporateTLD(domain: string): boolean {
+  const parts = domain.toLowerCase().split(".");
+  if (parts.length < 2) return false;
 
-    return data.assets;
-  } catch (error) {
-    console.error("Pipeline 1 error:", error);
-    return null;
-  }
+  const tld = parts[parts.length - 1];
+  return CORPORATE_TLDS.has(tld);
 }
 
-async function runPipeline2(
-  domain: string,
-  brandAssets: BrandAssets
-): Promise<{ products: unknown[]; totalProducts: number } | null> {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_VERCEL_URL || "http://localhost:3000"}/api/printify`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ domain, brandAssets }),
-      }
-    );
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || "Pipeline 2 failed");
-
-    return data;
-  } catch (error) {
-    console.error("Pipeline 2 error:", error);
-    return null;
-  }
-}
-
-async function runPipeline3(
-  domain: string,
-  products: unknown[],
-  brandName: string
-): Promise<{ storeUrl: string; productCount: number } | null> {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_VERCEL_URL || "http://localhost:3000"}/api/shopify`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ domain, products, brandName }),
-      }
-    );
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || "Pipeline 3 failed");
-
-    return {
-      storeUrl: data.storeUrl,
-      productCount: data.productCount,
-    };
-  } catch (error) {
-    console.error("Pipeline 3 error:", error);
-    return null;
-  }
+function validateDomainFormat(domain: string): boolean {
+  const domainRegex =
+    /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
+  return domainRegex.test(domain);
 }
 
 export async function POST(request: NextRequest) {
   try {
     const { domain } = await request.json();
 
-    if (!domain) {
+    if (!domain || typeof domain !== "string") {
       return NextResponse.json(
         { message: "Domain is required" },
         { status: 400 }
@@ -89,112 +42,42 @@ export async function POST(request: NextRequest) {
 
     const cleanDomain = domain.toLowerCase().trim();
 
-    // Initialize orchestration state
-    const state: OrchestrationState = {
-      status: "in_progress",
-      pipeline1: { status: "in_progress", message: "Extracting brand assets..." },
-      pipeline2: { status: "pending", message: "Waiting..." },
-      pipeline3: { status: "pending", message: "Waiting..." },
-      timestamp: Date.now(),
-    };
-    orchestrationStore.set(cleanDomain, state);
-
-    // Run Pipeline 1: Brand Intelligence (Brandfetch)
-    const brandAssets = await runPipeline1(cleanDomain);
-
-    if (!brandAssets) {
-      state.pipeline1 = {
-        status: "failed",
-        message: "Failed to extract brand assets",
-      };
-      state.status = "failed";
-      orchestrationStore.set(cleanDomain, state);
+    // Validate domain format
+    if (!validateDomainFormat(cleanDomain)) {
       return NextResponse.json(
-        { message: "Pipeline 1 failed", orchestration: state },
+        { message: "Invalid domain format" },
         { status: 400 }
       );
     }
 
-    state.pipeline1 = {
-      status: "completed",
-      message: "Brand assets extracted successfully",
-    };
-    state.pipeline2 = { status: "in_progress", message: "Generating mockups..." };
-    orchestrationStore.set(cleanDomain, state);
-
-    // Run Pipeline 2: Mockup Generation (Printify)
-    const mockupData = await runPipeline2(cleanDomain, brandAssets);
-
-    if (!mockupData) {
-      state.pipeline2 = {
-        status: "failed",
-        message: "Failed to generate mockups",
-      };
-      state.status = "failed";
-      orchestrationStore.set(cleanDomain, state);
+    // Check for corporate TLD
+    if (!isCorporateTLD(cleanDomain)) {
       return NextResponse.json(
-        { message: "Pipeline 2 failed", orchestration: state },
+        {
+          message:
+            "Only corporate domains (.com, .io, .co, .org, etc.) are supported",
+        },
         { status: 400 }
       );
     }
 
-    state.pipeline2 = {
-      status: "completed",
-      message: `Generated ${mockupData.totalProducts} products`,
-    };
-    state.pipeline3 = {
-      status: "in_progress",
-      message: "Provisioning Shopify store...",
-    };
-    orchestrationStore.set(cleanDomain, state);
+    // Create provisioning store in database
+    const result = await createProvisioningStore(cleanDomain);
 
-    // Run Pipeline 3: Shopify Provisioning
-    const brandName = cleanDomain.split(".")[0];
-    const shopifyResult = await runPipeline3(
-      cleanDomain,
-      mockupData.products,
-      brandName
+    if (!result) {
+      return NextResponse.json(
+        { message: "Failed to create store" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        storeId: result.storeId,
+        status: result.status,
+      },
+      { status: 201 }
     );
-
-    if (!shopifyResult) {
-      state.pipeline3 = {
-        status: "failed",
-        message: "Failed to provision Shopify store",
-      };
-      state.status = "failed";
-      orchestrationStore.set(cleanDomain, state);
-      return NextResponse.json(
-        { message: "Pipeline 3 failed", orchestration: state },
-        { status: 400 }
-      );
-    }
-
-    state.pipeline3 = {
-      status: "completed",
-      message: "Shopify store created successfully",
-    };
-    state.status = "completed";
-    state.storefront = {
-      url: shopifyResult.storeUrl,
-      productCount: shopifyResult.productCount,
-    };
-
-    // Store in database
-    await createStore(
-      cleanDomain,
-      brandName,
-      brandAssets,
-      brandAssets.logoUrl,
-      {} // mockup images would go here
-    );
-    await updateStoreWithShopifyUrl(cleanDomain, shopifyResult.storeUrl);
-
-    orchestrationStore.set(cleanDomain, state);
-
-    return NextResponse.json({
-      message: "Orchestration completed successfully",
-      orchestration: state,
-    });
   } catch (error) {
     console.error("Orchestration error:", error);
     return NextResponse.json(
@@ -202,27 +85,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-// Helper function to get current state (for polling)
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const domain = searchParams.get("domain");
-
-  if (!domain) {
-    return NextResponse.json(
-      { message: "Domain is required" },
-      { status: 400 }
-    );
-  }
-
-  const state = orchestrationStore.get(domain);
-  if (!state) {
-    return NextResponse.json(
-      { message: "No orchestration found for this domain" },
-      { status: 404 }
-    );
-  }
-
-  return NextResponse.json({ orchestration: state });
 }
