@@ -1,73 +1,102 @@
 import { NextRequest, NextResponse } from "next/server";
+import {
+  createShopifyClient,
+  generateUniqueSubdomain,
+  validateShopifyToken,
+  ShopifyStoreProvisioningResult,
+} from "@/lib/shopify";
+import { insertStoreMetadata } from "@/lib/stores";
 
-interface ShopifyStoreResponse {
-  storeUrl: string;
+interface StoreProvisioningRequest {
+  domain: string;
   storeName: string;
-  productCount: number;
-  adminUrl: string;
-}
-
-function generateShopifyUrl(domain: string): string {
-  // Generate a unique Shopify URL from the domain
-  const cleanDomain = domain.replace(/[^a-z0-9]/g, "-").slice(0, 30);
-  const timestamp = Date.now().toString().slice(-6);
-  return `https://${cleanDomain}-branded-fit-${timestamp}.myshopify.com`;
-}
-
-function generateAdminUrl(storeUrl: string): string {
-  return storeUrl.replace("myshopify.com", "admin.shopify.com");
+  currency?: string;
+  timezone?: string;
+  products?: unknown[];
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { domain, products, brandName } = await request.json();
+    const {
+      domain,
+      storeName,
+      currency = "USD",
+      timezone = "America/New_York",
+      products = [],
+    }: StoreProvisioningRequest = await request.json();
 
-    if (!domain || !products) {
+    if (!domain || !storeName) {
       return NextResponse.json(
-        { message: "Domain and products are required" },
+        { message: "Domain and storeName are required" },
         { status: 400 }
       );
     }
 
-    // For MVP, we'll generate a realistic mock Shopify store URL
-    // In production, this would call the Shopify Admin API with OAuth tokens
+    const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
+    const shopName = process.env.SHOPIFY_SHOP_NAME;
 
-    const apiKey = process.env.SHOPIFY_ADMIN_API_KEY;
-    const apiSecret = process.env.SHOPIFY_ADMIN_API_SECRET;
-
-    // If keys are not configured, return a demo store URL
-    if (!apiKey || !apiSecret) {
-      const storeUrl = generateShopifyUrl(domain);
-      const response: ShopifyStoreResponse = {
-        storeUrl,
-        storeName: brandName || domain,
-        productCount: products.length,
-        adminUrl: generateAdminUrl(storeUrl),
-      };
-      return NextResponse.json(response);
+    if (!accessToken || !shopName) {
+      return NextResponse.json(
+        {
+          message:
+            "Shopify integration not configured. Set SHOPIFY_ACCESS_TOKEN and SHOPIFY_SHOP_NAME environment variables.",
+        },
+        { status: 503 }
+      );
     }
 
-    // TODO: Implement actual Shopify Admin API integration
-    // This would:
-    // 1. Create a new app-owned store
-    // 2. Set store name and domain
-    // 3. Upload product data (name, description, price, images, variants)
-    // 4. Configure store settings (currency, tax)
-    // 5. Return store URL and credentials
+    // Validate the access token
+    const isValidToken = await validateShopifyToken(accessToken, shopName);
+    if (!isValidToken) {
+      return NextResponse.json(
+        { message: "Invalid Shopify access token or shop name" },
+        { status: 401 }
+      );
+    }
 
-    const storeUrl = generateShopifyUrl(domain);
-    const response: ShopifyStoreResponse = {
-      storeUrl,
-      storeName: brandName || domain,
-      productCount: products.length,
-      adminUrl: generateAdminUrl(storeUrl),
-    };
+    // Create Shopify client
+    const shopifyClient = createShopifyClient(accessToken, shopName);
 
-    return NextResponse.json(response);
+    // Generate unique subdomain
+    const subdomain = generateUniqueSubdomain(domain);
+
+    // Provision store
+    const provisioningResult = await shopifyClient.provisionStore({
+      name: storeName,
+      currency,
+      timezone,
+      subdomain,
+    });
+
+    // Store metadata in database
+    const storeMetadata = await insertStoreMetadata({
+      domain,
+      shopify_store_id: provisioningResult.storeId,
+      shopify_store_url: provisioningResult.storeUrl,
+      shopify_api_token: provisioningResult.accessToken,
+      status: "provisioned",
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        storeId: provisioningResult.storeId,
+        storeName: provisioningResult.storeName,
+        storeUrl: provisioningResult.storeUrl,
+        accessToken: provisioningResult.accessToken,
+        currency: provisioningResult.currency,
+        timezone: provisioningResult.timezone,
+        subdomain,
+        database: storeMetadata,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Shopify provisioning error:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to provision Shopify store";
     return NextResponse.json(
-      { message: "Failed to provision Shopify store" },
+      { message, success: false },
       { status: 500 }
     );
   }
