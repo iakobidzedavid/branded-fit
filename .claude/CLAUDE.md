@@ -61,9 +61,9 @@ Place new files in the correct directories shown above.
 All research, reports, plans, and documents MUST be saved in the
 `docs/` directory with a date prefix (YYYY-MM-DD) for future reference:
 
-  docs/2026-06-02_market_research.md
-  docs/2026-06-02_technical_feasibility.md
-  docs/2026-06-02_competitor_analysis.md
+  docs/2026-06-03_market_research.md
+  docs/2026-06-03_technical_feasibility.md
+  docs/2026-06-03_competitor_analysis.md
 
 Always include the date prefix so future agents know when the document
 was created.
