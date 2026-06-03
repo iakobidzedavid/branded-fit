@@ -156,17 +156,19 @@ export default function CommandConsole() {
         return;
       }
 
-      setOrchestrationState(data.orchestration);
+      if (data.orchestration) {
+        setOrchestrationState(data.orchestration);
 
-      if (pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current);
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current);
+        }
+
+        pollingIntervalRef.current = setInterval(() => {
+          pollStatus(cleanDomain);
+        }, 2000);
+
+        await pollStatus(cleanDomain);
       }
-
-      pollingIntervalRef.current = setInterval(() => {
-        pollStatus(cleanDomain);
-      }, 2000);
-
-      await pollStatus(cleanDomain);
     } catch (error) {
       console.error("Submit error:", error);
       setValidationError("Failed to submit domain");
@@ -214,6 +216,19 @@ export default function CommandConsole() {
     }
   };
 
+  const getProgressPercentage = (status: string) => {
+    switch (status) {
+      case "completed":
+        return 100;
+      case "in_progress":
+        return 65;
+      case "failed":
+        return 0;
+      default:
+        return 0;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-bg text-text flex flex-col">
       {/* Header */}
@@ -235,10 +250,11 @@ export default function CommandConsole() {
             <div className="space-y-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-text mb-2">
+                  <label htmlFor="domain-input" className="block text-sm font-medium text-text mb-2">
                     Domain
                   </label>
                   <input
+                    id="domain-input"
                     type="text"
                     placeholder="Enter your domain (e.g., ramp.com)"
                     value={domain}
@@ -282,7 +298,7 @@ export default function CommandConsole() {
                     orchestrationState.pipeline1.status
                   )}`}
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       {getStatusIcon(orchestrationState.pipeline1.status)}
                       <div>
@@ -298,6 +314,22 @@ export default function CommandConsole() {
                       {getStatusLabel(orchestrationState.pipeline1.status)}
                     </span>
                   </div>
+                  <div className="w-full bg-border rounded-full h-2 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        orchestrationState.pipeline1.status === "in_progress"
+                          ? "bg-accent animate-pulse"
+                          : orchestrationState.pipeline1.status === "completed"
+                          ? "bg-emerald-400"
+                          : orchestrationState.pipeline1.status === "failed"
+                          ? "bg-danger"
+                          : "bg-text-muted"
+                      }`}
+                      style={{
+                        width: `${getProgressPercentage(orchestrationState.pipeline1.status)}%`,
+                      }}
+                    />
+                  </div>
                 </div>
 
                 {/* Pipeline 2: Visual Mockup Engine */}
@@ -306,7 +338,7 @@ export default function CommandConsole() {
                     orchestrationState.pipeline2.status
                   )}`}
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       {getStatusIcon(orchestrationState.pipeline2.status)}
                       <div>
@@ -322,6 +354,22 @@ export default function CommandConsole() {
                       {getStatusLabel(orchestrationState.pipeline2.status)}
                     </span>
                   </div>
+                  <div className="w-full bg-border rounded-full h-2 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        orchestrationState.pipeline2.status === "in_progress"
+                          ? "bg-accent animate-pulse"
+                          : orchestrationState.pipeline2.status === "completed"
+                          ? "bg-emerald-400"
+                          : orchestrationState.pipeline2.status === "failed"
+                          ? "bg-danger"
+                          : "bg-text-muted"
+                      }`}
+                      style={{
+                        width: `${getProgressPercentage(orchestrationState.pipeline2.status)}%`,
+                      }}
+                    />
+                  </div>
                 </div>
 
                 {/* Pipeline 3: Infrastructure Provisioning */}
@@ -330,7 +378,7 @@ export default function CommandConsole() {
                     orchestrationState.pipeline3.status
                   )}`}
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       {getStatusIcon(orchestrationState.pipeline3.status)}
                       <div>
@@ -345,6 +393,22 @@ export default function CommandConsole() {
                     <span className="text-xs bg-surface rounded px-2 py-1">
                       {getStatusLabel(orchestrationState.pipeline3.status)}
                     </span>
+                  </div>
+                  <div className="w-full bg-border rounded-full h-2 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        orchestrationState.pipeline3.status === "in_progress"
+                          ? "bg-accent animate-pulse"
+                          : orchestrationState.pipeline3.status === "completed"
+                          ? "bg-emerald-400"
+                          : orchestrationState.pipeline3.status === "failed"
+                          ? "bg-danger"
+                          : "bg-text-muted"
+                      }`}
+                      style={{
+                        width: `${getProgressPercentage(orchestrationState.pipeline3.status)}%`,
+                      }}
+                    />
                   </div>
                 </div>
               </div>
