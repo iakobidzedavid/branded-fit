@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { BrandAssets } from "@/lib/supabase";
+import { BrandAssets, storeBrandExtraction } from "@/lib/supabase";
 
 interface BrandfetchResponse {
   data?: {
     name?: string;
-    colors?: { hex: string }[];
+    colors?: { hex: string; type?: string }[];
     logo?: { url?: string };
-    logos?: { url?: string }[];
+    logos?: { url?: string; type?: string }[];
+    fonts?: Array<{ name: string; origin: string }>;
     description?: string;
   };
 }
@@ -15,14 +16,16 @@ export async function POST(request: NextRequest) {
   try {
     const { domain } = await request.json();
 
-    if (!domain) {
+    if (!domain || typeof domain !== "string" || domain.trim() === "") {
       return NextResponse.json(
         { message: "Domain is required" },
         { status: 400 }
       );
     }
 
+    const normalizedDomain = domain.trim().toLowerCase();
     const apiKey = process.env.BRANDFETCH_API_KEY;
+
     if (!apiKey) {
       console.error("BRANDFETCH_API_KEY not configured");
       return NextResponse.json(
@@ -31,35 +34,63 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await fetch(`https://api.brandfetch.io/v2/brands/${domain}`, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        Accept: "application/json",
-      },
-    });
+    // Fetch from Brandfetch API
+    let apiSuccess = false;
+    let brandfetchData: BrandfetchResponse = {};
 
-    if (!response.ok) {
-      console.error(
-        `Brandfetch failed for ${domain}:`,
-        response.status,
-        response.statusText
+    try {
+      const response = await fetch(
+        `https://api.brandfetch.io/v2/brands/${normalizedDomain}`,
+        {
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            Accept: "application/json",
+          },
+        }
       );
 
-      // Return sensible defaults if brand not found
-      if (response.status === 404) {
-        const defaults = generateDefaultBrandAssets(domain);
-        return NextResponse.json({ assets: defaults });
+      if (response.ok) {
+        apiSuccess = true;
+        brandfetchData = await response.json();
+      } else {
+        console.warn(
+          `Brandfetch returned ${response.status} for ${normalizedDomain}`
+        );
       }
-
-      return NextResponse.json(
-        { message: `Brand not found for domain: ${domain}` },
-        { status: 404 }
+    } catch (fetchErr) {
+      console.warn(
+        `Brandfetch API call failed for ${normalizedDomain}:`,
+        fetchErr
       );
     }
 
-    const data: BrandfetchResponse = await response.json();
+    // Extract brand assets with sensible defaults
+    const assets = extractBrandAssets(
+      brandfetchData,
+      normalizedDomain,
+      apiSuccess
+    );
 
-    const assets = extractBrandAssets(data, domain);
+    // Cache extraction in Supabase for future use (30-day cache)
+    const colors = (assets as any).extractedColors || [];
+    const logos = (assets as any).extractedLogos || [];
+    const typography = (assets as any).extractedTypography || null;
+    const confidence = (assets as any).confidence || 50;
+
+    const stored = await storeBrandExtraction(normalizedDomain, {
+      domain: normalizedDomain,
+      colors,
+      logos,
+      typography,
+      extraction_confidence_pct: confidence,
+    });
+
+    if (!stored) {
+      console.warn(
+        `Failed to cache brand extraction for ${normalizedDomain} in Supabase`
+      );
+    }
+
     return NextResponse.json({ assets });
   } catch (error) {
     console.error("Brandfetch error:", error);
@@ -70,8 +101,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function generateDefaultBrandAssets(domain: string): BrandAssets {
-  // Generate sensible defaults based on domain
+function generateDefaultBrandAssets(domain: string): any {
   const hash = domain.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const colors = [
     "#6366f1", // indigo
@@ -88,27 +118,99 @@ function generateDefaultBrandAssets(domain: string): BrandAssets {
     logoUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${domain}`,
     primaryColor,
     secondaryColor,
+    extractedColors: [
+      { hex: primaryColor, type: "primary" },
+      { hex: secondaryColor, type: "secondary" },
+    ],
+    extractedLogos: [
+      {
+        url: `https://api.dicebear.com/7.x/initials/svg?seed=${domain}`,
+        type: "generated",
+      },
+    ],
+    confidence: 20,
   };
 }
 
-function extractBrandAssets(data: BrandfetchResponse, domain: string): BrandAssets {
+function extractBrandAssets(
+  data: BrandfetchResponse,
+  domain: string,
+  success: boolean
+): any {
   const brandData = data.data;
 
-  if (!brandData) {
+  if (!success || !brandData) {
     return generateDefaultBrandAssets(domain);
   }
 
-  const primaryColor = brandData.colors?.[0]?.hex || "#6366f1";
-  const secondaryColor = brandData.colors?.[1]?.hex || "#8b5cf6";
-  const logoUrl =
-    brandData.logo?.url ||
-    brandData.logos?.[0]?.url ||
-    `https://api.dicebear.com/7.x/initials/svg?seed=${domain}`;
+  // Extract colors with fallback to defaults
+  const colors = brandData.colors
+    ? brandData.colors.slice(0, 5).map((c) => ({
+        hex: c.hex,
+        type: c.type || "primary",
+      }))
+    : [];
+
+  if (colors.length === 0) {
+    return generateDefaultBrandAssets(domain);
+  }
+
+  // Extract logos with fallback
+  const logos: { url: string; type?: string }[] = [];
+
+  if (brandData.logos && brandData.logos.length > 0) {
+    brandData.logos.slice(0, 3).forEach((l) => {
+      if (l.url) {
+        logos.push({
+          url: l.url,
+          type: l.type || "primary",
+        });
+      }
+    });
+  }
+
+  if (logos.length === 0 && brandData.logo?.url) {
+    logos.push({
+      url: brandData.logo.url,
+      type: "primary",
+    });
+  }
+
+  if (logos.length === 0) {
+    logos.push({
+      url: `https://api.dicebear.com/7.x/initials/svg?seed=${domain}`,
+      type: "generated",
+    });
+  }
+
+  // Extract typography information
+  const typography =
+    brandData.fonts && brandData.fonts.length > 0
+      ? {
+          primary: brandData.fonts[0].name,
+          secondary:
+            brandData.fonts.length > 1
+              ? brandData.fonts[1].name
+              : brandData.fonts[0].name,
+        }
+      : null;
+
+  // Calculate confidence based on available data
+  let confidence = 50; // Base confidence for API success
+  if (brandData.colors && brandData.colors.length > 0) confidence += 15;
+  if (brandData.logo || brandData.logos) confidence += 15;
+  if (brandData.fonts && brandData.fonts.length > 0) confidence += 20;
+
+  const primaryColor = colors[0]?.hex || "#6366f1";
+  const secondaryColor = colors[1]?.hex || "#8b5cf6";
 
   return {
-    logoUrl,
+    logoUrl: logos[0]?.url || `https://api.dicebear.com/7.x/initials/svg?seed=${domain}`,
     primaryColor,
     secondaryColor,
-    typography: brandData.description || undefined,
+    extractedColors: colors,
+    extractedLogos: logos,
+    extractedTypography: typography,
+    confidence,
   };
 }
