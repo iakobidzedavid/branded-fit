@@ -1,44 +1,67 @@
 import { NextRequest, NextResponse } from "next/server";
-import { BrandAssets } from "@/lib/supabase";
+import {
+  getBrandExtraction,
+  storeProduct,
+  Product,
+  ProductVariant,
+  ProductPricing,
+} from "@/lib/supabase";
 
-interface Product {
+interface PrintifyTemplate {
   id: string;
+  sku: string;
   name: string;
   description: string;
-  basePrice: number;
-  markup: number;
-  finalPrice: number;
-  mockupUrl: string;
-  variants: {
-    color: string;
-    size: string;
-  }[];
+  basePriceCents: number;
+  colors: string[];
+  sizes: string[];
 }
 
-const PRODUCT_TEMPLATES = [
+const PRINTIFY_TEMPLATES: PrintifyTemplate[] = [
   {
-    id: "hoodie",
-    name: "Premium Hoodie",
-    description: "Comfortable, durable hoodie featuring your brand",
-    basePrice: 18.5,
-    colors: ["Black", "Navy", "Charcoal"],
+    id: "heavyweight-tee",
+    sku: "HWT-001",
+    name: "Heavyweight T-Shirt",
+    description: "Premium quality 100% cotton heavyweight t-shirt",
+    basePriceCents: 1200, // $12.00
+    colors: ["Black", "White", "Navy", "Charcoal"],
     sizes: ["XS", "S", "M", "L", "XL", "2XL"],
   },
   {
-    id: "water-bottle",
-    name: "Insulated Water Bottle",
-    description: "Keep drinks cold for 24 hours, hot for 12",
-    basePrice: 12.0,
-    colors: ["White", "Black", "Steel Blue"],
-    sizes: ["18oz", "24oz", "32oz"],
+    id: "premium-hoodie",
+    sku: "PHD-001",
+    name: "Premium Hoodie",
+    description: "Comfortable fleece-lined hoodie featuring your brand",
+    basePriceCents: 1850, // $18.50
+    colors: ["Black", "Navy", "Charcoal", "Gray"],
+    sizes: ["XS", "S", "M", "L", "XL", "2XL"],
   },
   {
-    id: "sticker-pack",
-    name: "Brand Sticker Pack",
-    description: "Premium vinyl stickers perfect for laptops and phones",
-    basePrice: 3.5,
-    colors: ["Glossy", "Matte"],
-    sizes: ["4-pack", "8-pack"],
+    id: "dad-cap",
+    sku: "DAD-001",
+    name: "Dad Cap",
+    description: "Classic unstructured dad cap with curved visor",
+    basePriceCents: 650, // $6.50
+    colors: ["Black", "White", "Navy", "Khaki"],
+    sizes: ["One Size"],
+  },
+  {
+    id: "tote-bag",
+    sku: "TOT-001",
+    name: "Tote Bag",
+    description: "Durable canvas tote bag perfect for daily use",
+    basePriceCents: 800, // $8.00
+    colors: ["Natural", "Black", "Navy", "Olive"],
+    sizes: ["One Size"],
+  },
+  {
+    id: "notebook",
+    sku: "NTB-001",
+    name: "Branded Notebook",
+    description: "Premium hardcover notebook with custom branding",
+    basePriceCents: 900, // $9.00
+    colors: ["Black", "Navy", "Burgundy", "Forest Green"],
+    sizes: ["A5", "A4"],
   },
 ];
 
@@ -49,64 +72,113 @@ function generateMockupUrl(
   primaryColor: string,
   domain: string
 ): string {
-  const colors = encodeURIComponent(primaryColor.replace("#", ""));
+  const cleanColor = primaryColor.replace("#", "").toUpperCase();
   const seed = encodeURIComponent(domain);
-  const products: Record<string, string> = {
-    hoodie: "https://api.dicebear.com/7.x/thumbs/svg?colors=primaryColor&seed=hoodie",
-    "water-bottle":
-      "https://api.dicebear.com/7.x/bottts/svg?colors=primaryColor&seed=bottle",
-    "sticker-pack":
-      "https://api.dicebear.com/7.x/shapes/svg?colors=primaryColor&seed=sticker",
+
+  const mockupEndpoints: Record<string, string> = {
+    "heavyweight-tee": `https://via.placeholder.com/400x400?text=T-Shirt&bg=${cleanColor}`,
+    "premium-hoodie": `https://via.placeholder.com/400x400?text=Hoodie&bg=${cleanColor}`,
+    "dad-cap": `https://via.placeholder.com/400x400?text=Cap&bg=${cleanColor}`,
+    "tote-bag": `https://via.placeholder.com/400x400?text=Tote&bg=${cleanColor}`,
+    notebook: `https://via.placeholder.com/400x400?text=Notebook&bg=${cleanColor}`,
   };
 
-  return products[productId] || "https://via.placeholder.com/400x400";
+  return mockupEndpoints[productId] || "https://via.placeholder.com/400x400";
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { domain, brandAssets } = await request.json();
+    const { domain } = await request.json();
 
-    if (!domain || !brandAssets) {
+    if (!domain || typeof domain !== "string" || domain.trim() === "") {
       return NextResponse.json(
-        { message: "Domain and brandAssets are required" },
+        { message: "Domain is required" },
         { status: 400 }
       );
     }
 
-    const assets: BrandAssets = brandAssets;
+    const normalizedDomain = domain.trim().toLowerCase();
+
+    // Fetch extracted brand data from Brandfetch
+    const brandExtraction = await getBrandExtraction(normalizedDomain);
+
+    if (!brandExtraction) {
+      return NextResponse.json(
+        { message: "Brand extraction not found. Run Brandfetch first." },
+        { status: 400 }
+      );
+    }
+
+    const primaryColor =
+      brandExtraction.colors[0]?.hex || "#6366f1";
+
     const products: Product[] = [];
 
-    for (const template of PRODUCT_TEMPLATES) {
-      const basePrice = template.basePrice;
+    // Generate products from templates
+    for (const template of PRINTIFY_TEMPLATES) {
+      const basePrice = template.basePriceCents / 100;
       const markupAmount = basePrice * MARKUP_PERCENTAGE;
       const finalPrice = basePrice + markupAmount;
 
-      const variants = [];
-      for (const color of template.colors) {
-        for (const size of template.sizes) {
-          variants.push({ color, size });
+      // Generate variants (limit to 5)
+      const variants: ProductVariant[] = [];
+      const colorLimit = Math.min(3, template.colors.length);
+      const sizeLimit = Math.min(Math.ceil(5 / colorLimit), template.sizes.length);
+
+      for (let i = 0; i < colorLimit; i++) {
+        for (let j = 0; j < sizeLimit; j++) {
+          if (variants.length < 5) {
+            variants.push({
+              color: template.colors[i],
+              size: template.sizes[j],
+            });
+          }
         }
       }
 
-      products.push({
-        id: template.id,
-        name: template.name,
-        description: template.description,
+      const pricing: ProductPricing = {
         basePrice,
-        markup: markupAmount,
+        markup: parseFloat(markupAmount.toFixed(2)),
         finalPrice: parseFloat(finalPrice.toFixed(2)),
-        mockupUrl: generateMockupUrl(template.id, assets.primaryColor, domain),
-        variants: variants.slice(0, 5), // Limit to 5 variants per product
-      });
+      };
+
+      const mockupImageUrl = generateMockupUrl(
+        template.id,
+        primaryColor,
+        normalizedDomain
+      );
+
+      const product: Product = {
+        domain: normalizedDomain,
+        sku: template.sku,
+        product_name: template.name,
+        mockup_image_url: mockupImageUrl,
+        variants,
+        pricing,
+      };
+
+      // Store in Supabase
+      const stored = await storeProduct(product);
+      if (!stored) {
+        console.warn(
+          `Failed to store product ${template.sku} for domain ${normalizedDomain}`
+        );
+      }
+
+      products.push(product);
     }
 
     return NextResponse.json({
+      success: true,
+      domain: normalizedDomain,
       products,
       totalProducts: products.length,
       totalVariants: products.reduce((acc, p) => acc + p.variants.length, 0),
+      brandColors: brandExtraction.colors,
+      brandLogos: brandExtraction.logos,
     });
   } catch (error) {
-    console.error("Printify error:", error);
+    console.error("Printify mockup generation error:", error);
     return NextResponse.json(
       { message: "Failed to generate mockups" },
       { status: 500 }
