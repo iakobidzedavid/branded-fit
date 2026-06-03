@@ -17,12 +17,15 @@ branded-fit/
   .env.example
   .gitignore
   README.md
+  TEST_GUIDE.md
   next-env.d.ts
   next.config.ts
   package-lock.json
   package.json
   postcss.config.js
   tailwind.config.ts
+  test-harness.js
+  test-harness.ts
   tsconfig.json
   tsconfig.tsbuildinfo
   .claude/
@@ -38,6 +41,14 @@ branded-fit/
     2026-06-02_landing_page_implementation.md
     2026-06-02_pipeline_implementation.md
     2026-06-02_weekly_reporting_setup.md
+    2026-06-03_brandfetch_extraction_pipeline.md
+    2026-06-03_e2e_test_report.md
+    2026-06-03_end_to_end_test_report.md
+    2026-06-03_printify_mockup_pipeline.md
+    2026-06-03_task_completion_summary.md
+    DELIVERABLES_CHECKLIST.md
+  public/
+    mockups/
   src/
     app/
       globals.css
@@ -47,10 +58,14 @@ branded-fit/
       api/
       command-console/
       pilot-checkout/
+      test-suite/
     lib/
       analytics.ts
+      mockup-generator.ts
       orchestration-state.ts
       supabase.ts
+  supabase/
+    migrations/
 ```
 
 BEFORE writing any code, use Read and Glob tools to understand existing files.
