@@ -278,3 +278,91 @@ export async function getProductsByDomain(
     return null;
   }
 }
+
+export type Storefront = {
+  id: string;
+  domain: string;
+  shopify_store_id: string;
+  storefront_url: string;
+  product_count: number;
+  status: string;
+  created_at: string;
+};
+
+export async function createStorefront(
+  domain: string,
+  shopifyStoreId: string,
+  storefrontUrl: string,
+  productCount: number,
+  status: string = "draft"
+): Promise<Storefront | null> {
+  try {
+    const client = getSupabase();
+    const { data, error } = await client.from("storefronts").insert([
+      {
+        domain,
+        shopify_store_id: shopifyStoreId,
+        storefront_url: storefrontUrl,
+        product_count: productCount,
+        status,
+        created_at: new Date().toISOString(),
+      },
+    ]);
+
+    if (error) {
+      console.error("Error creating storefront:", error);
+      return null;
+    }
+
+    return data?.[0] || null;
+  } catch (err) {
+    console.error("Error in createStorefront:", err);
+    return null;
+  }
+}
+
+export async function getStorefrontByDomain(
+  domain: string
+): Promise<Storefront | null> {
+  try {
+    const client = getSupabase();
+    const { data, error } = await client
+      .from("storefronts")
+      .select("*")
+      .eq("domain", domain)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      console.error("Error fetching storefront:", error);
+      return null;
+    }
+
+    return data || null;
+  } catch (err) {
+    console.error("Error in getStorefrontByDomain:", err);
+    return null;
+  }
+}
+
+export async function updateStorefrontStatus(
+  domain: string,
+  status: string
+): Promise<boolean> {
+  try {
+    const client = getSupabase();
+    const { error } = await client
+      .from("storefronts")
+      .update({ status })
+      .eq("domain", domain);
+
+    if (error) {
+      console.error("Error updating storefront status:", error);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error("Error in updateStorefrontStatus:", err);
+    return false;
+  }
+}
