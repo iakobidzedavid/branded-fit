@@ -128,8 +128,14 @@ export default function CommandConsole() {
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        setError(data.message || "Failed to start orchestration");
+        let errorMessage = "Failed to start orchestration";
+        try {
+          const data = await res.json();
+          errorMessage = data.message || errorMessage;
+        } catch {
+          errorMessage = `Server error (${res.status})`;
+        }
+        setError(errorMessage);
         setLoading(false);
         return;
       }
@@ -319,16 +325,18 @@ export default function CommandConsole() {
               ))}
             </div>
 
-            {error && (
-              <button
-                onClick={handleRetry}
-                disabled={loading}
-                className="w-full px-6 py-3 bg-surface border-2 border-border text-text font-semibold rounded-lg hover:border-accent/50 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
-              >
-                <RefreshCw size={18} />
-                Retry
-              </button>
-            )}
+            <button
+              onClick={handleRetry}
+              disabled={loading || !error}
+              className={`w-full px-6 py-3 font-semibold rounded-lg transition flex items-center justify-center gap-2 border-2 ${
+                error
+                  ? "bg-surface border-border text-text hover:border-accent/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  : "bg-bg border-border text-text-muted/50 cursor-not-allowed opacity-50"
+              }`}
+            >
+              <RefreshCw size={18} />
+              Retry
+            </button>
           </div>
 
           <div className="bg-surface border-2 border-border rounded-lg p-8 h-fit">
