@@ -380,8 +380,8 @@ export default function Home() {
               "Our team loved the unboxing experience. It genuinely felt special
               to see our brand celebrated on real products."
             </p>
-            <p className="font-semibold">Maya C., People Ops Manager</p>
-            <p className="text-text-muted text-sm">Series A SaaS, 45 employees</p>
+            <p className="font-semibold">A People Ops leader</p>
+            <p className="text-text-muted text-sm">Company using Branded Fit</p>
           </div>
         </div>
       </section>
@@ -392,7 +392,7 @@ export default function Home() {
           <h2 className="text-3xl md:text-4xl font-bold mb-8">
             Ready to launch your Brand Drop?
           </h2>
-          <div className="flex flex-col md:flex-row gap-4 justify-center">
+          <div className="flex flex-col md:flex-row gap-4 justify-center mb-4">
             <a
               href="/pilot-checkout"
               onClick={() => {
@@ -410,7 +410,7 @@ export default function Home() {
               }}
               className="px-8 py-4 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition"
             >
-              Request a Pilot ($4,800)
+              Start Your Pilot ($4,800)
             </a>
             <button
               onClick={() => {
@@ -431,6 +431,9 @@ export default function Home() {
               Generate your first report
             </button>
           </div>
+          <p className="text-text-muted text-sm">
+            AI-powered setup, no sales call required
+          </p>
         </div>
       </section>
 
