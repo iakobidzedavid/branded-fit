@@ -18,11 +18,14 @@ branded-fit/
   .gitignore
   README.md
   TEST_GUIDE.md
+  brandfetch-integration-test.ts
+  brandfetch-validation-test.ts
   next-env.d.ts
   next.config.ts
   package-lock.json
   package.json
   postcss.config.js
+  printify-integration-test.ts
   tailwind.config.ts
   test-harness.js
   test-harness.ts
@@ -41,10 +44,19 @@ branded-fit/
     2026-06-02_landing_page_implementation.md
     2026-06-02_pipeline_implementation.md
     2026-06-02_weekly_reporting_setup.md
+    2026-06-03_api_shopify_task_completion.md
     2026-06-03_brandfetch_extraction_pipeline.md
+    2026-06-03_brandfetch_implementation_guide.md
+    2026-06-03_brandfetch_integration_test_report.md
+    2026-06-03_brandfetch_task_completion_summary.md
     2026-06-03_e2e_test_report.md
     2026-06-03_end_to_end_test_report.md
     2026-06-03_printify_mockup_pipeline.md
+    2026-06-03_printify_mockup_pipeline_report.md
+    2026-06-03_product_upload_implementation.md
+    2026-06-03_shopify_api_integration.md
+    2026-06-03_shopify_endpoint_implementation.md
+    2026-06-03_shopify_implementation_summary.md
     2026-06-03_task_completion_summary.md
     DELIVERABLES_CHECKLIST.md
   public/
@@ -61,8 +73,12 @@ branded-fit/
       test-suite/
     lib/
       analytics.ts
+      database.types.ts
       mockup-generator.ts
       orchestration-state.ts
+      shopify.test.ts
+      shopify.ts
+      stores.ts
       supabase.ts
   supabase/
     migrations/
