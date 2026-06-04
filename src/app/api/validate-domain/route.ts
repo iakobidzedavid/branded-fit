@@ -13,6 +13,7 @@ const CORPORATE_TLDS = new Set([
   "tech",
   "inc",
   "company",
+  "so",
 ]);
 
 function isCorporateTLD(domain: string): boolean {

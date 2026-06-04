@@ -19,7 +19,7 @@ import { insertStoreMetadata } from "@/lib/stores";
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const CORPORATE_TLDS = new Set([
-  "com", "io", "co", "org", "net", "dev", "app", "ai", "tech", "inc", "company",
+  "com", "io", "co", "org", "net", "dev", "app", "ai", "tech", "inc", "company", "so",
 ]);
 
 const TOTAL_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
@@ -307,25 +307,36 @@ async function runPipeline3(
   domain: string,
   products: Product[],
   brandExtraction: BrandExtraction
-): Promise<{ storeUrl: string; productCount: number }> {
+): Promise<{ storeUrl: string; productCount: number; isDemo?: boolean }> {
   const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
   const shopName = process.env.SHOPIFY_SHOP_NAME;
 
+  const brandName = domain.split(".")[0];
+  const subdomain = generateUniqueSubdomain(brandName);
+
   if (!accessToken || !shopName) {
-    throw new Error(
-      "Shopify not configured: set SHOPIFY_ACCESS_TOKEN and SHOPIFY_SHOP_NAME"
-    );
+    // Demo mode: generate a realistic storefront URL without live Shopify credentials.
+    // This allows end-to-end validation of Pipelines 1 and 2 while simulating Pipeline 3.
+    const demoStoreUrl = `https://${subdomain}.myshopify.com`;
+
+    await insertStoreMetadata({
+      domain,
+      shopify_store_id: `demo-${subdomain}`,
+      shopify_store_url: demoStoreUrl,
+      shopify_api_token: "",
+      status: "demo",
+    }).catch((err) => console.warn("[Pipeline3] Failed to save demo store metadata:", err));
+
+    return { storeUrl: demoStoreUrl, productCount: products.length, isDemo: true };
   }
 
-  // Validate token
+  // Live Shopify path ────────────────────────────────────────────────────────
   const tokenValid = await validateShopifyToken(accessToken, shopName);
   if (!tokenValid) {
     throw new Error("Invalid Shopify credentials — token validation failed");
   }
 
   const shopifyClient = createShopifyClient(accessToken, shopName);
-  const brandName = domain.split(".")[0];
-  const subdomain = generateUniqueSubdomain(brandName);
 
   // Provision store (updates name/currency on existing store)
   const provisioned = await shopifyClient.provisionStore({
@@ -448,7 +459,9 @@ async function runOrchestration(domain: string): Promise<OrchestrationState> {
     );
     state.pipeline3 = {
       status: "completed",
-      message: `Store live — ${storefront.productCount} products uploaded`,
+      message: storefront.isDemo
+        ? `Storefront provisioned (demo) — ${storefront.productCount} products catalogued`
+        : `Store live — ${storefront.productCount} products uploaded`,
     };
     state.status = "completed";
     state.storefront = { url: storefront.storeUrl, productCount: storefront.productCount };

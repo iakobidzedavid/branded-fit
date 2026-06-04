@@ -19,6 +19,7 @@ import {
 const INVALID_TLDS = new Set([
   "test", "local", "example", "invalid", "localhost", "corp", "intranet",
 ]);
+// .so is valid (used by notion.so)
 
 function validateDomain(domain: string): { valid: boolean; error?: string } {
   const trimmed = domain.trim().toLowerCase();
