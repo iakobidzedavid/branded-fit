@@ -1,15 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BrandAssets, storeBrandExtraction } from "@/lib/supabase";
 
+interface BrandfetchLogoFormat {
+  src: string;
+  format: string;
+}
+
+interface BrandfetchLogo {
+  type?: string;
+  theme?: string;
+  formats?: BrandfetchLogoFormat[];
+  url?: string;
+}
+
+interface BrandfetchBrand {
+  name?: string;
+  colors?: { hex: string; type?: string }[];
+  logos?: BrandfetchLogo[];
+  fonts?: Array<{ name: string; origin: string }>;
+  description?: string;
+}
+
 interface BrandfetchResponse {
-  data?: {
-    name?: string;
-    colors?: { hex: string; type?: string }[];
-    logo?: { url?: string };
-    logos?: { url?: string; type?: string }[];
-    fonts?: Array<{ name: string; origin: string }>;
-    description?: string;
-  };
+  data?: BrandfetchBrand;
 }
 
 export async function POST(request: NextRequest) {
@@ -155,24 +168,18 @@ function extractBrandAssets(
     return generateDefaultBrandAssets(domain);
   }
 
-  // Extract logos with fallback
+  // Extract logos — Brandfetch v2 stores URLs inside a `formats` array
   const logos: { url: string; type?: string }[] = [];
 
   if (brandData.logos && brandData.logos.length > 0) {
     brandData.logos.slice(0, 3).forEach((l) => {
-      if (l.url) {
-        logos.push({
-          url: l.url,
-          type: l.type || "primary",
-        });
+      let url: string | undefined;
+      if (l.formats && l.formats.length > 0) {
+        const svg = l.formats.find((f) => f.format === "svg" && f.src);
+        url = svg?.src ?? l.formats.find((f) => f.src)?.src;
       }
-    });
-  }
-
-  if (logos.length === 0 && brandData.logo?.url) {
-    logos.push({
-      url: brandData.logo.url,
-      type: "primary",
+      if (!url && l.url) url = l.url;
+      if (url) logos.push({ url, type: l.type || "logo" });
     });
   }
 
@@ -198,7 +205,7 @@ function extractBrandAssets(
   // Calculate confidence based on available data
   let confidence = 50; // Base confidence for API success
   if (brandData.colors && brandData.colors.length > 0) confidence += 15;
-  if (brandData.logo || brandData.logos) confidence += 15;
+  if (brandData.logos && brandData.logos.length > 0) confidence += 15;
   if (brandData.fonts && brandData.fonts.length > 0) confidence += 20;
 
   const primaryColor = colors[0]?.hex || "#6366f1";

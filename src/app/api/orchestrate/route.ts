@@ -136,43 +136,71 @@ function generateMockupUrl(productId: string, primaryColor: string): string {
 
 // ─── Pipeline 1: Brand Intelligence (Brandfetch) ───────────────────────────────
 
+// Brandfetch v2 API: logos have a `formats` array, each entry has a `src` URL.
+interface BrandfetchLogoFormat {
+  src: string;
+  format: string;
+  height?: number | null;
+  width?: number | null;
+  size?: number | null;
+}
+
+interface BrandfetchLogo {
+  type?: string;
+  theme?: string;
+  formats?: BrandfetchLogoFormat[];
+  // Legacy flat-shape fallback
+  url?: string;
+}
+
 interface BrandfetchApiResponse {
   name?: string;
   colors?: { hex: string; type?: string }[];
-  logo?: { url?: string };
-  logos?: { url?: string; type?: string }[];
-  fonts?: Array<{ name: string; origin: string }>;
-  // v2 wraps in data
+  logos?: BrandfetchLogo[];
+  fonts?: Array<{ name: string; type?: string; origin: string }>;
+  // Some integrations wrap fields under `data`
   data?: {
     name?: string;
     colors?: { hex: string; type?: string }[];
-    logo?: { url?: string };
-    logos?: { url?: string; type?: string }[];
-    fonts?: Array<{ name: string; origin: string }>;
+    logos?: BrandfetchLogo[];
+    fonts?: Array<{ name: string; type?: string; origin: string }>;
   };
 }
 
+function extractLogoUrl(logo: BrandfetchLogo): string | null {
+  // Prefer SVG, then any other format from the `formats` array (Brandfetch v2)
+  if (logo.formats && logo.formats.length > 0) {
+    const svg = logo.formats.find((f) => f.format === "svg" && f.src);
+    if (svg) return svg.src;
+    const any = logo.formats.find((f) => f.src);
+    if (any) return any.src;
+  }
+  // Legacy: flat `url` field
+  if (logo.url) return logo.url;
+  return null;
+}
+
 function parseBrandfetchResponse(raw: BrandfetchApiResponse, domain: string): BrandExtraction {
-  // Brandfetch v2 sometimes wraps fields under `data`, sometimes flat
+  // v2 API returns a flat object; some older integrations wrap under `data`
   const brand = raw.data ?? raw;
 
   const rawColors = brand.colors ?? [];
-  const colors = rawColors.length > 0
-    ? rawColors.slice(0, 5).map((c) => ({ hex: c.hex, type: c.type ?? "primary" }))
+  const hasApiColors = rawColors.length > 0;
+  const colors = hasApiColors
+    ? rawColors.slice(0, 5).map((c) => ({ hex: c.hex, type: c.type ?? "brand" }))
     : generateDefaultColors(domain);
 
-  const rawLogos: { url?: string; type?: string }[] = [];
+  const extractedLogos: { url: string; type: string }[] = [];
   if (brand.logos && brand.logos.length > 0) {
-    brand.logos.slice(0, 3).forEach((l) => {
-      if (l.url) rawLogos.push({ url: l.url, type: l.type ?? "primary" });
-    });
+    for (const logo of brand.logos.slice(0, 3)) {
+      const url = extractLogoUrl(logo);
+      if (url) extractedLogos.push({ url, type: logo.type ?? "logo" });
+    }
   }
-  if (rawLogos.length === 0 && brand.logo?.url) {
-    rawLogos.push({ url: brand.logo.url, type: "primary" });
-  }
+  const hasApiLogos = extractedLogos.length > 0;
   const logos =
-    rawLogos.length > 0
-      ? rawLogos
+    hasApiLogos
+      ? extractedLogos
       : [{ url: `https://api.dicebear.com/7.x/initials/svg?seed=${domain}`, type: "generated" }];
 
   const typography =
@@ -183,15 +211,16 @@ function parseBrandfetchResponse(raw: BrandfetchApiResponse, domain: string): Br
         }
       : null;
 
+  // Confidence: 50 base (API success) + 20 real colors + 20 real logos + 10 typography
   let confidence = 50;
-  if (colors.length > 0 && !colors[0].type?.startsWith("default")) confidence += 20;
-  if (logos.length > 0 && logos[0].type !== "generated") confidence += 20;
+  if (hasApiColors) confidence += 20;
+  if (hasApiLogos) confidence += 20;
   if (typography) confidence += 10;
 
   return {
     domain,
     colors,
-    logos: logos as { url: string; type?: string }[],
+    logos,
     typography,
     extraction_confidence_pct: Math.min(confidence, 100),
   };
