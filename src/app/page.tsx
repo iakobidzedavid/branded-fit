@@ -8,105 +8,182 @@ import {
   Zap,
   Code2,
   RefreshCw,
+  ExternalLink,
+  Download,
+  Users,
+  MessageSquare,
+  Timer,
+  Target,
 } from "lucide-react";
 
 const INVALID_TLDS = new Set([
-  "test",
-  "local",
-  "dev",
-  "example",
-  "invalid",
-  "localhost",
-  "corp",
-  "company",
-  "intranet",
+  "test", "local", "example", "invalid", "localhost", "corp", "intranet",
 ]);
 
 function validateDomain(domain: string): { valid: boolean; error?: string } {
   const trimmed = domain.trim().toLowerCase();
-
-  if (!trimmed) {
-    return { valid: false, error: "Domain is required" };
-  }
-
+  if (!trimmed) return { valid: false, error: "Domain is required" };
   const domainRegex =
     /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*\.[a-z]{2,}$/;
-  if (!domainRegex.test(trimmed)) {
+  if (!domainRegex.test(trimmed))
     return { valid: false, error: "Invalid domain format" };
-  }
-
   const tld = trimmed.split(".").pop();
-  if (tld && INVALID_TLDS.has(tld)) {
-    return {
-      valid: false,
-      error: `${tld} is not a valid corporate domain`,
-    };
-  }
-
+  if (tld && INVALID_TLDS.has(tld))
+    return { valid: false, error: `${tld} is not a valid corporate domain` };
   return { valid: true };
 }
 
-interface Pipeline {
+interface PipelineState {
   name: string;
   status: "pending" | "in_progress" | "completed" | "failed";
   message: string;
 }
 
+interface BrandData {
+  colors: { hex: string; type?: string }[];
+  logoUrl?: string;
+  fontFamily?: string;
+  confidence: number;
+}
+
+interface StorefrontData {
+  url: string;
+  productCount: number;
+}
+
+const DEFAULT_PIPELINES: PipelineState[] = [
+  { name: "Brand Intelligence", status: "pending", message: "Ready to start..." },
+  { name: "Visual Mockup Engine", status: "pending", message: "Ready to start..." },
+  { name: "Infrastructure Provisioning", status: "pending", message: "Ready to start..." },
+];
+
 export default function CommandConsole() {
   const [domain, setDomain] = useState("");
   const [validationError, setValidationError] = useState("");
-  const [submittedDomains, setSubmittedDomains] = useState<Set<string>>(
-    new Set()
-  );
+  const [submittedDomains, setSubmittedDomains] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [pipelines, setPipelines] = useState<Pipeline[]>([
-    {
-      name: "Brand Intelligence",
-      status: "pending",
-      message: "Ready to start...",
-    },
-    {
-      name: "Visual Mockup Engine",
-      status: "pending",
-      message: "Ready to start...",
-    },
-    {
-      name: "Infrastructure Provisioning",
-      status: "pending",
-      message: "Ready to start...",
-    },
-  ]);
+  const [pipelines, setPipelines] = useState<PipelineState[]>(DEFAULT_PIPELINES);
   const [currentDomain, setCurrentDomain] = useState("");
-  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [orchestrationStatus, setOrchestrationStatus] = useState<
+    "idle" | "in_progress" | "completed" | "failed"
+  >("idle");
+  const [storefront, setStorefront] = useState<StorefrontData | null>(null);
+  const [brandData, setBrandData] = useState<BrandData | null>(null);
+  const [provisioningTime, setProvisioningTime] = useState<number | null>(null);
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const startTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
     return () => {
-      if (pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current);
-      }
+      if (pollingRef.current) clearInterval(pollingRef.current);
     };
   }, []);
 
+  const stopPolling = () => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  };
+
+  const applyOrchestrationState = (orch: {
+    status: string;
+    pipeline1?: { status: string; message: string };
+    pipeline2?: { status: string; message: string };
+    pipeline3?: { status: string; message: string };
+    storefront?: { url: string; productCount: number };
+    brandData?: BrandData;
+    error?: string;
+  }) => {
+    setPipelines([
+      {
+        name: "Brand Intelligence",
+        status: (orch.pipeline1?.status ?? "pending") as PipelineState["status"],
+        message: orch.pipeline1?.message ?? "",
+      },
+      {
+        name: "Visual Mockup Engine",
+        status: (orch.pipeline2?.status ?? "pending") as PipelineState["status"],
+        message: orch.pipeline2?.message ?? "",
+      },
+      {
+        name: "Infrastructure Provisioning",
+        status: (orch.pipeline3?.status ?? "pending") as PipelineState["status"],
+        message: orch.pipeline3?.message ?? "",
+      },
+    ]);
+
+    if (orch.status === "completed") {
+      setOrchestrationStatus("completed");
+      if (orch.storefront) setStorefront(orch.storefront);
+      if (orch.brandData) setBrandData(orch.brandData);
+      if (startTimeRef.current) {
+        setProvisioningTime(Math.round((Date.now() - startTimeRef.current) / 1000));
+      }
+    } else if (orch.status === "failed") {
+      setOrchestrationStatus("failed");
+      if (orch.error) setError(orch.error);
+      if (orch.brandData) setBrandData(orch.brandData);
+    }
+  };
+
+  const startPolling = (cleanDomain: string) => {
+    stopPolling();
+    let pollCount = 0;
+    const maxPolls = 120; // 10 minutes at 5s intervals
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(
+          `/api/orchestrate?domain=${encodeURIComponent(cleanDomain)}`
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data.orchestration) return;
+
+        applyOrchestrationState(data.orchestration);
+
+        if (
+          data.orchestration.status === "completed" ||
+          data.orchestration.status === "failed"
+        ) {
+          stopPolling();
+          setLoading(false);
+        }
+
+        pollCount++;
+        if (pollCount >= maxPolls) {
+          stopPolling();
+          setLoading(false);
+          setError("Orchestration timed out — please retry");
+          setOrchestrationStatus("failed");
+        }
+      } catch {
+        // silently ignore transient poll errors
+      }
+    }, 5000);
+
+    pollingRef.current = interval;
+  };
+
   const handleDomainChange = (value: string) => {
     setDomain(value);
-
     if (!value.trim()) {
       setValidationError("");
       return;
     }
-
-    const { valid, error } = validateDomain(value);
-    setValidationError(error || "");
+    const { error: valErr } = validateDomain(value);
+    setValidationError(valErr || "");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    const { valid, error } = validateDomain(domain);
+    const { valid, error: valErr } = validateDomain(domain);
     if (!valid) {
-      setValidationError(error || "Invalid domain");
+      setValidationError(valErr || "Invalid domain");
       return;
     }
 
@@ -119,6 +196,20 @@ export default function CommandConsole() {
 
     setLoading(true);
     setCurrentDomain(cleanDomain);
+    setOrchestrationStatus("in_progress");
+    setStorefront(null);
+    setBrandData(null);
+    setProvisioningTime(null);
+    startTimeRef.current = Date.now();
+
+    setPipelines([
+      { name: "Brand Intelligence", status: "in_progress", message: "Extracting brand assets..." },
+      { name: "Visual Mockup Engine", status: "pending", message: "Waiting for brand data..." },
+      { name: "Infrastructure Provisioning", status: "pending", message: "Waiting for mockups..." },
+    ]);
+
+    // Start polling BEFORE awaiting POST so progress updates show during execution
+    startPolling(cleanDomain);
 
     try {
       const res = await fetch("/api/orchestrate", {
@@ -127,106 +218,79 @@ export default function CommandConsole() {
         body: JSON.stringify({ domain: cleanDomain }),
       });
 
+      // POST has returned — stop polling and use the definitive response
+      stopPolling();
+
+      const data = await res.json().catch(() => ({})) as {
+        success?: boolean;
+        message?: string;
+        orchestration?: Parameters<typeof applyOrchestrationState>[0];
+      };
+
       if (!res.ok) {
-        let errorMessage = "Failed to start orchestration";
-        try {
-          const data = await res.json();
-          errorMessage = data.message || errorMessage;
-        } catch {
-          errorMessage = `Server error (${res.status})`;
-        }
+        const errorMessage =
+          data.message ||
+          (data.orchestration as { error?: string } | undefined)?.error ||
+          `Server error (${res.status})`;
         setError(errorMessage);
+        setOrchestrationStatus("failed");
+        // Still apply pipeline state so user can see which step failed
+        if (data.orchestration) applyOrchestrationState(data.orchestration);
         setLoading(false);
         return;
       }
 
+      if (data.orchestration) applyOrchestrationState(data.orchestration);
+
       setSubmittedDomains((prev) => new Set([...prev, cleanDomain]));
       setDomain("");
       setValidationError("");
-
-      startPolling(cleanDomain);
-    } catch (err) {
-      setError("Failed to submit domain");
-      setLoading(false);
-    }
-  };
-
-  const startPolling = (cleanDomain: string) => {
-    let pollCount = 0;
-    const maxPolls = 120;
-
-    if (pollingIntervalRef.current) {
-      clearInterval(pollingIntervalRef.current);
+    } catch {
+      stopPolling();
+      setError("Network error — check your connection and retry");
+      setOrchestrationStatus("failed");
     }
 
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(`/api/orchestrate?domain=${cleanDomain}`);
-        const data = await res.json();
-        const state = data.orchestration;
-
-        setPipelines([
-          {
-            name: "Brand Intelligence",
-            status: state.pipeline1.status,
-            message: state.pipeline1.message,
-          },
-          {
-            name: "Visual Mockup Engine",
-            status: state.pipeline2.status,
-            message: state.pipeline2.message,
-          },
-          {
-            name: "Infrastructure Provisioning",
-            status: state.pipeline3.status,
-            message: state.pipeline3.message,
-          },
-        ]);
-
-        if (state.status === "completed" || state.status === "failed") {
-          clearInterval(interval);
-          setLoading(false);
-          pollingIntervalRef.current = null;
-        }
-
-        pollCount++;
-        if (pollCount >= maxPolls) {
-          clearInterval(interval);
-          setLoading(false);
-          pollingIntervalRef.current = null;
-        }
-      } catch (err) {
-        // Silently ignore polling errors - polling will eventually timeout
-      }
-    }, 5000);
-
-    pollingIntervalRef.current = interval;
+    setLoading(false);
   };
 
   const handleRetry = () => {
     setError("");
-    if (currentDomain) {
-      setDomain(currentDomain);
-      handleSubmit({
-        preventDefault: () => {},
-      } as React.FormEvent);
+    setOrchestrationStatus("idle");
+    setPipelines(DEFAULT_PIPELINES);
+    if (currentDomain) setDomain(currentDomain);
+  };
+
+  const handleSupportEscalation = async () => {
+    try {
+      const res = await fetch("/api/support-escalation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: currentDomain, error }),
+      });
+      const data = await res.json().catch(() => ({})) as { message?: string };
+      alert(data.message ?? "Support has been notified.");
+    } catch {
+      alert("Failed to reach support — please email support@branded-fit.com");
     }
   };
+
+  const showPanel = orchestrationStatus !== "idle";
 
   return (
     <div className="min-h-screen bg-bg text-text p-6 md:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-2">
-            Command Console
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-2">Command Console</h1>
           <p className="text-text-muted text-lg">
             Enter your domain to orchestrate the full brand pipeline
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left column */}
           <div className="lg:col-span-2 space-y-8">
+            {/* Domain Input */}
             <div className="bg-surface border-2 border-border rounded-lg p-8">
               <h2 className="text-2xl font-bold mb-6">Enter Domain</h2>
 
@@ -254,133 +318,304 @@ export default function CommandConsole() {
 
                 <button
                   type="submit"
-                  disabled={loading || !domain.trim()}
+                  disabled={loading || !domain.trim() || !!validationError}
                   className="w-full px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
                 >
-                  {loading ? "Processing..." : "Submit Domain"}
-                  {!loading && <Zap size={18} />}
+                  {loading ? (
+                    <>
+                      <RefreshCw size={18} className="animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      Submit Domain
+                      <Zap size={18} />
+                    </>
+                  )}
                 </button>
               </form>
 
+              {/* Error banner */}
               {error && (
-                <div className="mt-4 p-4 bg-danger/20 border-2 border-danger rounded-lg flex items-center gap-3">
-                  <AlertCircle size={20} className="text-danger flex-shrink-0" />
-                  <p className="text-text text-sm">{error}</p>
+                <div className="mt-4 p-4 bg-danger/10 border-2 border-danger rounded-lg">
+                  <div className="flex items-start gap-3 mb-3">
+                    <AlertCircle size={20} className="text-danger flex-shrink-0 mt-0.5" />
+                    <p className="text-text text-sm">{error}</p>
+                  </div>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={handleRetry}
+                      className="px-4 py-2 bg-surface border-2 border-border text-text text-sm font-medium rounded-lg hover:border-accent/50 transition flex items-center gap-2"
+                    >
+                      <RefreshCw size={14} />
+                      Retry
+                    </button>
+                    <button
+                      onClick={handleSupportEscalation}
+                      className="px-4 py-2 bg-surface border-2 border-border text-text text-sm font-medium rounded-lg hover:border-accent/50 transition flex items-center gap-2"
+                    >
+                      <MessageSquare size={14} />
+                      Contact Support
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
 
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold">Pipeline Status</h2>
-              {pipelines.map((pipeline, idx) => (
-                <div
-                  key={idx}
-                  className="bg-surface border-2 border-border rounded-lg p-6"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      {pipeline.status === "pending" && (
-                        <Clock size={24} className="text-text-muted" />
-                      )}
-                      {pipeline.status === "in_progress" && (
-                        <Zap
-                          size={24}
-                          className="text-accent animate-pulse"
-                        />
-                      )}
-                      {pipeline.status === "completed" && (
-                        <CheckCircle2 size={24} className="text-green-500" />
-                      )}
-                      {pipeline.status === "failed" && (
-                        <AlertCircle size={24} className="text-danger" />
-                      )}
-                      <div>
-                        <h3 className="font-semibold text-lg">
-                          {pipeline.name}
-                        </h3>
-                        <p className="text-text-muted text-sm">
-                          {pipeline.message}
-                        </p>
+            {/* Pipeline Status */}
+            {showPanel && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold">Pipeline Status</h2>
+                {pipelines.map((pipeline, idx) => (
+                  <div
+                    key={idx}
+                    className={`bg-surface border-2 rounded-lg p-6 transition-colors ${
+                      pipeline.status === "completed"
+                        ? "border-emerald-500/50"
+                        : pipeline.status === "in_progress"
+                        ? "border-accent/50"
+                        : pipeline.status === "failed"
+                        ? "border-danger/50"
+                        : "border-border"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        {pipeline.status === "pending" && (
+                          <Clock size={24} className="text-text-muted" />
+                        )}
+                        {pipeline.status === "in_progress" && (
+                          <Zap size={24} className="text-accent animate-pulse" />
+                        )}
+                        {pipeline.status === "completed" && (
+                          <CheckCircle2 size={24} className="text-emerald-500" />
+                        )}
+                        {pipeline.status === "failed" && (
+                          <AlertCircle size={24} className="text-danger" />
+                        )}
+                        <div>
+                          <h3 className="font-semibold text-lg">
+                            Pipeline {idx + 1}: {pipeline.name}
+                          </h3>
+                          <p className="text-text-muted text-sm">{pipeline.message}</p>
+                        </div>
                       </div>
+                      <span
+                        className={`text-xs font-mono px-2 py-1 rounded ${
+                          pipeline.status === "completed"
+                            ? "bg-emerald-500/20 text-emerald-400"
+                            : pipeline.status === "in_progress"
+                            ? "bg-accent/20 text-accent"
+                            : pipeline.status === "failed"
+                            ? "bg-danger/20 text-danger"
+                            : "bg-bg text-text-muted"
+                        }`}
+                      >
+                        {pipeline.status}
+                      </span>
                     </div>
-                    <span className="text-sm font-mono px-2 py-1 bg-bg rounded text-text-muted">
-                      {pipeline.status}
-                    </span>
-                  </div>
 
-                  <div className="w-full bg-bg rounded-full h-2 overflow-hidden">
-                    <div
-                      className={`h-full transition-all ${
-                        pipeline.status === "completed"
-                          ? "w-full bg-green-500"
-                          : pipeline.status === "in_progress"
-                          ? "w-2/3 bg-accent"
-                          : pipeline.status === "failed"
-                          ? "w-full bg-danger"
-                          : "w-0 bg-border"
-                      }`}
-                    />
+                    <div className="w-full bg-bg rounded-full h-2 overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-500 ${
+                          pipeline.status === "completed"
+                            ? "w-full bg-emerald-500"
+                            : pipeline.status === "in_progress"
+                            ? "w-2/3 bg-accent animate-pulse"
+                            : pipeline.status === "failed"
+                            ? "w-full bg-danger"
+                            : "w-0"
+                        }`}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Success Card */}
+            {orchestrationStatus === "completed" && storefront && (
+              <div className="bg-surface border-2 border-emerald-500/50 rounded-lg p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <CheckCircle2 size={28} className="text-emerald-500" />
+                  <h2 className="text-2xl font-bold">Storefront Ready</h2>
+                </div>
+
+                {/* Storefront URL */}
+                <div className="mb-6 p-4 bg-bg rounded-lg flex items-center gap-3">
+                  <ExternalLink size={16} className="text-accent flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-text-muted text-xs mb-1">Live Storefront URL</p>
+                    <a
+                      href={storefront.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-accent hover:underline text-sm font-mono break-all"
+                    >
+                      {storefront.url}
+                    </a>
                   </div>
                 </div>
-              ))}
-            </div>
 
-            <button
-              onClick={handleRetry}
-              disabled={loading || !error}
-              className={`w-full px-6 py-3 font-semibold rounded-lg transition flex items-center justify-center gap-2 border-2 ${
-                error
-                  ? "bg-surface border-border text-text hover:border-accent/50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  : "bg-bg border-border text-text-muted/50 cursor-not-allowed opacity-50"
-              }`}
-            >
-              <RefreshCw size={18} />
-              Retry
-            </button>
+                {/* Metrics */}
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="bg-bg rounded-lg p-4 text-center">
+                    <p className="text-3xl font-bold text-text">{storefront.productCount}</p>
+                    <p className="text-text-muted text-xs mt-1">Products</p>
+                  </div>
+                  {brandData && (
+                    <div className="bg-bg rounded-lg p-4 text-center">
+                      <p
+                        className={`text-3xl font-bold ${
+                          brandData.confidence >= 85
+                            ? "text-emerald-400"
+                            : brandData.confidence >= 60
+                            ? "text-amber-400"
+                            : "text-danger"
+                        }`}
+                      >
+                        {brandData.confidence}%
+                      </p>
+                      <p className="text-text-muted text-xs mt-1">Brand Fidelity</p>
+                    </div>
+                  )}
+                  {provisioningTime !== null && (
+                    <div className="bg-bg rounded-lg p-4 text-center">
+                      <p className="text-3xl font-bold text-text">{provisioningTime}s</p>
+                      <p className="text-text-muted text-xs mt-1">Provisioning Time</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* CTAs */}
+                <div className="flex flex-wrap gap-3">
+                  <a
+                    href={storefront.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-2.5 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition flex items-center gap-2 text-sm"
+                  >
+                    <ExternalLink size={16} />
+                    View Store
+                  </a>
+                  <a
+                    href={`/api/download-assets?domain=${encodeURIComponent(currentDomain)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-2.5 bg-surface border-2 border-border text-text font-semibold rounded-lg hover:border-accent/50 transition flex items-center gap-2 text-sm"
+                  >
+                    <Download size={16} />
+                    Download Assets
+                  </a>
+                  <button
+                    onClick={() => alert("Team invite feature coming soon.")}
+                    className="px-5 py-2.5 bg-surface border-2 border-border text-text font-semibold rounded-lg hover:border-accent/50 transition flex items-center gap-2 text-sm"
+                  >
+                    <Users size={16} />
+                    Invite Team
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
-          <div className="bg-surface border-2 border-border rounded-lg p-8 h-fit">
+          {/* Right column — Brand Preview */}
+          <div className="bg-surface border-2 border-border rounded-lg p-8 h-fit sticky top-8">
             <h2 className="text-2xl font-bold mb-6">Brand Preview</h2>
 
+            {/* Logo */}
             <div className="mb-8">
-              <h3 className="font-semibold text-text-muted text-sm mb-3">
-                Logo
-              </h3>
-              <div className="w-full aspect-square bg-bg rounded-lg border-2 border-dashed border-border flex items-center justify-center">
-                <Code2 size={48} className="text-text-muted/50" />
+              <h3 className="font-semibold text-text-muted text-sm mb-3">Logo</h3>
+              <div className="w-full aspect-square bg-bg rounded-lg border-2 border-dashed border-border flex items-center justify-center overflow-hidden">
+                {brandData?.logoUrl ? (
+                  <img
+                    src={brandData.logoUrl}
+                    alt={`${currentDomain} logo`}
+                    className="max-w-full max-h-full object-contain p-4"
+                  />
+                ) : (
+                  <Code2 size={48} className="text-text-muted/50" />
+                )}
               </div>
             </div>
 
+            {/* Colors */}
             <div className="mb-8">
-              <h3 className="font-semibold text-text-muted text-sm mb-3">
-                Colors
-              </h3>
+              <h3 className="font-semibold text-text-muted text-sm mb-3">Colors</h3>
               <div className="space-y-2">
-                {["#a855f7", "#0d1f33", "#ecebf3"].map((color, idx) => (
+                {(
+                  brandData?.colors && brandData.colors.length > 0
+                    ? brandData.colors.slice(0, 3)
+                    : [
+                        { hex: "#a855f7" },
+                        { hex: "#0d1f33" },
+                        { hex: "#ecebf3" },
+                      ]
+                ).map((color, idx) => (
                   <div key={idx} className="flex items-center gap-3">
                     <div
-                      className="w-10 h-10 rounded border-2 border-border"
-                      style={{ backgroundColor: color }}
+                      className="w-10 h-10 rounded border-2 border-border flex-shrink-0"
+                      style={{ backgroundColor: color.hex }}
                     />
-                    <span className="font-mono text-sm text-text-muted">
-                      {color}
-                    </span>
+                    <span className="font-mono text-sm text-text-muted">{color.hex}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div>
-              <h3 className="font-semibold text-text-muted text-sm mb-3">
-                Typography
-              </h3>
+            {/* Typography */}
+            <div className="mb-6">
+              <h3 className="font-semibold text-text-muted text-sm mb-3">Typography</h3>
               <div className="bg-bg rounded-lg p-4">
                 <p className="text-sm text-text-muted mb-2">Font Family:</p>
                 <p className="text-text text-xs">
-                  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto
+                  {brandData?.fontFamily ??
+                    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto'}
                 </p>
               </div>
             </div>
+
+            {/* Fidelity meter */}
+            {brandData && (
+              <div className="pt-6 border-t border-border">
+                <div className="flex items-center gap-2 mb-3">
+                  <Target size={16} className="text-text-muted" />
+                  <h3 className="font-semibold text-text-muted text-sm">Brand Fidelity</h3>
+                </div>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="flex-1 bg-bg rounded-full h-2 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-700 ${
+                        brandData.confidence >= 85
+                          ? "bg-emerald-500"
+                          : brandData.confidence >= 60
+                          ? "bg-amber-500"
+                          : "bg-danger"
+                      }`}
+                      style={{ width: `${brandData.confidence}%` }}
+                    />
+                  </div>
+                  <span className="text-text font-semibold text-sm tabular-nums">
+                    {brandData.confidence}%
+                  </span>
+                </div>
+                <p className="text-text-muted text-xs">
+                  {brandData.confidence >= 85
+                    ? "High confidence — ready for launch"
+                    : brandData.confidence >= 60
+                    ? "Moderate confidence — review recommended"
+                    : "Low confidence — manual review required"}
+                </p>
+              </div>
+            )}
+
+            {/* Provisioning time */}
+            {provisioningTime !== null && (
+              <div className="mt-4 flex items-center gap-2 text-text-muted text-xs">
+                <Timer size={13} />
+                <span>Provisioned in {provisioningTime}s</span>
+              </div>
+            )}
           </div>
         </div>
       </div>

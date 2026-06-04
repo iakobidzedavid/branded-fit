@@ -380,12 +380,14 @@ async function runPipeline3(
 // ─── Main orchestration runner ────────────────────────────────────────────────
 
 async function runOrchestration(domain: string): Promise<OrchestrationState> {
+  const startTime = Date.now();
   const state: OrchestrationState = {
     status: "in_progress",
     pipeline1: { status: "in_progress", message: "Extracting brand assets from Brandfetch…" },
     pipeline2: { status: "pending", message: "Waiting for brand data…" },
     pipeline3: { status: "pending", message: "Waiting for mockups…" },
-    timestamp: Date.now(),
+    startTime,
+    timestamp: startTime,
   };
   orchestrationStore.set(domain, state);
 
@@ -396,6 +398,12 @@ async function runOrchestration(domain: string): Promise<OrchestrationState> {
     state.pipeline1 = {
       status: "completed",
       message: `Extracted ${brandExtraction.colors.length} colors, ${brandExtraction.logos.length} logos (${brandExtraction.extraction_confidence_pct}% confidence)`,
+    };
+    state.brandData = {
+      colors: brandExtraction.colors.slice(0, 5),
+      logoUrl: brandExtraction.logos.find((l) => l.type !== "generated")?.url ?? brandExtraction.logos[0]?.url,
+      fontFamily: brandExtraction.typography?.primary ?? undefined,
+      confidence: brandExtraction.extraction_confidence_pct,
     };
     state.pipeline2 = { status: "in_progress", message: "Generating product mockups…" };
     orchestrationStore.set(domain, state);
@@ -458,6 +466,28 @@ async function runOrchestration(domain: string): Promise<OrchestrationState> {
 
 // ─── Route handlers ───────────────────────────────────────────────────────────
 
+export async function GET(request: NextRequest) {
+  const domain = request.nextUrl.searchParams.get("domain");
+  if (!domain) {
+    return NextResponse.json({ message: "Domain is required" }, { status: 400 });
+  }
+  const cleanDomain = domain.toLowerCase().trim();
+  const state = orchestrationStore.get(cleanDomain);
+  if (!state) {
+    return NextResponse.json({
+      status: "pending",
+      orchestration: {
+        status: "pending",
+        pipeline1: { status: "pending", message: "Not started" },
+        pipeline2: { status: "pending", message: "Not started" },
+        pipeline3: { status: "pending", message: "Not started" },
+        timestamp: Date.now(),
+      },
+    });
+  }
+  return NextResponse.json({ status: state.status, orchestration: state });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -510,7 +540,7 @@ export async function POST(request: NextRequest) {
 
     const success = finalState.status === "completed";
     return NextResponse.json(
-      { success, orchestration: finalState },
+      { success, message: finalState.error, orchestration: finalState },
       { status: success ? 200 : 500 }
     );
   } catch (error) {

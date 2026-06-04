@@ -9,7 +9,14 @@ export interface OrchestrationState {
   pipeline2: { status: PipelineStatus; message: string };
   pipeline3: { status: PipelineStatus; message: string };
   storefront?: { url: string; productCount: number };
+  brandData?: {
+    colors: { hex: string; type?: string }[];
+    logoUrl?: string;
+    fontFamily?: string;
+    confidence: number;
+  };
   error?: string;
+  startTime?: number;
   timestamp: number;
 }
 
