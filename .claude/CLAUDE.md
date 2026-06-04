@@ -59,6 +59,9 @@ branded-fit/
     2026-06-03_shopify_endpoint_implementation.md
     2026-06-03_shopify_implementation_summary.md
     2026-06-03_task_completion_summary.md
+    2026-06-04_orchestration_test_results.md
+    2026-06-04_test-results.md
+    2026-06-04_test_results.md
     DELIVERABLES_CHECKLIST.md
   public/
     mockups/
