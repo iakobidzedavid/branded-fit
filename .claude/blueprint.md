@@ -9,6 +9,21 @@ Living map of the product. Each node below has a `path`, a `purpose`, and permis
 
 _20 nodes total._
 
+- `integrations.composio` (integration) — Composio
+  - purpose: Marketing platform OAuth + tool discovery
+  - actions: read, edit, extend
+- `integrations.hyperfx` (integration) — HyperFX
+  - purpose: Marketing AI via MCP
+  - actions: read, edit, extend
+- `integrations.pica` (integration) — Pica
+  - purpose: SaaS integrations (Gmail, Slack, etc.)
+  - actions: read, edit, extend
+- `integrations.zapier` (integration) — Zapier
+  - purpose: Zapier MCP (hosted)
+  - actions: read, edit, extend
+- `integrations.google_ads` (integration) — Google Ads
+  - purpose: Direct Google Ads API v20 REST
+  - actions: read, edit, extend
 - `planned-app` (app) — Branded Fit
   - purpose: Autonomous swag-as-a-service platform that transforms a corporate domain into a live, branded e-commerce storefront with custom apparel in minutes, orchestrating brand discovery, mockup generation, and Shopify provisioning through a single command console.
   - actions: read, edit, extend
@@ -93,18 +108,3 @@ _20 nodes total._
     - rule: Store remains in draft/private mode until user explicitly publishes.
     - rule: Product descriptions are auto-generated from brand data; user can edit post-generation.
     - actions: read, edit, extend
-- `integrations.composio` (integration) — Composio
-  - purpose: Marketing platform OAuth + tool discovery
-  - actions: read, edit, extend
-- `integrations.hyperfx` (integration) — HyperFX
-  - purpose: Marketing AI via MCP
-  - actions: read, edit, extend
-- `integrations.pica` (integration) — Pica
-  - purpose: SaaS integrations (Gmail, Slack, etc.)
-  - actions: read, edit, extend
-- `integrations.zapier` (integration) — Zapier
-  - purpose: Zapier MCP (hosted)
-  - actions: read, edit, extend
-- `integrations.google_ads` (integration) — Google Ads
-  - purpose: Direct Google Ads API v20 REST
-  - actions: read, edit, extend
