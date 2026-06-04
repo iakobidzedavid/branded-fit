@@ -11,6 +11,15 @@ import {
   ExternalLink,
 } from "lucide-react";
 
+// Fire-and-forget analytics event. Never throws — failure is silent.
+function logEvent(event_name: string, event_data: Record<string, unknown>): void {
+  fetch("/api/analytics", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ event_name, event_data }),
+  }).catch(() => {});
+}
+
 interface PipelineStatus {
   status: "pending" | "in_progress" | "completed" | "failed";
   message: string;
@@ -55,6 +64,8 @@ export default function CommandConsole() {
   const [pollingError, setPollingError] = useState("");
   const [completedAt, setCompletedAt] = useState<number | null>(null);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const submitTimeRef = useRef<number | null>(null);
+  const firedEventsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     return () => {
@@ -63,6 +74,61 @@ export default function CommandConsole() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!orchestrationState) return;
+
+    const elapsedMs = submitTimeRef.current ? Date.now() - submitTimeRef.current : null;
+
+    // Brand extraction complete (Pipeline 1)
+    if (
+      (orchestrationState.pipeline1.status === "completed" ||
+        orchestrationState.pipeline1.status === "failed") &&
+      !firedEventsRef.current.has("brand_extraction_complete")
+    ) {
+      firedEventsRef.current.add("brand_extraction_complete");
+      const msg = orchestrationState.pipeline1.message;
+      const colorMatch = msg.match(/(\d+) colors/);
+      const logoMatch = msg.match(/(\d+) logos/);
+      logEvent("brand_extraction_complete", {
+        status: orchestrationState.pipeline1.status,
+        brand_name: domain.split(".")[0],
+        color_count: colorMatch ? parseInt(colorMatch[1], 10) : null,
+        logo_count: logoMatch ? parseInt(logoMatch[1], 10) : null,
+        time_ms: elapsedMs,
+      });
+    }
+
+    // Mockup generation complete (Pipeline 2)
+    if (
+      (orchestrationState.pipeline2.status === "completed" ||
+        orchestrationState.pipeline2.status === "failed") &&
+      !firedEventsRef.current.has("mockup_generation_complete")
+    ) {
+      firedEventsRef.current.add("mockup_generation_complete");
+      const msg = orchestrationState.pipeline2.message;
+      const mockupMatch = msg.match(/(\d+) products/);
+      logEvent("mockup_generation_complete", {
+        status: orchestrationState.pipeline2.status,
+        mockup_count: mockupMatch ? parseInt(mockupMatch[1], 10) : null,
+        time_ms: elapsedMs,
+      });
+    }
+
+    // Storefront provisioning complete (Pipeline 3)
+    if (
+      (orchestrationState.pipeline3.status === "completed" ||
+        orchestrationState.pipeline3.status === "failed") &&
+      !firedEventsRef.current.has("storefront_generation_complete")
+    ) {
+      firedEventsRef.current.add("storefront_generation_complete");
+      logEvent("storefront_generation_complete", {
+        status: orchestrationState.pipeline3.status,
+        url: orchestrationState.storefront?.url ?? null,
+        time_ms: elapsedMs,
+      });
+    }
+  }, [orchestrationState, domain]);
 
   const validateDomain = (value: string): boolean => {
     if (!value) {
@@ -140,6 +206,9 @@ export default function CommandConsole() {
     setValidationError("");
     setPollingError("");
     setCompletedAt(null);
+    submitTimeRef.current = Date.now();
+    firedEventsRef.current = new Set();
+    logEvent("domain_submitted", { domain: cleanDomain });
 
     try {
       const res = await fetch("/api/orchestrate", {
