@@ -21,9 +21,8 @@ interface BrandfetchBrand {
   description?: string;
 }
 
-interface BrandfetchResponse {
-  data?: BrandfetchBrand;
-}
+// Brandfetch v2 API returns a flat response. Some proxy/SDK integrations wrap under `data`.
+type BrandfetchResponse = BrandfetchBrand & { data?: BrandfetchBrand };
 
 export async function POST(request: NextRequest) {
   try {
@@ -150,7 +149,8 @@ function extractBrandAssets(
   domain: string,
   success: boolean
 ): any {
-  const brandData = data.data;
+  // v2 API returns flat; some integrations wrap under `data` — handle both
+  const brandData: BrandfetchBrand | undefined = success ? (data.data ?? data) : undefined;
 
   if (!success || !brandData) {
     return generateDefaultBrandAssets(domain);

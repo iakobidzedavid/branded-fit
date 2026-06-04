@@ -282,10 +282,33 @@ async function runPipeline1(domain: string): Promise<BrandExtraction> {
 
 // ─── Pipeline 2: Visual Mockup Engine (Printify-style) ───────────────────────
 
+async function validatePrintifyKey(): Promise<boolean> {
+  const apiKey = process.env.PRINTIFY_API_KEY;
+  if (!apiKey) {
+    console.warn("[Pipeline2] PRINTIFY_API_KEY not set — using placeholder mockups");
+    return false;
+  }
+  try {
+    const res = await fetch("https://api.printify.com/v1/shops.json", {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    });
+    if (res.ok) {
+      console.log("[Pipeline2] Printify API key validated successfully");
+      return true;
+    }
+    console.warn(`[Pipeline2] Printify API key validation failed: ${res.status}`);
+    return false;
+  } catch (err) {
+    console.warn("[Pipeline2] Printify API key validation error:", err);
+    return false;
+  }
+}
+
 async function runPipeline2(
   domain: string,
   brandExtraction: BrandExtraction
 ): Promise<Product[]> {
+  await validatePrintifyKey();
   const primaryColor = brandExtraction.colors[0]?.hex ?? "#6366f1";
   const products: Product[] = [];
 

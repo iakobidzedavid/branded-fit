@@ -70,20 +70,18 @@ const MARKUP_PERCENTAGE = 0.4; // 40% markup
 function generateMockupUrl(
   productId: string,
   primaryColor: string,
-  domain: string
 ): string {
-  const cleanColor = primaryColor.replace("#", "").toUpperCase();
-  const seed = encodeURIComponent(domain);
+  const cleanColor = primaryColor.replace("#", "");
 
-  const mockupEndpoints: Record<string, string> = {
-    "heavyweight-tee": `https://via.placeholder.com/400x400?text=T-Shirt&bg=${cleanColor}`,
-    "premium-hoodie": `https://via.placeholder.com/400x400?text=Hoodie&bg=${cleanColor}`,
-    "dad-cap": `https://via.placeholder.com/400x400?text=Cap&bg=${cleanColor}`,
-    "tote-bag": `https://via.placeholder.com/400x400?text=Tote&bg=${cleanColor}`,
-    notebook: `https://via.placeholder.com/400x400?text=Notebook&bg=${cleanColor}`,
+  const labels: Record<string, string> = {
+    "heavyweight-tee": "T-Shirt",
+    "premium-hoodie": "Hoodie",
+    "dad-cap": "Cap",
+    "tote-bag": "Tote",
+    notebook: "Notebook",
   };
-
-  return mockupEndpoints[productId] || "https://via.placeholder.com/400x400";
+  const label = encodeURIComponent(labels[productId] ?? "Product");
+  return `https://placehold.co/400x400/${cleanColor}/ffffff?text=${label}`;
 }
 
 export async function POST(request: NextRequest) {
@@ -99,18 +97,9 @@ export async function POST(request: NextRequest) {
 
     const normalizedDomain = domain.trim().toLowerCase();
 
-    // Fetch extracted brand data from Brandfetch
+    // Fetch extracted brand data from cache; fall back to defaults if unavailable
     const brandExtraction = await getBrandExtraction(normalizedDomain);
-
-    if (!brandExtraction) {
-      return NextResponse.json(
-        { message: "Brand extraction not found. Run Brandfetch first." },
-        { status: 400 }
-      );
-    }
-
-    const primaryColor =
-      brandExtraction.colors[0]?.hex || "#6366f1";
+    const primaryColor = brandExtraction?.colors[0]?.hex ?? "#6366f1";
 
     const products: Product[] = [];
 
@@ -142,11 +131,7 @@ export async function POST(request: NextRequest) {
         finalPrice: parseFloat(finalPrice.toFixed(2)),
       };
 
-      const mockupImageUrl = generateMockupUrl(
-        template.id,
-        primaryColor,
-        normalizedDomain
-      );
+      const mockupImageUrl = generateMockupUrl(template.id, primaryColor);
 
       const product: Product = {
         domain: normalizedDomain,
@@ -174,8 +159,9 @@ export async function POST(request: NextRequest) {
       products,
       totalProducts: products.length,
       totalVariants: products.reduce((acc, p) => acc + p.variants.length, 0),
-      brandColors: brandExtraction.colors,
-      brandLogos: brandExtraction.logos,
+      brandColors: brandExtraction?.colors ?? [],
+      brandLogos: brandExtraction?.logos ?? [],
+      brandDataSource: brandExtraction ? "cached" : "defaults",
     });
   } catch (error) {
     console.error("Printify mockup generation error:", error);
