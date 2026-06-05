@@ -2,6 +2,20 @@
 
 import { useState } from "react";
 import { Lock, AlertCircle, RefreshCw } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  Cell,
+  LabelList,
+} from "recharts";
 
 const FUNNEL_STAGES = [
   "domain_submitted",
@@ -44,6 +58,18 @@ interface AnalyticsData {
   timeSeries: TimeSeriesDay[];
   endToEndConversion: number;
 }
+
+const CHART_STYLE = {
+  backgroundColor: "transparent",
+  fontSize: 11,
+};
+
+const TOOLTIP_STYLE = {
+  backgroundColor: "#102542",
+  border: "1px solid #1a3a5c",
+  borderRadius: 8,
+  color: "#ecebf3",
+};
 
 export default function AdminAnalytics() {
   const [password, setPassword] = useState("");
@@ -127,7 +153,17 @@ export default function AdminAnalytics() {
     );
   }
 
-  const topCount = data.funnel[0]?.count ?? 0;
+  const funnelBarData = data.funnel.map((entry, i) => ({
+    name: STAGE_META[entry.stage].label,
+    count: entry.count,
+    rateLabel: i === 0 ? "baseline" : `${entry.conversionRate}%`,
+    color: STAGE_META[entry.stage].color,
+  }));
+
+  const timeSeriesData = data.timeSeries.map((d) => ({
+    ...d,
+    date: d.date.slice(5),
+  }));
 
   return (
     <div className="min-h-screen bg-bg text-text px-4 py-10">
@@ -171,38 +207,103 @@ export default function AdminAnalytics() {
         {/* Funnel Chart */}
         <div className="bg-surface border border-border rounded-xl p-6 mb-6">
           <h2 className="text-lg font-bold mb-6">Conversion Funnel</h2>
-          <div className="space-y-6">
-            {data.funnel.map((entry, i) => (
-              <FunnelBar
-                key={entry.stage}
-                step={i + 1}
-                label={STAGE_META[entry.stage].label}
-                count={entry.count}
-                conversionRate={entry.conversionRate}
-                color={STAGE_META[entry.stage].color}
-                maxCount={topCount}
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart
+              data={funnelBarData}
+              layout="vertical"
+              margin={{ top: 0, right: 80, bottom: 0, left: 120 }}
+            >
+              <CartesianGrid
+                strokeDasharray="4 4"
+                stroke="#1a3a5c"
+                horizontal={false}
               />
-            ))}
-          </div>
+              <XAxis
+                type="number"
+                tick={{ fill: "#8fa3b8", fontSize: 11 }}
+                axisLine={{ stroke: "#1a3a5c" }}
+                tickLine={false}
+                style={CHART_STYLE}
+              />
+              <YAxis
+                type="category"
+                dataKey="name"
+                tick={{ fill: "#ecebf3", fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+                width={116}
+              />
+              <Tooltip
+                contentStyle={TOOLTIP_STYLE}
+                labelStyle={{ color: "#ecebf3", fontWeight: 600 }}
+                itemStyle={{ color: "#8fa3b8" }}
+                formatter={(value, _name, props) => {
+                  const rateLabel = (props as { payload?: { rateLabel?: string } }).payload?.rateLabel;
+                  const count = typeof value === "number" ? value : Number(value);
+                  return [
+                    `${count.toLocaleString()} events${rateLabel ? ` (${rateLabel})` : ""}`,
+                    "Count",
+                  ];
+                }}
+              />
+              <Bar dataKey="count" radius={[0, 4, 4, 0]} maxBarSize={28}>
+                {funnelBarData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+                <LabelList
+                  dataKey="rateLabel"
+                  position="right"
+                  style={{ fill: "#8fa3b8", fontSize: 11 }}
+                />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
 
         {/* Time Series Chart */}
         <div className="bg-surface border border-border rounded-xl p-6">
-          <h2 className="text-lg font-bold mb-3">Daily Event Volume</h2>
-          <div className="flex flex-wrap gap-x-5 gap-y-2 mb-5">
-            {FUNNEL_STAGES.map((stage) => (
-              <div key={stage} className="flex items-center gap-2">
-                <span
-                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: STAGE_META[stage].color }}
+          <h2 className="text-lg font-bold mb-6">Daily Event Volume</h2>
+          <ResponsiveContainer width="100%" height={260}>
+            <LineChart
+              data={timeSeriesData}
+              margin={{ top: 4, right: 8, bottom: 0, left: 0 }}
+            >
+              <CartesianGrid strokeDasharray="4 4" stroke="#1a3a5c" />
+              <XAxis
+                dataKey="date"
+                tick={{ fill: "#8fa3b8", fontSize: 11 }}
+                axisLine={{ stroke: "#1a3a5c" }}
+                tickLine={false}
+              />
+              <YAxis
+                tick={{ fill: "#8fa3b8", fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+                allowDecimals={false}
+                width={28}
+              />
+              <Tooltip
+                contentStyle={TOOLTIP_STYLE}
+                labelStyle={{ color: "#8fa3b8", fontSize: 11 }}
+                itemStyle={{ fontSize: 12 }}
+              />
+              <Legend
+                wrapperStyle={{ paddingTop: 16, fontSize: 12, color: "#8fa3b8" }}
+              />
+              {FUNNEL_STAGES.map((stage) => (
+                <Line
+                  key={stage}
+                  type="monotone"
+                  dataKey={stage}
+                  name={STAGE_META[stage].label}
+                  stroke={STAGE_META[stage].color}
+                  strokeWidth={2}
+                  dot={{ r: 3, fill: STAGE_META[stage].color }}
+                  activeDot={{ r: 5 }}
                 />
-                <span className="text-xs text-text-muted">
-                  {STAGE_META[stage].label}
-                </span>
-              </div>
-            ))}
-          </div>
-          <TimeSeriesChart data={data.timeSeries} />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>
@@ -232,155 +333,5 @@ function MetricCard({
         {value}
       </div>
     </div>
-  );
-}
-
-function FunnelBar({
-  step,
-  label,
-  count,
-  conversionRate,
-  color,
-  maxCount,
-}: {
-  step: number;
-  label: string;
-  count: number;
-  conversionRate: number;
-  color: string;
-  maxCount: number;
-}) {
-  const widthPct = maxCount > 0 ? (count / maxCount) * 100 : 0;
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <span
-            className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-            style={{ backgroundColor: color }}
-          >
-            {step}
-          </span>
-          <span className="text-sm font-medium">{label}</span>
-        </div>
-        <div className="flex items-center gap-4 text-sm flex-shrink-0">
-          <span className="font-bold" style={{ color }}>
-            {count.toLocaleString()}
-          </span>
-          <span className="text-text-muted w-14 text-right">
-            {step === 1 ? "baseline" : `${conversionRate}%`}
-          </span>
-        </div>
-      </div>
-      <div className="h-2 bg-bg rounded-full overflow-hidden">
-        <div
-          className="h-full rounded-full transition-all duration-500"
-          style={{
-            width: `${count > 0 ? Math.max(widthPct, 1) : 0}%`,
-            backgroundColor: color,
-          }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function TimeSeriesChart({ data }: { data: TimeSeriesDay[] }) {
-  const W = 560;
-  const H = 180;
-  const PAD = { top: 16, right: 16, bottom: 28, left: 36 };
-
-  const chartW = W - PAD.left - PAD.right;
-  const chartH = H - PAD.top - PAD.bottom;
-  const n = data.length;
-
-  const maxVal = Math.max(
-    ...data.flatMap((d) => FUNNEL_STAGES.map((s) => d[s])),
-    1
-  );
-
-  const xPos = (i: number) =>
-    PAD.left + (n > 1 ? (i / (n - 1)) * chartW : chartW / 2);
-
-  const yPos = (v: number) => PAD.top + (1 - v / maxVal) * chartH;
-
-  const makePath = (stage: FunnelStageName) =>
-    data
-      .map((d, i) => {
-        const x = xPos(i).toFixed(1);
-        const y = yPos(d[stage]).toFixed(1);
-        return `${i === 0 ? "M" : "L"} ${x} ${y}`;
-      })
-      .join(" ");
-
-  const yTicks = [0, Math.round(maxVal / 2), maxVal];
-
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" aria-hidden="true">
-      {/* Horizontal grid lines */}
-      {yTicks.map((tick) => (
-        <g key={tick}>
-          <line
-            x1={PAD.left}
-            x2={W - PAD.right}
-            y1={yPos(tick)}
-            y2={yPos(tick)}
-            stroke="#1a3a5c"
-            strokeWidth="1"
-            strokeDasharray="4 4"
-          />
-          <text
-            x={PAD.left - 6}
-            y={yPos(tick) + 4}
-            textAnchor="end"
-            fontSize="10"
-            fill="#8fa3b8"
-          >
-            {tick}
-          </text>
-        </g>
-      ))}
-
-      {/* Stage lines */}
-      {FUNNEL_STAGES.map((stage) => (
-        <path
-          key={stage}
-          d={makePath(stage)}
-          fill="none"
-          stroke={STAGE_META[stage].color}
-          strokeWidth="2"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        />
-      ))}
-
-      {/* Data point dots */}
-      {FUNNEL_STAGES.map((stage) =>
-        data.map((d, i) => (
-          <circle
-            key={`${stage}-${i}`}
-            cx={xPos(i)}
-            cy={yPos(d[stage])}
-            r="3"
-            fill={STAGE_META[stage].color}
-          />
-        ))
-      )}
-
-      {/* X-axis labels */}
-      {data.map((d, i) => (
-        <text
-          key={d.date}
-          x={xPos(i)}
-          y={H - 4}
-          textAnchor="middle"
-          fontSize="10"
-          fill="#8fa3b8"
-        >
-          {d.date.slice(5)}
-        </text>
-      ))}
-    </svg>
   );
 }
