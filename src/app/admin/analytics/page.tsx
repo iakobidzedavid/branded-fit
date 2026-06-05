@@ -268,8 +268,8 @@ function FunnelBar({
           <span className="font-bold" style={{ color }}>
             {count.toLocaleString()}
           </span>
-          <span className="text-text-muted w-12 text-right">
-            {conversionRate}%
+          <span className="text-text-muted w-14 text-right">
+            {step === 1 ? "baseline" : `${conversionRate}%`}
           </span>
         </div>
       </div>

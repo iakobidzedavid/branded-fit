@@ -11,10 +11,10 @@ const FUNNEL_STAGES = [
 type FunnelStageName = (typeof FUNNEL_STAGES)[number];
 
 function buildEmptyResponse() {
-  const funnel = FUNNEL_STAGES.map((stage) => ({
+  const funnel = FUNNEL_STAGES.map((stage, i) => ({
     stage,
     count: 0,
-    conversionRate: 0,
+    conversionRate: i === 0 ? 100 : 0,
   }));
 
   const days: string[] = [];
@@ -86,12 +86,18 @@ export async function GET(request: NextRequest) {
 
     const topCount = stageCounts.domain_submitted;
 
-    const funnel = FUNNEL_STAGES.map((stage) => ({
-      stage,
-      count: stageCounts[stage],
-      conversionRate:
-        topCount > 0 ? Math.round((stageCounts[stage] / topCount) * 100) : 0,
-    }));
+    const funnel = FUNNEL_STAGES.map((stage, i) => {
+      const prevStage = i > 0 ? FUNNEL_STAGES[i - 1] : null;
+      const prevCount = prevStage ? stageCounts[prevStage] : stageCounts[stage];
+      return {
+        stage,
+        count: stageCounts[stage],
+        conversionRate:
+          prevCount > 0
+            ? Math.round((stageCounts[stage] / prevCount) * 100)
+            : 0,
+      };
+    });
 
     const endToEndConversion =
       topCount > 0
