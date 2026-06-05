@@ -62,6 +62,7 @@ branded-fit/
     2026-06-04_orchestration_test_results.md
     2026-06-04_test-results.md
     2026-06-04_test_results.md
+    2026-06-05_analytics_endpoint_test_results.md
     2026-06-05_deployment-log.md
     2026-06-05_test-results.md
     DELIVERABLES_CHECKLIST.md
@@ -88,6 +89,7 @@ branded-fit/
       stores.ts
       supabase.ts
   supabase/
+    .temp/
     migrations/
 ```
 
