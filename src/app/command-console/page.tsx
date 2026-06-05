@@ -533,9 +533,7 @@ export default function CommandConsole() {
                         Download Assets
                       </button>
                       <button
-                        onClick={() => {
-                          // TODO: Implement invite team modal
-                        }}
+                        onClick={() => alert("Team invite feature coming soon.")}
                         className="bg-surface border-2 border-accent text-accent px-4 py-3 rounded flex items-center justify-center gap-2 hover:bg-accent/10 transition"
                       >
                         <Users className="w-4 h-4" />

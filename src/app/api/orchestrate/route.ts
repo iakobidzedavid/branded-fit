@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { orchestrationStore, OrchestrationState } from "@/lib/orchestration-state";
+
+export const maxDuration = 300;
 import {
   storeBrandExtraction,
   storeProduct,

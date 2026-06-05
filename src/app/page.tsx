@@ -72,6 +72,7 @@ export default function CommandConsole() {
   const [storefront, setStorefront] = useState<StorefrontData | null>(null);
   const [brandData, setBrandData] = useState<BrandData | null>(null);
   const [provisioningTime, setProvisioningTime] = useState<number | null>(null);
+  const [publishStatus, setPublishStatus] = useState<"idle" | "publishing" | "published" | "failed">("idle");
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number | null>(null);
 
@@ -201,6 +202,7 @@ export default function CommandConsole() {
     setStorefront(null);
     setBrandData(null);
     setProvisioningTime(null);
+    setPublishStatus("idle");
     startTimeRef.current = Date.now();
 
     setPipelines([
@@ -259,7 +261,22 @@ export default function CommandConsole() {
     setError("");
     setOrchestrationStatus("idle");
     setPipelines(DEFAULT_PIPELINES);
+    setPublishStatus("idle");
     if (currentDomain) setDomain(currentDomain);
+  };
+
+  const handlePublish = async () => {
+    setPublishStatus("publishing");
+    try {
+      const res = await fetch("/api/publish-store", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: currentDomain }),
+      });
+      setPublishStatus(res.ok ? "published" : "failed");
+    } catch {
+      setPublishStatus("failed");
+    }
   };
 
   const handleSupportEscalation = async () => {
@@ -499,6 +516,27 @@ export default function CommandConsole() {
                     <ExternalLink size={16} />
                     View Store
                   </a>
+                  <button
+                    onClick={handlePublish}
+                    disabled={publishStatus === "publishing" || publishStatus === "published"}
+                    className={`px-5 py-2.5 border-2 font-semibold rounded-lg transition flex items-center gap-2 text-sm disabled:opacity-60 disabled:cursor-not-allowed ${
+                      publishStatus === "published"
+                        ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
+                        : publishStatus === "failed"
+                        ? "bg-danger/10 border-danger/50 text-danger"
+                        : "bg-surface border-border text-text hover:border-accent/50"
+                    }`}
+                  >
+                    {publishStatus === "published" ? (
+                      <><CheckCircle2 size={16} />Published!</>
+                    ) : publishStatus === "publishing" ? (
+                      <><RefreshCw size={16} className="animate-spin" />Publishing...</>
+                    ) : publishStatus === "failed" ? (
+                      <><AlertCircle size={16} />Retry Publish</>
+                    ) : (
+                      <><Zap size={16} />Publish Store</>
+                    )}
+                  </button>
                   <a
                     href={`/api/download-assets?domain=${encodeURIComponent(currentDomain)}`}
                     target="_blank"
