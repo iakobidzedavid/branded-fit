@@ -1,0 +1,41 @@
+{
+  "view_type": "report",
+  "headline": "Discovery Call Execution Framework: 7-part script, 4 validation questions, tracker template, and go/pivot/no-go criteria.",
+  "primary_stat": {
+    "label": "Deliverables Created",
+    "value": 2
+  },
+  "highlights": [
+    "7-part discovery call script with embedded WTP methodology (Parts 2A–2G)",
+    "4 validation questions operationalized: brand-fidelity (1–5), 10-min provisioning (1–5), $24K WTP signal (yes/conditional/no), $4,800 pilot intent (yes/maybe/no)",
+    "Call tracker template with 40+ structured fields for persona fit, objections, feature requests, and next-step commitments",
+    "Go/Pivot/No-Go decision framework with explicit CONFIRM/REFUTE criteria for ≥3 calls (Parts 5–6)",
+    "Production-ready playbook: pre-call prep, execution checklist, post-call handoff, recording consent, Zoom integration notes",
+    "Maya Chen persona reference, competitor positioning, Pilot Agreement template outline, facilitation training notes",
+    "Real-time call log structure (3 call template blocks) with synthesis section for quantitative results and qualitative insights"
+  ],
+  "links": [
+    {
+      "label": "Discovery Call Execution Plan (23.8 KB)",
+      "url": "documents/2026-06-05_discovery_call_execution_plan.md"
+    },
+    {
+      "label": "Discovery Call Tracker Template (14.5 KB)",
+      "url": "documents/2026-06-05_discovery_call_tracker_template.md"
+    }
+  ],
+  "next_actions": [
+    {
+      "label": "Execute discovery calls",
+      "task_template": "Run ≥3 discovery calls using 7-part script; obtain verbal recording consent; record calls to Zoom cloud; fill call tracker immediately post-call"
+    },
+    {
+      "label": "Populate prospect list",
+      "task_template": "Identify/confirm ≥3 warm prospects from Task 4 outreach replies; schedule calls for June 5–7 window; send calendar invites with Zoom link"
+    },
+    {
+      "label": "Synthesize findings",
+      "task_template": "After all calls, complete synthesis section of tracker; calculate quantitative metrics (avg fidelity/provisioning ratings, WTP distribution, pilot intent); identify objection themes and feature requests; make go/pivot/no-go recommendation"
+    }
+  ]
+}
