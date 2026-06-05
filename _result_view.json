@@ -1,31 +1,29 @@
 {
   "view_type": "report",
-  "headline": "Created Objection Handling Guide + Feature Prioritization Matrix to operationalize discovery feedback into GTM collateral",
+  "headline": "Objection Handling Guide & Feature Prioritization Matrix—discovery feedback operationalized for sales & product",
   "primary_stat": {
     "label": "Documents Created",
     "value": 2
   },
   "highlights": [
-    "Objection Handling Guide: 3 top discovery objections (CMO approval, vendor lock-in, international shipping) with verbatim quotes, reframing strategies, case studies, and proof points",
-    "Feature Prioritization Matrix: Top 3 feature requests ranked by frequency, WTP impact, and dev effort; includes detailed specs, timelines, and success metrics",
-    "Feature #1 (Slack Integration): Priority 1 H1 roadmap — drives mid-market expansion (+$6K/yr), 2-3 week lift",
-    "Feature #2 (Multi-Brand Support): Priority 1 H1 roadmap — enterprise lock-in, +$8K-12K/yr potential, 4-5 week lift",
-    "Feature #3 (Employee Redemption Portal): Priority 2 H2 roadmap — 60% engagement lift, unlocks 1K+ employee TAM, 6-8 week lift",
-    "Ready for sales team training: AE scripts, discovery call playbook, competitive positioning included",
-    "Ready for product planning: Development timelines, success metrics, prioritization rubric documented"
+    "Objection Handling Guide: 3 sales-ready responses (CMO approval, vendor lock-in, international shipping) with proof points & competitive comparisons",
+    "Feature Prioritization Matrix: Top 3 features ranked by frequency, WTP impact, & dev effort (Slack integration, multi-brand, employee portal)",
+    "Each objection entry includes verbatim quote, underlying concern, reframed value prop, case study, technical spec, and closing question",
+    "Each feature ranked for H1/H2 2026 with success metrics, dev timeline (4-6 weeks), and revenue impact (+$6K-12K/yr per feature)",
+    "Sales collateral immediately actionable for warm outreach; product roadmap informs Step 24 planning & prioritization"
   ],
   "next_actions": [
     {
-      "label": "Train sales team on Objection Handling Guide",
-      "task_template": "Run internal training session with AEs; practice closing questions with peer reviews"
+      "label": "Share Objection Guide with sales team",
+      "task_template": "Run discovery call training session on de-risking top 3 objections"
     },
     {
-      "label": "Prioritize Slack & Multi-Brand for H1 sprint planning",
-      "task_template": "Add features to engineering backlog; schedule design review for both features"
+      "label": "Prioritize Slack integration in engineering",
+      "task_template": "Create Slack API integration task (4-week sprint, 2 eng)"
     },
     {
-      "label": "Validate with customers post-launch",
-      "task_template": "Track adoption metrics (40%+ Slack adoption, 25%+ multi-brand adoption); adjust roadmap if below threshold"
+      "label": "Present matrix to leadership",
+      "task_template": "Review H1/H2 roadmap allocation & revenue impact estimates"
     }
   ]
 }
