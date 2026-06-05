@@ -12,11 +12,11 @@ import {
 } from "lucide-react";
 
 // Fire-and-forget analytics event. Never throws — failure is silent.
-function logEvent(event_name: string, event_data: Record<string, unknown>): void {
+function logEvent(event_name: string, fields: Record<string, unknown>): void {
   fetch("/api/analytics", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ event_name, event_data }),
+    body: JSON.stringify({ event_name, ...fields }),
   }).catch(() => {});
 }
 
@@ -32,6 +32,12 @@ interface OrchestrationState {
   pipeline3: PipelineStatus;
   timestamp: number;
   storefront?: { url: string; productCount: number };
+  brandData?: {
+    colors: { hex: string; type?: string }[];
+    logoUrl?: string;
+    fontFamily?: string;
+    confidence: number;
+  };
 }
 
 const CORPORATE_TLDS = new Set([
@@ -80,6 +86,15 @@ export default function CommandConsole() {
 
     const elapsedMs = submitTimeRef.current ? Date.now() - submitTimeRef.current : null;
 
+    // Brand extraction started (Pipeline 1)
+    if (
+      orchestrationState.pipeline1.status === "in_progress" &&
+      !firedEventsRef.current.has("brand_extraction_started")
+    ) {
+      firedEventsRef.current.add("brand_extraction_started");
+      logEvent("brand_extraction_started", { domain });
+    }
+
     // Brand extraction complete (Pipeline 1)
     if (
       (orchestrationState.pipeline1.status === "completed" ||
@@ -87,16 +102,21 @@ export default function CommandConsole() {
       !firedEventsRef.current.has("brand_extraction_complete")
     ) {
       firedEventsRef.current.add("brand_extraction_complete");
-      const msg = orchestrationState.pipeline1.message;
-      const colorMatch = msg.match(/(\d+) colors/);
-      const logoMatch = msg.match(/(\d+) logos/);
       logEvent("brand_extraction_complete", {
+        domain,
         status: orchestrationState.pipeline1.status,
-        brand_name: domain.split(".")[0],
-        color_count: colorMatch ? parseInt(colorMatch[1], 10) : null,
-        logo_count: logoMatch ? parseInt(logoMatch[1], 10) : null,
+        fidelity_score: orchestrationState.brandData?.confidence ?? null,
         time_ms: elapsedMs,
       });
+    }
+
+    // Mockup generation started (Pipeline 2)
+    if (
+      orchestrationState.pipeline2.status === "in_progress" &&
+      !firedEventsRef.current.has("mockup_generation_started")
+    ) {
+      firedEventsRef.current.add("mockup_generation_started");
+      logEvent("mockup_generation_started", { domain });
     }
 
     // Mockup generation complete (Pipeline 2)
@@ -106,16 +126,25 @@ export default function CommandConsole() {
       !firedEventsRef.current.has("mockup_generation_complete")
     ) {
       firedEventsRef.current.add("mockup_generation_complete");
-      const msg = orchestrationState.pipeline2.message;
-      const mockupMatch = msg.match(/(\d+) products/);
+      const productMatch = orchestrationState.pipeline2.message.match(/(\d+) products/);
       logEvent("mockup_generation_complete", {
+        domain,
         status: orchestrationState.pipeline2.status,
-        mockup_count: mockupMatch ? parseInt(mockupMatch[1], 10) : null,
+        product_count: productMatch ? parseInt(productMatch[1], 10) : null,
         time_ms: elapsedMs,
       });
     }
 
-    // Storefront provisioning complete (Pipeline 3)
+    // Storefront generation started (Pipeline 3)
+    if (
+      orchestrationState.pipeline3.status === "in_progress" &&
+      !firedEventsRef.current.has("storefront_generation_started")
+    ) {
+      firedEventsRef.current.add("storefront_generation_started");
+      logEvent("storefront_generation_started", { domain });
+    }
+
+    // Storefront generation complete (Pipeline 3)
     if (
       (orchestrationState.pipeline3.status === "completed" ||
         orchestrationState.pipeline3.status === "failed") &&
@@ -123,8 +152,10 @@ export default function CommandConsole() {
     ) {
       firedEventsRef.current.add("storefront_generation_complete");
       logEvent("storefront_generation_complete", {
+        domain,
         status: orchestrationState.pipeline3.status,
-        url: orchestrationState.storefront?.url ?? null,
+        storefront_url: orchestrationState.storefront?.url ?? null,
+        product_count: orchestrationState.storefront?.productCount ?? null,
         time_ms: elapsedMs,
       });
     }
@@ -511,6 +542,13 @@ export default function CommandConsole() {
                           href={orchestrationState.storefront.url}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={() =>
+                            logEvent("user_clicks_publish", {
+                              domain,
+                              storefront_url: orchestrationState.storefront!.url,
+                              product_count: orchestrationState.storefront!.productCount,
+                            })
+                          }
                           className="bg-accent text-white px-4 py-2 rounded flex items-center gap-2 whitespace-nowrap hover:bg-purple-600 transition"
                         >
                           <ExternalLink className="w-4 h-4" />
