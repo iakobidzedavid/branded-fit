@@ -376,11 +376,20 @@ export default function CommandConsole() {
   return (
     <div className="min-h-screen bg-bg text-text p-6 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-2">Command Console</h1>
-          <p className="text-text-muted text-lg">
-            Enter your domain to orchestrate the full brand pipeline
-          </p>
+        <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-2">Command Console</h1>
+            <p className="text-text-muted text-lg">
+              Enter your domain to orchestrate the full brand pipeline
+            </p>
+          </div>
+          <a
+            href="/store/demo"
+            className="px-4 py-2 bg-surface border-2 border-border text-text-muted hover:text-text hover:border-accent/50 text-sm font-medium rounded-lg transition flex items-center gap-2"
+          >
+            <ExternalLink size={14} />
+            Preview Demo Store
+          </a>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

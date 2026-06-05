@@ -43,19 +43,30 @@ function logEvent(event_name: string, fields: Record<string, unknown>): void {
   }).catch(() => {});
 }
 
+const DEMO_STORE: StoreData = {
+  id: "demo",
+  domain: "acme.com",
+  shopifyUrl: "https://acme-branded.myshopify.com",
+  shopifyStoreId: "demo-store-001",
+  status: "draft",
+  createdAt: new Date().toISOString(),
+};
+
 export default function StorefrontPreview() {
   const params = useParams();
   const storeId = typeof params?.storeId === "string" ? params.storeId : Array.isArray(params?.storeId) ? params.storeId[0] : "";
 
-  const [store, setStore] = useState<StoreData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const isDemo = storeId === "demo";
+
+  const [store, setStore] = useState<StoreData | null>(isDemo ? DEMO_STORE : null);
+  const [loading, setLoading] = useState(!isDemo);
   const [error, setError] = useState("");
   const [publishStatus, setPublishStatus] = useState<
     "idle" | "publishing" | "published" | "failed"
   >("idle");
 
   useEffect(() => {
-    if (!storeId) return;
+    if (!storeId || isDemo) return;
 
     fetch(`/api/store/${encodeURIComponent(storeId)}`)
       .then((res) => res.json())
@@ -68,7 +79,7 @@ export default function StorefrontPreview() {
       })
       .catch(() => setError("Failed to load store"))
       .finally(() => setLoading(false));
-  }, [storeId]);
+  }, [storeId, isDemo]);
 
   const handlePublish = async () => {
     if (!store) return;
@@ -124,7 +135,9 @@ export default function StorefrontPreview() {
     <div className="min-h-screen bg-bg text-text p-6 md:p-8">
       <div className="max-w-3xl mx-auto">
         <div className="mb-8">
-          <p className="text-text-muted text-sm mb-1">Storefront Preview</p>
+          <p className="text-text-muted text-sm mb-1">
+            Storefront Preview{isDemo && <span className="ml-2 text-xs font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-400">demo</span>}
+          </p>
           <h1 className="text-4xl font-bold">{store.domain}</h1>
         </div>
 
