@@ -1,44 +1,31 @@
 {
   "view_type": "report",
-  "headline": "Unit economics model validates $24K Growth tier: LTV:COCA 9.3x, 8.1mo payback, all sensitivity scenarios healthy",
+  "headline": "Created Objection Handling Guide + Feature Prioritization Matrix to operationalize discovery feedback into GTM collateral",
   "primary_stat": {
-    "label": "LTV:COCA Ratio (Y1)",
-    "value": "9.3x"
+    "label": "Documents Created",
+    "value": 2
   },
   "highlights": [
-    "LTV:COCA Year 1: 9.3x; Year 3: 15.0x (exceeds 3x gate by 3–5x)",
-    "Payback Period: 8.1 months (upfront annual) — well below 9-month target",
-    "5-Year NPV LTV: $78,000 (85% retention, 120% NRR, 52% margin, 15% discount rate)",
-    "COCA: $8.4K Y1, $5.2K Y3 (channel-weighted, fully-loaded)",
-    "WTP Validation: $24K median discovery call signal; 85% of target segment confident",
-    "Sensitivity Resilience: All scenarios (WTP, churn, COCA) maintain >5.7x LTV:COCA; no single lever breaks 3x gate",
-    "Unit Economics: Single customer = $29.9K 3-year NPV; 10-customer cohort = $287K contribution",
-    "Go/No-Go: ✅ PROCEED with Growth tier. Pilot 10 customers; gate full scale to Month 3 metrics"
+    "Objection Handling Guide: 3 top discovery objections (CMO approval, vendor lock-in, international shipping) with verbatim quotes, reframing strategies, case studies, and proof points",
+    "Feature Prioritization Matrix: Top 3 feature requests ranked by frequency, WTP impact, and dev effort; includes detailed specs, timelines, and success metrics",
+    "Feature #1 (Slack Integration): Priority 1 H1 roadmap — drives mid-market expansion (+$6K/yr), 2-3 week lift",
+    "Feature #2 (Multi-Brand Support): Priority 1 H1 roadmap — enterprise lock-in, +$8K-12K/yr potential, 4-5 week lift",
+    "Feature #3 (Employee Redemption Portal): Priority 2 H2 roadmap — 60% engagement lift, unlocks 1K+ employee TAM, 6-8 week lift",
+    "Ready for sales team training: AE scripts, discovery call playbook, competitive positioning included",
+    "Ready for product planning: Development timelines, success metrics, prioritization rubric documented"
   ],
   "next_actions": [
     {
-      "label": "Deploy warm outreach playbook",
-      "task_template": "Execute 10 named prospect targeting (Brand Drop Pilot, $24K Growth tier); embed WTP validation questions",
-      "args": {
-        "duration": "Weeks 1–2",
-        "success_criteria": "≥3 pilots closed; <15% early churn signal"
-      }
+      "label": "Train sales team on Objection Handling Guide",
+      "task_template": "Run internal training session with AEs; practice closing questions with peer reviews"
     },
     {
-      "label": "Track actual COCA & cohort metrics",
-      "task_template": "Establish monitoring dashboard (weekly churn, monthly COCA by channel, NRR signals, payback realization)",
-      "args": {
-        "duration": "Month 1 ongoing",
-        "gate_criteria": "COCA <$10K, Payback <9 months, Retention >85%"
-      }
+      "label": "Prioritize Slack & Multi-Brand for H1 sprint planning",
+      "task_template": "Add features to engineering backlog; schedule design review for both features"
     },
     {
-      "label": "Month 3 go/no-go decision",
-      "task_template": "Aggregate pilot results against thresholds; decide to scale, pivot, or hold; trigger product/GTM improvements if needed",
-      "args": {
-        "duration": "End of Month 3",
-        "decision_criteria": "GO: 5+ closed, <15% churn, COCA <$10K | PIVOT: 2–4 closed, 15–20% churn | NO-GO: <2 closed, >25% churn"
-      }
+      "label": "Validate with customers post-launch",
+      "task_template": "Track adoption metrics (40%+ Slack adoption, 25%+ multi-brand adoption); adjust roadmap if below threshold"
     }
   ]
 }
