@@ -11,12 +11,27 @@ import {
   ExternalLink,
 } from "lucide-react";
 
+function getOrCreateSessionId(): string {
+  if (typeof window === "undefined") return "";
+  let id = localStorage.getItem("bf_session_id");
+  if (!id) {
+    id = `ses_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    localStorage.setItem("bf_session_id", id);
+  }
+  return id;
+}
+
 // Fire-and-forget analytics event. Never throws — failure is silent.
 function logEvent(event_name: string, fields: Record<string, unknown>): void {
   fetch("/api/analytics", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ event_name, ...fields }),
+    body: JSON.stringify({
+      event_name,
+      session_id: getOrCreateSessionId(),
+      timestamp: new Date().toISOString(),
+      ...fields,
+    }),
   }).catch(() => {});
 }
 
