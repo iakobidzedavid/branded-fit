@@ -8,6 +8,7 @@ const FUNNEL_STAGES = [
   "brand_extraction_complete",
   "mockup_generation_complete",
   "storefront_generation_complete",
+  "user_clicks_publish",
 ] as const;
 
 type FunnelStageName = (typeof FUNNEL_STAGES)[number];
@@ -20,6 +21,7 @@ const STAGE_META: Record<FunnelStageName, { label: string; color: string }> = {
     label: "Storefront Created",
     color: "#f59e0b",
   },
+  user_clicks_publish: { label: "Store Viewed", color: "#ec4899" },
 };
 
 interface FunnelEntry {
@@ -34,6 +36,7 @@ interface TimeSeriesDay {
   brand_extraction_complete: number;
   mockup_generation_complete: number;
   storefront_generation_complete: number;
+  user_clicks_publish: number;
 }
 
 interface AnalyticsData {
@@ -148,7 +151,7 @@ export default function AdminAnalytics() {
         </div>
 
         {/* Metric Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
           {data.funnel.map((entry) => (
             <MetricCard
               key={entry.stage}

@@ -5,6 +5,7 @@ const FUNNEL_STAGES = [
   "brand_extraction_complete",
   "mockup_generation_complete",
   "storefront_generation_complete",
+  "user_clicks_publish",
 ] as const;
 
 type FunnelStageName = (typeof FUNNEL_STAGES)[number];
@@ -74,6 +75,7 @@ export async function GET(request: NextRequest) {
       brand_extraction_complete: 0,
       mockup_generation_complete: 0,
       storefront_generation_complete: 0,
+      user_clicks_publish: 0,
     };
 
     (events ?? []).forEach((e) => {
