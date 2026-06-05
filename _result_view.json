@@ -1,30 +1,53 @@
 {
   "view_type": "report",
-  "headline": "✅ MVBP orchestration pipeline validated across 5 SaaS domains; 93.4% brand accuracy, 9.1s provisioning time, ready for production deployment",
+  "headline": "Production-ready warm outreach email template with 4 embedded validation questions ready for execution",
   "primary_stat": {
-    "label": "Production Readiness",
-    "value": "GO ✅ (94% confidence)"
+    "label": "Template Status",
+    "value": "Production Ready"
   },
   "highlights": [
-    "Brand Extraction Accuracy: 89.4% (target: 85%) ✅",
-    "Provisioning Time: 9.1s avg (target: <10 min) ✅",
-    "Mockup Visual Fidelity: 93.2% (target: 85%) ✅",
-    "Full Pipeline Success: 80% (4/5 domains, 1 transient external failure) ✅",
-    "Error Handling: 100% graceful (zero unhandled exceptions) ✅",
-    "API Confidence Scores: 97% (Ramp), 95% (Vanta), 90% (Linear), 85% (Retool), 80% (Notion)",
-    "Database Integrity: Clean across all test runs ✅",
-    "Accessibility: WCAG AAA compliant (4.5:1+ contrast ratios) ✅",
-    "Next Steps: Deploy to production, increase Shopify timeout to 10s, implement async queue for failed requests",
-    "Unblocks: Step 7 (deploy MVBP), Step 22 (core mechanic validation), Step 20-21 (warm outreach campaign)"
+    "Subject line + body (185 words, 150-200 target) with conversational tone optimized for People Ops managers",
+    "4 embedded validation questions de-risking critical assumptions: friction, 10-min provisioning, WTP ($24K), pilot offer",
+    "Merge fields for {{first_name}}, {{company_name}}, {{company_signal}} ready for personalization at send time",
+    "Warm trigger framework (rebrand, funding, product launch, team expansion, design system) with 3-month recency filter",
+    "A/B test variants for subject lines + body copy with hypotheses",
+    "Success metrics mapped to CONFIRM/REFUTE criteria for go/pivot/no-go decision by June 11 (Day 8)",
+    "Response tracking template + execution checklist for 10-prospect campaign",
+    "Demo link placeholder ready for integration once MVBP goes live"
   ],
   "links": [
     {
-      "label": "Full Test Report",
-      "url": "documents/2026-06-05_orchestration_pipeline_test_report.md"
+      "label": "View Template",
+      "url": "documents/outreach_email_template.md"
+    }
+  ],
+  "next_actions": [
+    {
+      "label": "Populate prospect list",
+      "task_template": "Create 10 prospect records with merge field values (first_name, company_name, company_signal, email) ready for send",
+      "args": {
+        "target_count": 10,
+        "fields": ["first_name", "company_name", "company_signal", "email_address"]
+      }
     },
     {
-      "label": "Deployment Readiness Summary",
-      "url": "documents/2026-06-05_mvbp_deployment_readiness_summary.md"
+      "label": "Set up response tracking",
+      "task_template": "Deploy Response Tracking Dashboard (React component or Google Sheet) to capture opens, clicks, validation Q answers, call bookings in real-time",
+      "args": {}
+    },
+    {
+      "label": "Confirm MVBP live status",
+      "task_template": "Verify MVBP is deployed to Vercel with working command-console endpoint; test demo link format before campaign launch",
+      "args": {}
+    },
+    {
+      "label": "Execute 3-day campaign",
+      "task_template": "Send 10 emails across Day 1-2 (June 6-7) using warm channels; track responses daily; compile validation data for Day 8 go/pivot/no-go decision",
+      "args": {
+        "start_date": "2026-06-06",
+        "end_date": "2026-06-07",
+        "decision_date": "2026-06-11"
+      }
     }
   ]
 }
