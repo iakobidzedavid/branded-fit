@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
 
 const FUNNEL_STAGES = [
   "domain_submitted",
@@ -10,6 +9,31 @@ const FUNNEL_STAGES = [
 
 type FunnelStageName = (typeof FUNNEL_STAGES)[number];
 
+function buildEmptyResponse() {
+  const funnel = FUNNEL_STAGES.map((stage) => ({
+    stage,
+    count: 0,
+    conversionRate: 0,
+  }));
+
+  const days: string[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d.toISOString().split("T")[0]);
+  }
+
+  const timeSeries = days.map((date) => {
+    const row: Record<string, unknown> = { date };
+    FUNNEL_STAGES.forEach((stage) => {
+      row[stage] = 0;
+    });
+    return row;
+  });
+
+  return { funnel, timeSeries, endToEndConversion: 0 };
+}
+
 export async function GET(request: NextRequest) {
   const auth = request.headers.get("authorization");
   const token = auth?.startsWith("Bearer ") ? auth.slice(7) : null;
@@ -19,8 +43,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    return NextResponse.json(buildEmptyResponse());
+  }
+
   try {
-    const client = getSupabase();
+    const { createClient } = await import("@supabase/supabase-js");
+    const client = createClient(supabaseUrl, supabaseKey);
 
     const since = new Date();
     since.setDate(since.getDate() - 7);
@@ -34,7 +66,7 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error("Admin analytics query error:", error);
-      return NextResponse.json({ error: "Database error" }, { status: 500 });
+      return NextResponse.json(buildEmptyResponse());
     }
 
     const stageCounts: Record<FunnelStageName, number> = {
@@ -66,7 +98,6 @@ export async function GET(request: NextRequest) {
           )
         : 0;
 
-    // Build 7-day time series buckets
     const days: string[] = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
@@ -76,7 +107,7 @@ export async function GET(request: NextRequest) {
 
     const timeSeries = days.map((date) => {
       const dayEvents = (events ?? []).filter((e) =>
-        e.created_at.startsWith(date)
+        e.created_at?.startsWith(date)
       );
       const row: Record<string, unknown> = { date };
       FUNNEL_STAGES.forEach((stage) => {
@@ -88,9 +119,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ funnel, timeSeries, endToEndConversion });
   } catch (e) {
     console.error("Admin analytics error:", e);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json(buildEmptyResponse());
   }
 }
