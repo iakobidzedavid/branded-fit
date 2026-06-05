@@ -16,6 +16,29 @@ import {
   Target,
 } from "lucide-react";
 
+function getOrCreateSessionId(): string {
+  if (typeof window === "undefined") return "";
+  let id = localStorage.getItem("bf_session_id");
+  if (!id) {
+    id = `ses_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    localStorage.setItem("bf_session_id", id);
+  }
+  return id;
+}
+
+function logEvent(event_name: string, fields: Record<string, unknown>): void {
+  fetch("/api/analytics", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      event_name,
+      session_id: getOrCreateSessionId(),
+      timestamp: new Date().toISOString(),
+      ...fields,
+    }),
+  }).catch(() => {});
+}
+
 const INVALID_TLDS = new Set([
   "test", "local", "example", "invalid", "localhost", "corp", "intranet",
 ]);
@@ -75,12 +98,59 @@ export default function CommandConsole() {
   const [publishStatus, setPublishStatus] = useState<"idle" | "publishing" | "published" | "failed">("idle");
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number | null>(null);
+  const firedEventsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (!currentDomain) return;
+    const [p1, p2, p3] = pipelines;
+
+    if (p1.status === "in_progress" && !firedEventsRef.current.has("brand_extraction_started")) {
+      firedEventsRef.current.add("brand_extraction_started");
+      logEvent("brand_extraction_started", { domain: currentDomain });
+    }
+    if ((p1.status === "completed" || p1.status === "failed") && !firedEventsRef.current.has("brand_extraction_complete")) {
+      firedEventsRef.current.add("brand_extraction_complete");
+      logEvent("brand_extraction_complete", {
+        domain: currentDomain,
+        status: p1.status,
+        fidelity_score: brandData?.confidence ?? null,
+      });
+    }
+
+    if (p2.status === "in_progress" && !firedEventsRef.current.has("mockup_generation_started")) {
+      firedEventsRef.current.add("mockup_generation_started");
+      logEvent("mockup_generation_started", { domain: currentDomain });
+    }
+    if ((p2.status === "completed" || p2.status === "failed") && !firedEventsRef.current.has("mockup_generation_complete")) {
+      firedEventsRef.current.add("mockup_generation_complete");
+      const productMatch = p2.message.match(/(\d+) products/);
+      logEvent("mockup_generation_complete", {
+        domain: currentDomain,
+        status: p2.status,
+        product_count: productMatch ? parseInt(productMatch[1], 10) : null,
+      });
+    }
+
+    if (p3.status === "in_progress" && !firedEventsRef.current.has("storefront_generation_started")) {
+      firedEventsRef.current.add("storefront_generation_started");
+      logEvent("storefront_generation_started", { domain: currentDomain });
+    }
+    if ((p3.status === "completed" || p3.status === "failed") && !firedEventsRef.current.has("storefront_generation_complete")) {
+      firedEventsRef.current.add("storefront_generation_complete");
+      logEvent("storefront_generation_complete", {
+        domain: currentDomain,
+        status: p3.status,
+        storefront_url: storefront?.url ?? null,
+        product_count: storefront?.productCount ?? null,
+      });
+    }
+  }, [pipelines, currentDomain, brandData, storefront]);
 
   const stopPolling = () => {
     if (pollingRef.current) {
@@ -191,6 +261,9 @@ export default function CommandConsole() {
 
     const cleanDomain = domain.trim().toLowerCase();
 
+    firedEventsRef.current = new Set();
+    logEvent("domain_submitted", { domain: cleanDomain });
+
     if (submittedDomains.has(cleanDomain)) {
       setValidationError("This domain has already been processed");
       return;
@@ -266,6 +339,11 @@ export default function CommandConsole() {
   };
 
   const handlePublish = async () => {
+    logEvent("user_clicks_publish", {
+      domain: currentDomain,
+      storefront_url: storefront?.url ?? null,
+      product_count: storefront?.productCount ?? null,
+    });
     setPublishStatus("publishing");
     try {
       const res = await fetch("/api/publish-store", {
