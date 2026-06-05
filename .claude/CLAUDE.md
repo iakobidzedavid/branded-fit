@@ -89,6 +89,7 @@ branded-fit/
       stores.ts
       supabase.ts
   supabase/
+    seed.sql
     .temp/
     migrations/
 ```
