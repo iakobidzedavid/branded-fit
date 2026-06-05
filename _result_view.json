@@ -1,0 +1,46 @@
+{
+  "view_type": "report",
+  "headline": "Discovery Call Execution Plan: Framework for validating Maya Chen persona, $24K WTP, and pilot conversion intent",
+  "primary_stat": {
+    "label": "Deliverables Created",
+    "value": 2
+  },
+  "highlights": [
+    "Complete discovery call script with 5 embedded validation questions aligned to Step 20-21 assumptions",
+    "Pre-call qualification checklist and scheduling best practices",
+    "Live product demo framework with real-time brand accuracy, provisioning speed, and storefront appeal validation",
+    "Direct $24K WTP pricing discussion methodology with conditional, maybe, and rejection handling",
+    "$4,800 pilot offer framework with timeline-to-decision assessment",
+    "Post-call documentation template with persona fit, WTP signal, pilot intent, objections, and feature request tracking",
+    "Aggregated discovery call notes tracking dashboard for monitoring progress toward ≥3 calls",
+    "Assumption validation test plan mapping (Assumptions #2, #3, #6 from Step 20-21)",
+    "Contingency plans for 5 common failure scenarios (no-show, demo failure, pricing objection, feature gaps, decision-maker gaps)",
+    "Go/Pivot/No-Go decision criteria with success metrics and post-campaign synthesis methodology",
+    "Real-world call examples demonstrating strong yes, conditional yes, and feature-gap objection handling",
+    "Weekly synthesis checklist and risk mitigation playbook for campaign execution"
+  ],
+  "links": [
+    {
+      "label": "View Discovery Call Execution Plan",
+      "url": "documents/2026-06-05_discovery_call_execution_plan.md"
+    },
+    {
+      "label": "View Discovery Call Notes Tracker",
+      "url": "documents/discovery_call_notes.md"
+    }
+  ],
+  "next_actions": [
+    {
+      "label": "Schedule first discovery call",
+      "task_template": "Schedule with first warm-outreach respondent using provided email template and 3-slot scheduling approach"
+    },
+    {
+      "label": "Conduct discovery calls (minimum 3)",
+      "task_template": "Execute calls using script provided in Section 2 of execution plan; complete post-call documentation immediately after each call"
+    },
+    {
+      "label": "Synthesize results and make go/pivot/no-go decision",
+      "task_template": "After ≥3 calls complete, fill out assumption validation dashboard and determine next phase (scale to 20-30 more prospects, adjust messaging/pricing, or pause for product improvements)"
+    }
+  ]
+}
