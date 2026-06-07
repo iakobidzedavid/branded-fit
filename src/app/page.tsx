@@ -26,13 +26,15 @@ function getOrCreateSessionId(): string {
   return id;
 }
 
-function logEvent(event_name: string, fields: Record<string, unknown>): void {
+function logEvent(event_type: string, fields: Record<string, unknown>): void {
+  const sessionId = getOrCreateSessionId();
   fetch("/api/analytics", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      event_name,
-      session_id: getOrCreateSessionId(),
+      event_type,
+      customer_id: sessionId,
+      session_id: sessionId,
       timestamp: new Date().toISOString(),
       ...fields,
     }),
@@ -114,9 +116,9 @@ export default function CommandConsole() {
       firedEventsRef.current.add("brand_extraction_started");
       logEvent("brand_extraction_started", { domain: currentDomain });
     }
-    if ((p1.status === "completed" || p1.status === "failed") && !firedEventsRef.current.has("brand_extraction_complete")) {
-      firedEventsRef.current.add("brand_extraction_complete");
-      logEvent("brand_extraction_complete", {
+    if ((p1.status === "completed" || p1.status === "failed") && !firedEventsRef.current.has("brand_extraction_completed")) {
+      firedEventsRef.current.add("brand_extraction_completed");
+      logEvent("brand_extraction_completed", {
         domain: currentDomain,
         status: p1.status,
         fidelity_score: brandData?.confidence ?? null,
@@ -127,10 +129,10 @@ export default function CommandConsole() {
       firedEventsRef.current.add("mockup_generation_started");
       logEvent("mockup_generation_started", { domain: currentDomain });
     }
-    if ((p2.status === "completed" || p2.status === "failed") && !firedEventsRef.current.has("mockup_generation_complete")) {
-      firedEventsRef.current.add("mockup_generation_complete");
+    if ((p2.status === "completed" || p2.status === "failed") && !firedEventsRef.current.has("mockup_generation_completed")) {
+      firedEventsRef.current.add("mockup_generation_completed");
       const productMatch = p2.message.match(/(\d+) products/);
-      logEvent("mockup_generation_complete", {
+      logEvent("mockup_generation_completed", {
         domain: currentDomain,
         status: p2.status,
         product_count: productMatch ? parseInt(productMatch[1], 10) : null,
@@ -141,9 +143,9 @@ export default function CommandConsole() {
       firedEventsRef.current.add("storefront_generation_started");
       logEvent("storefront_generation_started", { domain: currentDomain });
     }
-    if ((p3.status === "completed" || p3.status === "failed") && !firedEventsRef.current.has("storefront_generation_complete")) {
-      firedEventsRef.current.add("storefront_generation_complete");
-      logEvent("storefront_generation_complete", {
+    if ((p3.status === "completed" || p3.status === "failed") && !firedEventsRef.current.has("storefront_generated")) {
+      firedEventsRef.current.add("storefront_generated");
+      logEvent("storefront_generated", {
         domain: currentDomain,
         status: p3.status,
         storefront_url: storefront?.url ?? null,
