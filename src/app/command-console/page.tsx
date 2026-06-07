@@ -22,12 +22,12 @@ function getOrCreateSessionId(): string {
 }
 
 // Fire-and-forget analytics event. Never throws — failure is silent.
-function logEvent(event_name: string, fields: Record<string, unknown>): void {
+function logEvent(event_type: string, fields: Record<string, unknown>): void {
   fetch("/api/analytics", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      event_name,
+      event_type,
       session_id: getOrCreateSessionId(),
       timestamp: new Date().toISOString(),
       ...fields,
