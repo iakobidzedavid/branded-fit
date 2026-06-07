@@ -43,7 +43,7 @@ const DEMO_STORE: StoreData = {
   shopifyUrl: "https://acme-branded.myshopify.com",
   shopifyStoreId: "demo-store-001",
   status: "draft",
-  createdAt: new Date().toISOString(),
+  createdAt: "2024-01-01T00:00:00.000Z",
 };
 
 function getOrCreateCustomerId(): string {
