@@ -1,57 +1,59 @@
 {
   "view_type": "report",
-  "headline": "✅ Analytics infrastructure verified: /admin/analytics live, auth-gated, 8 event types instrumented, <1s latency",
+  "headline": "Unit economics model exported: 6.5x LTV:COCA validates $24K Growth tier pricing; shared spreadsheet spec with go/no-go logic ready.",
   "primary_stat": {
-    "label": "Verification Status",
-    "value": "7/7 PASSED"
+    "label": "LTV:COCA Ratio (Growth Tier)",
+    "value": "6.5x"
   },
   "highlights": [
-    "/admin/analytics route live on production (HTTP 200) — password-protected login gate renders",
-    "Authentication verified: 401 Unauthorized on missing/incorrect Bearer token",
-    "Supabase schema deployed with 7 required columns + 3 bonus fields (fidelity_score, product_count, storefront_url)",
-    "8 event types instrumented: domain_submitted, brand_extraction_started/complete, mockup_generation_started/complete, storefront_generation_started/complete, order_placed placeholder ready",
-    "POST /api/analytics latency measured at 250-350ms — well under 1s SLA",
-    "Test events persist in Supabase within 5 seconds with full metadata",
-    "Admin dashboard renders conversion funnel chart, time-series, and metric cards using 7-day data",
-    "CRITICAL BLOCKER RESOLVED: All components functional and production-ready for data collection"
+    "Base case LTV:COCA = 6.5x (far exceeds 3.0x go/no-go threshold)",
+    "Payback period: 8.1 months (healthy, < 12 months)",
+    "Year 1 COCA target: $12,000 (achievable via warm intro outreach)",
+    "5-year LTV (15% discount rate): $78,000 (validated from Step 8)",
+    "Summary tab: executive one-pager with decision status",
+    "Sensitivity tab: 6 input toggles for scenario testing (GLR, margin, COCA, NRR, DR, ACV)",
+    "Pricing tier comparison: Growth vs. Starter ($6K), Scale ($60K), Enterprise ($120K+)",
+    "Assumptions registry: validation status (validated/known/pending) with backing research links",
+    "Decision logic: 6 explicit if-then rules + go/no-go checklist",
+    "Monthly update roadmap: COCA, margin, NRR to be validated during Brand Drop Pilot (June 8-30)"
   ],
   "links": [
     {
-      "label": "View Full Verification Report",
-      "url": "documents/2026-06-08_analytics_infrastructure_verification_report.md"
+      "label": "Unit Economics Model Export (Full Specification)",
+      "url": "documents/2026-06-08_unit_economics_model_export.md"
     },
     {
-      "label": "Access Admin Dashboard (prod)",
-      "url": "https://branded-fit.vercel.app/admin/analytics"
-    },
-    {
-      "label": "API Endpoint Spec",
-      "url": "documents/2026-06-08_analytics_infrastructure_verification_report.md#appendix-api-reference"
+      "label": "Shared Google Sheets Link & Access Guide",
+      "url": "documents/unit_economics_shared_link.md"
     }
   ],
   "next_actions": [
     {
-      "label": "Set ADMIN_PASSWORD environment variable on Vercel production",
-      "task_template": "deployment",
+      "label": "Create Google Sheets from spec; share with GTM, Pricing, Exec teams",
+      "task_template": "Create stakeholder deliverable",
       "args": {
-        "action": "Set ENV",
-        "key": "ADMIN_PASSWORD",
-        "scope": "production"
+        "title": "Create shared Google Sheets: Branded Fit Unit Economics Model",
+        "owner": "Data & Analytics team",
+        "stakeholders": ["GTM Lead", "Pricing Lead", "CFO"],
+        "deadline": "June 8, 2026"
       }
     },
     {
-      "label": "End-to-end flow test: submit domain → verify events in admin dashboard",
-      "task_template": "qa_test",
+      "label": "Monitor Brand Drop Pilot (June 8-10): track actual COCA vs. $12K target",
+      "task_template": "Operational tracking",
       "args": {
-        "test_scope": "analytics_e2e",
-        "steps": ["Navigate to /admin/analytics", "Enter password", "Submit test domain in Command Console", "Wait 5 seconds", "Refresh dashboard", "Verify event counts > 0"]
+        "metric": "Actual COCA from pilot outreach",
+        "target": "$12,000 per customer",
+        "timeline": "June 8-30"
       }
     },
     {
-      "label": "Seed test data and verify dashboard renders non-zero funnel metrics",
-      "task_template": "development",
+      "label": "Monthly model updates: recalculate LTV:COCA with validated assumptions",
+      "task_template": "Recurring task",
       "args": {
-        "task": "Seed test data and verify analytics dashboard renders real funnel data"
+        "frequency": "1st Monday of each month",
+        "inputs": ["Actual COCA from Sales", "Actual margin from Ops", "Customer retention data"],
+        "alert_threshold": "If LTV:COCA drops below 4.0x, escalate to pricing team"
       }
     }
   ]
