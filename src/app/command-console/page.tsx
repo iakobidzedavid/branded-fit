@@ -9,6 +9,8 @@ import {
   DownloadCloud,
   Users,
   ExternalLink,
+  PlayCircle,
+  ShoppingBag,
 } from "lucide-react";
 
 function getOrCreateSessionId(): string {
@@ -407,6 +409,48 @@ export default function CommandConsole() {
           {!orchestrationState ? (
             // Input Section
             <div className="space-y-6">
+              {/* Demo Funnel — always visible above form */}
+              <div className="bg-surface border-2 border-accent/30 rounded-lg p-6">
+                <div className="flex items-start gap-4 mb-4">
+                  <PlayCircle className="w-6 h-6 text-accent flex-shrink-0 mt-0.5" />
+                  <div className="min-w-0">
+                    <h2 className="font-bold text-base mb-1">See the Full End-to-End Funnel</h2>
+                    <p className="text-text-muted text-sm">
+                      Explore all 5 stages — brand extraction, mockup generation, storefront
+                      provisioning, product interaction, and quote request — with live event
+                      tracking and Supabase persistence data.
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+                  <div className="bg-bg rounded-lg p-3 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    <span className="text-xs text-text-muted">8 funnel events tracked</span>
+                  </div>
+                  <div className="bg-bg rounded-lg p-3 flex items-center gap-2">
+                    <ShoppingBag className="w-4 h-4 text-accent flex-shrink-0" />
+                    <span className="text-xs text-text-muted">4 clickable products</span>
+                  </div>
+                  <div className="bg-bg rounded-lg p-3 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    <span className="text-xs text-text-muted">Quote request CTA</span>
+                  </div>
+                </div>
+                <a
+                  href="/store/demo"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition text-sm"
+                >
+                  <PlayCircle className="w-4 h-4" />
+                  View Demo Storefront &amp; Funnel Test
+                </a>
+              </div>
+
+              <div className="relative flex items-center gap-4">
+                <div className="flex-1 border-t border-border" />
+                <span className="text-text-muted text-xs font-mono">or submit your domain below</span>
+                <div className="flex-1 border-t border-border" />
+              </div>
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label htmlFor="domain-input" className="block text-sm font-medium text-text mb-2">
@@ -616,7 +660,14 @@ export default function CommandConsole() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <a
+                        href="/store/demo"
+                        className="bg-accent text-white px-4 py-3 rounded flex items-center justify-center gap-2 hover:bg-purple-600 transition font-semibold"
+                      >
+                        <ShoppingBag className="w-4 h-4" />
+                        View Storefront Preview
+                      </a>
                       <button
                         onClick={() => {
                           window.open(
