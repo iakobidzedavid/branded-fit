@@ -68,6 +68,7 @@ branded-fit/
     2026-06-05_analytics_timeseries_verification.md
     2026-06-05_deployment-log.md
     2026-06-05_test-results.md
+    2026-06-08_e2e_funnel_test_report.md
     DELIVERABLES_CHECKLIST.md
   public/
     mockups/
