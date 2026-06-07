@@ -21,18 +21,62 @@ function getOrCreateSessionId(): string {
   return id;
 }
 
-// Fire-and-forget analytics event. Never throws — failure is silent.
+interface StoredFunnelEvent {
+  firedAt: number;
+  persisted?: boolean;
+  persistedAt?: number;
+}
+
 function logEvent(event_type: string, fields: Record<string, unknown>): void {
+  const firedAt = Date.now();
+  const domain = typeof fields.domain === "string" ? fields.domain : "";
+
+  if (typeof window !== "undefined") {
+    try {
+      let stored: { domain?: string; startedAt?: number; events?: Record<string, StoredFunnelEvent> } = {};
+      const raw = localStorage.getItem("bf_funnel_test");
+      if (raw) stored = JSON.parse(raw);
+
+      if (event_type === "domain_submitted") {
+        stored = { domain, startedAt: firedAt, events: {} };
+      } else {
+        if (!stored.events) stored.events = {};
+        if (domain && !stored.domain) stored.domain = domain;
+        if (!stored.startedAt) stored.startedAt = firedAt;
+      }
+
+      stored.events![event_type] = { firedAt };
+      localStorage.setItem("bf_funnel_test", JSON.stringify(stored));
+    } catch {}
+  }
+
   fetch("/api/analytics", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       event_type,
       session_id: getOrCreateSessionId(),
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(firedAt).toISOString(),
       ...fields,
     }),
-  }).catch(() => {});
+  })
+    .then((res) => res.json())
+    .then((data: { success?: boolean; data?: { id?: string } }) => {
+      if (data?.success && typeof window !== "undefined") {
+        try {
+          const raw = localStorage.getItem("bf_funnel_test");
+          if (raw) {
+            const stored = JSON.parse(raw) as { events?: Record<string, StoredFunnelEvent> };
+            if (stored.events?.[event_type]) {
+              stored.events[event_type].persisted = true;
+              stored.events[event_type].persistedAt = Date.now();
+              localStorage.setItem("bf_funnel_test", JSON.stringify(stored));
+            }
+          }
+        } catch {}
+      }
+    })
+    .catch(() => {});
 }
 
 interface PipelineStatus {
