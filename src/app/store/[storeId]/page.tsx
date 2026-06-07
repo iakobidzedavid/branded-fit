@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import {
   ExternalLink,
@@ -9,6 +9,8 @@ import {
   Loader,
   Zap,
   RefreshCw,
+  ShoppingBag,
+  MessageSquare,
 } from "lucide-react";
 
 interface StoreData {
@@ -20,28 +22,20 @@ interface StoreData {
   createdAt: string;
 }
 
-function getOrCreateSessionId(): string {
-  if (typeof window === "undefined") return "";
-  let id = localStorage.getItem("bf_session_id");
-  if (!id) {
-    id = `ses_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
-    localStorage.setItem("bf_session_id", id);
-  }
-  return id;
+interface Product {
+  id: string;
+  name: string;
+  sku: string;
+  price: number;
+  description: string;
 }
 
-function logEvent(event_name: string, fields: Record<string, unknown>): void {
-  fetch("/api/analytics", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      event_name,
-      session_id: getOrCreateSessionId(),
-      timestamp: new Date().toISOString(),
-      ...fields,
-    }),
-  }).catch(() => {});
-}
+const DEMO_PRODUCTS: Product[] = [
+  { id: "1", name: "Premium Tee", sku: "BF-TEE-001", price: 32.99, description: "100% organic cotton crew neck" },
+  { id: "2", name: "Embroidered Cap", sku: "BF-CAP-002", price: 28.99, description: "Structured 6-panel, adjustable strap" },
+  { id: "3", name: "Zip Hoodie", sku: "BF-HOD-003", price: 64.99, description: "Midweight fleece, full-zip" },
+  { id: "4", name: "Tote Bag", sku: "BF-TOT-004", price: 22.99, description: "12 oz canvas, reinforced handles" },
+];
 
 const DEMO_STORE: StoreData = {
   id: "demo",
@@ -52,9 +46,42 @@ const DEMO_STORE: StoreData = {
   createdAt: new Date().toISOString(),
 };
 
+function getOrCreateCustomerId(): string {
+  if (typeof window === "undefined") return "";
+  let id = localStorage.getItem("bf_customer_id");
+  if (!id) {
+    id = `cust_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    localStorage.setItem("bf_customer_id", id);
+  }
+  return id;
+}
+
+function logEvent(
+  event_type: string,
+  domain: string,
+  metadata?: Record<string, unknown>
+): void {
+  fetch("/api/analytics", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      event_type,
+      customer_id: getOrCreateCustomerId(),
+      domain,
+      timestamp: new Date().toISOString(),
+      ...(metadata ? { metadata } : {}),
+    }),
+  }).catch(() => {});
+}
+
 export default function StorefrontPreview() {
   const params = useParams();
-  const storeId = typeof params?.storeId === "string" ? params.storeId : Array.isArray(params?.storeId) ? params.storeId[0] : "";
+  const storeId =
+    typeof params?.storeId === "string"
+      ? params.storeId
+      : Array.isArray(params?.storeId)
+      ? params.storeId[0]
+      : "";
 
   const isDemo = storeId === "demo";
 
@@ -64,6 +91,9 @@ export default function StorefrontPreview() {
   const [publishStatus, setPublishStatus] = useState<
     "idle" | "publishing" | "published" | "failed"
   >("idle");
+  const [quoteRequested, setQuoteRequested] = useState(false);
+
+  const viewFired = useRef(false);
 
   useEffect(() => {
     if (!storeId || isDemo) return;
@@ -81,13 +111,28 @@ export default function StorefrontPreview() {
       .finally(() => setLoading(false));
   }, [storeId, isDemo]);
 
+  // storefront_view — fires once per mount when store data is available
+  useEffect(() => {
+    if (!store || viewFired.current) return;
+    viewFired.current = true;
+    logEvent("storefront_view", store.domain, { store_id: store.id, status: store.status });
+  }, [store]);
+
+  const handleProductClick = (product: Product) => {
+    if (!store) return;
+    logEvent("product_clicked", store.domain, { sku: product.sku, product_name: product.name, price: product.price });
+  };
+
+  const handleRequestQuote = () => {
+    if (!store) return;
+    logEvent("request_quote", store.domain, { store_id: store.id, shopify_url: store.shopifyUrl ?? null });
+    setQuoteRequested(true);
+  };
+
   const handlePublish = async () => {
     if (!store) return;
 
-    logEvent("user_clicks_publish", {
-      domain: store.domain,
-      storefront_url: store.shopifyUrl ?? null,
-    });
+    logEvent("user_clicks_publish", store.domain, { shopify_url: store.shopifyUrl ?? null });
 
     setPublishStatus("publishing");
     try {
@@ -136,11 +181,17 @@ export default function StorefrontPreview() {
       <div className="max-w-3xl mx-auto">
         <div className="mb-8">
           <p className="text-text-muted text-sm mb-1">
-            Storefront Preview{isDemo && <span className="ml-2 text-xs font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-400">demo</span>}
+            Storefront Preview
+            {isDemo && (
+              <span className="ml-2 text-xs font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-400">
+                demo
+              </span>
+            )}
           </p>
           <h1 className="text-4xl font-bold">{store.domain}</h1>
         </div>
 
+        {/* Store status card */}
         <div className="bg-surface border-2 border-border rounded-lg p-8 mb-6">
           <div className="flex items-center gap-3 mb-6">
             <CheckCircle2 size={24} className="text-emerald-500" />
@@ -232,6 +283,69 @@ export default function StorefrontPreview() {
                 <>
                   <Zap size={16} />
                   Publish Store
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Featured products */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <ShoppingBag size={18} className="text-accent" />
+            <h2 className="text-lg font-bold">Featured Products</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {DEMO_PRODUCTS.map((product) => (
+              <button
+                key={product.id}
+                onClick={() => handleProductClick(product)}
+                className="bg-surface border-2 border-border rounded-lg p-5 text-left hover:border-accent/50 transition group"
+              >
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <p className="text-text font-semibold text-sm group-hover:text-accent transition">
+                    {product.name}
+                  </p>
+                  <span className="text-accent font-mono text-sm font-bold whitespace-nowrap">
+                    ${product.price.toFixed(2)}
+                  </span>
+                </div>
+                <p className="text-text-muted text-xs mb-3">{product.description}</p>
+                <span className="text-xs font-mono px-2 py-0.5 rounded bg-bg text-text-muted border border-border">
+                  {product.sku}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Request Quote CTA */}
+        <div className="bg-surface border-2 border-border rounded-lg p-6 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base font-bold mb-1">Ready to order for your team?</h3>
+              <p className="text-text-muted text-sm">
+                Get a custom quote tailored to your headcount and product mix.
+              </p>
+            </div>
+            <button
+              onClick={handleRequestQuote}
+              disabled={quoteRequested}
+              className={`flex-shrink-0 px-6 py-2.5 font-semibold rounded-lg transition flex items-center gap-2 text-sm disabled:cursor-not-allowed ${
+                quoteRequested
+                  ? "bg-emerald-500/20 text-emerald-400 border-2 border-emerald-500/50"
+                  : "bg-accent text-white hover:bg-purple-600"
+              }`}
+            >
+              {quoteRequested ? (
+                <>
+                  <CheckCircle2 size={16} />
+                  Quote Requested
+                </>
+              ) : (
+                <>
+                  <MessageSquare size={16} />
+                  Request Quote
                 </>
               )}
             </button>
