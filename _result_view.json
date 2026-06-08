@@ -1,54 +1,38 @@
 {
   "view_type": "report",
-  "headline": "GTM Readiness Audit: Business Model & Messaging Deficits Mapped to 12-Item Remediation Plan (T3 Execution)",
+  "headline": "3 Brand Drop Pilot SOWs drafted for Vanta, Retool, Linear; $4,800 per pilot with NPS-based conversion to $24K annual.",
   "primary_stat": {
-    "label": "GTM Readiness Target",
-    "value": "2.5-3.0/10 (from 1.8/10)"
+    "label": "SOWs Ready",
+    "value": "3 prospects"
   },
   "highlights": [
-    "Business Model Gap: Pricing framework validation requires 3 evidence streams—credit-burn rate from paying pilots, independent WTP study (15-20 People Ops leaders), and win/loss pricing objection tracking",
-    "Messaging Readiness Gap: Core value narrative ('3x faster, 2x cheaper, 95% brand fidelity') must be tested in discovery calls; requires messaging playbook, sales deck, one-pager, and async demo video",
-    "Launch Infrastructure: Analytics dashboard code-complete; gap is real customer data seeding once T3 pilots launch (2-week effort)",
-    "8-Week Execution Timeline: BM track (3 workstreams) and MSG track (3 workstreams) run parallel; critical path is WTP study + messaging playbook (6-8 weeks)",
-    "Decision Framework: Go/pivot/no-go decision gate at T3 Week 7-8 based on pricing validation (median WTP ≥$20K, ≥70% resonance on messaging narrative)",
-    "Resource Allocation: 420-530 total hours (10-13 FTE-weeks) across Product Head, Strategic Analyst, Sales Ops, Marketing, Data Engineer, Discovery Lead",
-    "Risk Mitigation: 5 key risks identified (sparse pilot data, low WTP response rates, late objection stabilization, narrative non-resonance, playbook adoption gaps) with contingencies",
-    "Success Metrics: Credit-burn ≤$200/mo per customer, median WTP ≥$20K (60%+ willing at $24K anchor), ≥70% narrative resonance, ≥80% closing rate at $24K",
-    "T4 Runway: By end of T3, will have market-validated pricing, tested messaging, and real customer usage data enabling 10+ pilot scaling by T4"
-  ],
-  "links": [
-    {
-      "label": "View Full GTM Readiness Audit",
-      "url": "https://github.com/iakobidzedavid/branded-fit/blob/main/documents/2026-06-08_gtm_readiness_audit_and_remediation_plan.md"
-    }
+    "SOW template: lightweight 1-2 page statement of work covering scope, pricing ($4,800), deliverables, success metrics (NPS ≥7), and conversion terms ($24K annual)",
+    "30-day pilot scope: domain-in autonomous store (Day 2), 50-unit mockup approval (Day 5), fulfillment & shipping (Day 24), NPS survey (Day 30), annual conversion decision (Day 60)",
+    "Success metrics: (1) Mockup approval ≤5 days, (2) On-time delivery, (3) NPS ≥7 → Triggers automatic invitation to $24K annual Growth Contract",
+    "Payment terms: 50% ($2,400) upon execution + 50% ($2,400) upon storefront go-live; late payment 1.5% monthly interest",
+    "Termination: Either party can decline annual conversion at Day 60 with no penalty; post-approval termination allowed with prorated refunds",
+    "Legal framework: Delaware governing law, AAA arbitration, IP ownership clarity (customer retains brand assets; Branded Fit retains platform IP), liability cap at $4,800",
+    "3 customized SOWs created: Vanta, Retool, Linear (prospect-specific with company names and signature blocks)",
+    "Outreach plan: 5-day execution window (Jun 8-14); email + PDF delivery, 15-min signing calls, payment collection by Day 5",
+    "Negotiation framework provided: Common objections (mockup deadline extension, legal review, price negotiation, payment terms) with response templates",
+    "Supporting docs: Email template, signing call agenda, fallback prospect list (Notion, Figma, Ramp), unit economics validation showing 54% pilot margin + 60% conversion rate target"
   ],
   "next_actions": [
     {
-      "label": "Kick off Business Model track: Instrument pilot customer credit consumption and begin WTP study recruiting",
-      "task_template": "gtm_execution_task",
-      "args": {
-        "track": "Business Model",
-        "items": ["BM-1: Credit-burn instrumentation", "BM-2: WTP study recruiting", "BM-3: Pricing objection logging"],
-        "start_week": "T3 Week 1"
-      }
+      "label": "Confirm warm intro contacts",
+      "task_template": "Verify email addresses and warm intro source for Vanta, Retool, Linear from discovery call synthesis"
     },
     {
-      "label": "Finalize Messaging track: Complete narrative testing in discovery calls, create playbook, design sales collateral",
-      "task_template": "gtm_execution_task",
-      "args": {
-        "track": "Messaging Readiness",
-        "items": ["MSG-1: Narrative testing (embedded in T2 discovery)", "MSG-2: Messaging playbook v1", "MSG-3: Sales deck + collateral"],
-        "start_week": "T2 Week 4 (concurrent with BM)"
-      }
+      "label": "Send personalized SOWs & outreach emails",
+      "task_template": "Execute outreach plan: send PDF SOW + signing call calendar invite to 3 prospects by EOD Jun 9"
     },
     {
-      "label": "Schedule mid-cycle review: T3 Week 4 preliminary findings memo (credit-burn trends, WTP data, objection patterns)",
-      "task_template": "governance_task",
-      "args": {
-        "meeting": "T3 Mid-Cycle Executive Review",
-        "date": "T3 Week 4",
-        "deliverable": "Preliminary findings memo (BM-1, BM-2 early results, MSG-1 narrative resonance)"
-      }
+      "label": "Conduct signing calls",
+      "task_template": "15-min calls with each prospect (Jun 10-11) to walk through SOW, address objections, confirm delivery addresses"
+    },
+    {
+      "label": "Collect signed SOWs & 50% payment",
+      "task_template": "Target: 2-3 SOWs signed + first $2,400 payment received by EOD Jun 14"
     }
   ]
 }
