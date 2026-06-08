@@ -1,69 +1,35 @@
-import { getSupabase } from "./supabase";
-
 export type EventType =
   | "domain_submitted"
+  | "brand_extraction_completed"
   | "mockup_viewed"
+  | "storefront_generated"
+  | "storefront_published"
   | "storefront_clicked"
   | "faq_opened"
   | "headline_variant_seen"
   | "pilot_checkout_viewed";
 
-export interface AnalyticsEvent {
-  eventType: EventType;
-  eventData: Record<string, unknown>;
-  storeId?: string;
-  utmSource?: string;
-  utmMedium?: string;
-  utmCampaign?: string;
-  abVariant?: string;
+export interface TrackEventParams {
+  event_name: string;
+  domain?: string;
+  pipeline_stage?: string;
+  duration_ms?: number;
+  error_message?: string;
+  user_id?: string;
 }
 
-export const getUTMParams = (): {
-  source?: string;
-  medium?: string;
-  campaign?: string;
-} => {
-  if (typeof window === "undefined") {
-    return {};
-  }
-
-  const params = new URLSearchParams(window.location.search);
-  return {
-    source: params.get("utm_source") || undefined,
-    medium: params.get("utm_medium") || undefined,
-    campaign: params.get("utm_campaign") || undefined,
-  };
-};
-
-export const getABTestVariant = (): string => {
-  if (typeof window === "undefined") return "A";
-
-  let variant = localStorage.getItem("bf_ab_variant");
-
-  if (!variant) {
-    const variants = ["A", "B", "C"];
-    variant = variants[Math.floor(Math.random() * variants.length)];
-    localStorage.setItem("bf_ab_variant", variant);
-  }
-
-  return variant;
-};
-
-export const trackEvent = async (event: AnalyticsEvent) => {
+export const trackEvent = async (params: TrackEventParams): Promise<void> => {
   try {
-    const response = await fetch("/api/analytics/events", {
+    const response = await fetch("/api/analytics", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(event),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
     });
-
     if (!response.ok) {
       console.error("Failed to track event:", response.statusText);
     }
-  } catch (error) {
-    console.error("Error tracking event:", error);
+  } catch (err) {
+    console.error("Error tracking event:", err);
   }
 };
 
