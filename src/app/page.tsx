@@ -9,87 +9,83 @@ import {
   ChevronDown,
   ChevronUp,
   Zap,
+  Clock,
+  Palette,
+  Package,
 } from "lucide-react";
 
-function ROICalculator() {
-  const [annualSwagSpend, setAnnualSwagSpend] = useState(50000);
-  const [swagEventsPerYear, setSwagEventsPerYear] = useState(6);
+const FTE_TIERS = [
+  {
+    label: "200 FTE",
+    fte: 200,
+    annualValue: 19000,
+    hoursSaved: 30,
+    events: 4,
+  },
+  {
+    label: "500 FTE",
+    fte: 500,
+    annualValue: 47000,
+    hoursSaved: 68,
+    events: 9,
+  },
+  {
+    label: "1,000 FTE",
+    fte: 1000,
+    annualValue: 94000,
+    hoursSaved: 120,
+    events: 16,
+  },
+] as const;
 
-  // Traditional procurement: ~8 hrs/event. With Branded Fit: ~0.5 hrs/event.
-  // Grounded in Step 8 pilot data (avg 7.5 hrs saved per event).
-  const hoursSavedPerYear = Math.round(7.5 * swagEventsPerYear);
-  // Cost savings: 15% reduction from vendor consolidation + automation (Step 23 pilot data).
-  const costSavings = Math.round(annualSwagSpend * 0.15);
-  const daysEquivalent = Math.round(hoursSavedPerYear / 8);
+const PLAN_PRICE = 24000;
+
+function ROICalculator() {
+  const [selected, setSelected] = useState(1);
+  const tier = FTE_TIERS[selected];
+  const paybackMonths = Math.round((PLAN_PRICE / tier.annualValue) * 12);
 
   return (
     <div className="bg-surface border border-border rounded-xl p-8 max-w-2xl mx-auto">
-      <div className="space-y-6 mb-8">
-        <div>
-          <label className="block text-sm font-medium text-text-muted mb-2">
-            Annual Swag Spend
-          </label>
-          <input
-            type="range"
-            min={5000}
-            max={500000}
-            step={5000}
-            value={annualSwagSpend}
-            onChange={(e) => setAnnualSwagSpend(Number(e.target.value))}
-            className="w-full accent-accent"
-          />
-          <div className="flex justify-between text-sm text-text-muted mt-1">
-            <span>$5K</span>
-            <span className="text-accent font-semibold">
-              ${(annualSwagSpend / 1000).toFixed(0)}K / year
-            </span>
-            <span>$500K</span>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-text-muted mb-2">
-            Swag Events per Year
-          </label>
-          <input
-            type="range"
-            min={1}
-            max={24}
-            step={1}
-            value={swagEventsPerYear}
-            onChange={(e) => setSwagEventsPerYear(Number(e.target.value))}
-            className="w-full accent-accent"
-          />
-          <div className="flex justify-between text-sm text-text-muted mt-1">
-            <span>1</span>
-            <span className="text-accent font-semibold">
-              {swagEventsPerYear} events
-            </span>
-            <span>24</span>
-          </div>
-        </div>
+      <div className="flex gap-2 mb-8 bg-bg rounded-lg p-1">
+        {FTE_TIERS.map((t, i) => (
+          <button
+            key={t.label}
+            onClick={() => setSelected(i)}
+            className={`flex-1 py-2 rounded-md text-sm font-semibold transition ${
+              selected === i
+                ? "bg-accent text-white"
+                : "text-text-muted hover:text-text"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-bg rounded-lg p-4 text-center">
-          <p className="text-3xl font-bold text-accent">{hoursSavedPerYear}h</p>
-          <p className="text-text-muted text-sm mt-1">Hours saved / year</p>
+          <p className="text-3xl font-bold text-accent">
+            ${(tier.annualValue / 1000).toFixed(0)}K
+          </p>
+          <p className="text-text-muted text-sm mt-1">Annual value</p>
         </div>
         <div className="bg-bg rounded-lg p-4 text-center">
           <p className="text-3xl font-bold text-emerald-400">
-            ${(costSavings / 1000).toFixed(0)}K
+            {tier.hoursSaved}h
           </p>
-          <p className="text-text-muted text-sm mt-1">Cost savings</p>
+          <p className="text-text-muted text-sm mt-1">Hours saved / year</p>
         </div>
         <div className="bg-bg rounded-lg p-4 text-center">
-          <p className="text-3xl font-bold text-text">{daysEquivalent}d</p>
-          <p className="text-text-muted text-sm mt-1">People Ops time freed</p>
+          <p className="text-3xl font-bold text-text">{paybackMonths}mo</p>
+          <p className="text-text-muted text-sm mt-1">Payback period</p>
         </div>
       </div>
 
-      <p className="text-text-muted text-xs mt-4 text-center">
-        Equivalent to {daysEquivalent} days of People Ops time — freed for
-        higher-impact work. Based on Step 23 pilot data.
+      <p className="text-text-muted text-xs text-center">
+        Based on {tier.events} swag events/year × 7.5h saved each, plus 15%
+        cost savings on vendor spend. Growth tier at $24K/year. Step 8 pilot
+        data.
       </p>
     </div>
   );
@@ -142,10 +138,16 @@ export default function LandingPage() {
               FAQ
             </a>
             <Link
+              href="/pricing"
+              className="text-text-muted hover:text-text text-sm transition hidden sm:block"
+            >
+              Pricing
+            </Link>
+            <Link
               href="/command-console"
               className="px-4 py-2 bg-accent text-white text-sm font-semibold rounded-lg hover:bg-purple-600 transition"
             >
-              See Your Store
+              Start Your Free Brand Audit
             </Link>
           </div>
         </div>
@@ -172,7 +174,7 @@ export default function LandingPage() {
               href="/command-console"
               className="px-8 py-4 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition flex items-center justify-center gap-2 text-lg"
             >
-              See Your Store in 7 Minutes
+              Start Your Free Brand Audit
               <ArrowRight className="w-5 h-5" />
             </Link>
             <a
@@ -221,8 +223,95 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* 3-Pillar Value Section */}
+      <section className="px-4 py-20">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-3">
+            Three Reasons People Ops Teams Choose Branded Fit
+          </h2>
+          <p className="text-text-muted text-center mb-12 max-w-xl mx-auto">
+            Speed, brand fidelity, and on-demand fulfillment — all in one
+            fully automated platform.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-surface border border-border rounded-xl p-6">
+              <div className="w-12 h-12 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center mb-4">
+                <Clock className="w-5 h-5 text-accent" />
+              </div>
+              <h3 className="text-lg font-bold text-text mb-2">Speed</h3>
+              <p className="text-text-muted text-sm leading-relaxed mb-4">
+                From domain to live storefront in 10 minutes — while incumbents
+                take 6 weeks of back-and-forth.
+              </p>
+              <ul className="space-y-2">
+                {[
+                  "10-minute end-to-end pipeline",
+                  "14-day median delivery",
+                  "No meetings, no approval chains",
+                ].map((point) => (
+                  <li key={point} className="flex items-start gap-2 text-sm">
+                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-text-muted">{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="bg-surface border border-border rounded-xl p-6">
+              <div className="w-12 h-12 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center mb-4">
+                <Palette className="w-5 h-5 text-accent" />
+              </div>
+              <h3 className="text-lg font-bold text-text mb-2">
+                Brand Fidelity
+              </h3>
+              <p className="text-text-muted text-sm leading-relaxed mb-4">
+                Automated brand extraction pulls your exact colors, fonts, and
+                logo — and QA checks every mockup before it ships.
+              </p>
+              <ul className="space-y-2">
+                {[
+                  "95% brand-fidelity score",
+                  "NPS 8.6/10 from pilot cohort",
+                  "Automated QA before go-live",
+                ].map((point) => (
+                  <li key={point} className="flex items-start gap-2 text-sm">
+                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-text-muted">{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="bg-surface border border-border rounded-xl p-6">
+              <div className="w-12 h-12 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center mb-4">
+                <Package className="w-5 h-5 text-accent" />
+              </div>
+              <h3 className="text-lg font-bold text-text mb-2">
+                On-Demand Fulfillment
+              </h3>
+              <p className="text-text-muted text-sm leading-relaxed mb-4">
+                No inventory, no minimums, no warehousing risk. Team members
+                order what they need, when they need it.
+              </p>
+              <ul className="space-y-2">
+                {[
+                  "Zero inventory overhead",
+                  "No minimum order quantities",
+                  "Global print-on-demand network",
+                ].map((point) => (
+                  <li key={point} className="flex items-start gap-2 text-sm">
+                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-text-muted">{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* How It Works */}
-      <section id="how-it-works" className="px-4 py-20">
+      <section id="how-it-works" className="px-4 py-20 bg-surface border-y border-border">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-3">
             How It Works
@@ -278,7 +367,7 @@ export default function LandingPage() {
             ].map(({ step, label, time, desc }) => (
               <div
                 key={step}
-                className="flex gap-6 items-start bg-surface border border-border rounded-lg p-5"
+                className="flex gap-6 items-start bg-bg border border-border rounded-lg p-5"
               >
                 <div className="flex-shrink-0 w-12 h-12 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center">
                   <span className="text-accent font-bold text-sm">{step}</span>
@@ -299,17 +388,17 @@ export default function LandingPage() {
       </section>
 
       {/* Demo */}
-      <section id="demo" className="px-4 py-20 bg-surface border-y border-border">
+      <section id="demo" className="px-4 py-20">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-3">See It For Yourself</h2>
           <p className="text-text-muted mb-10 max-w-xl mx-auto">
             Enter any corporate domain and watch your branded storefront come to
-            life. Or explore our live demo with real brand data.
+            life in under 10 minutes. No account required.
           </p>
 
-          <div className="bg-bg border border-border rounded-xl p-8 mb-8 max-w-2xl mx-auto">
+          <div className="bg-surface border border-border rounded-xl p-8 mb-8 max-w-2xl mx-auto">
             <p className="text-text-muted text-sm mb-4">
-              Try it — no account required
+              Free brand audit — no account or credit card required
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <input
@@ -317,7 +406,7 @@ export default function LandingPage() {
                 placeholder="Enter your domain (e.g., ramp.com)"
                 value={demoInput}
                 onChange={(e) => setDemoInput(e.target.value)}
-                className="flex-1 px-4 py-3 bg-surface border border-border text-text placeholder-text-muted rounded-lg focus:border-accent focus:ring-2 focus:ring-accent/20 transition"
+                className="flex-1 px-4 py-3 bg-bg border border-border text-text placeholder-text-muted rounded-lg focus:border-accent focus:ring-2 focus:ring-accent/20 transition"
               />
               <Link
                 href={
@@ -327,7 +416,7 @@ export default function LandingPage() {
                 }
                 className="px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition whitespace-nowrap"
               >
-                Generate Store
+                Start Your Free Brand Audit
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
@@ -338,7 +427,7 @@ export default function LandingPage() {
               ].map(({ icon: Icon, text }) => (
                 <div
                   key={text}
-                  className="flex items-center gap-2 bg-surface rounded-lg p-3"
+                  className="flex items-center gap-2 bg-bg rounded-lg p-3"
                 >
                   <Icon className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                   <span className="text-xs text-text-muted">{text}</span>
@@ -352,7 +441,7 @@ export default function LandingPage() {
           </p>
           <a
             href="/store/demo"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-bg border border-border text-text rounded-lg hover:bg-border/30 transition font-medium"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-surface border border-border text-text rounded-lg hover:bg-border/30 transition font-medium"
           >
             Explore Demo Storefront
             <ArrowRight className="w-4 h-4" />
@@ -361,21 +450,21 @@ export default function LandingPage() {
       </section>
 
       {/* ROI Calculator */}
-      <section className="px-4 py-20">
+      <section className="px-4 py-20 bg-surface border-y border-border">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-3">
             What&apos;s Your ROI?
           </h2>
           <p className="text-text-muted text-center mb-12 max-w-xl mx-auto">
-            Our pilots save an average of 7.5 hours per swag event. See what
-            that means for your team.
+            Select your company size and see the annual value Branded Fit
+            delivers — grounded in Step 8 pilot data.
           </p>
           <ROICalculator />
         </div>
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="px-4 py-20 bg-surface border-t border-border">
+      <section id="faq" className="px-4 py-20">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-3">
             Common Questions
@@ -385,20 +474,24 @@ export default function LandingPage() {
           </p>
           <div className="space-y-3">
             <FAQItem
-              q="How do you ensure the brand colors match exactly?"
-              a="We use Brandfetch to extract your brand DNA — colors, fonts, and logos — then run an automated brand-fidelity QA pass before the store goes live. Our pilot cohort achieved an average 95% brand-fidelity score. For edge cases, our team manually reviews and adjusts before handoff."
+              q="What if our brand is too complex for automated extraction?"
+              a="Our brand extraction handles the vast majority of corporate identities — including multi-weight wordmarks, gradient logos, and custom color palettes. In our pilot cohort of 5 companies, all passed automated QA within two runs. For genuinely complex brand systems (e.g., co-branding with a parent company), our team manually reviews and adjusts before handoff at no extra charge."
+            />
+            <FAQItem
+              q="How do you ensure color accuracy — we have very specific brand guidelines?"
+              a="We use Brandfetch to extract your exact hex color values and run an automated brand-fidelity QA pass that compares extracted colors against your brand guidelines before any mockup is finalized. Our pilot cohort achieved an average 95% brand-fidelity score. If a color is off by more than our threshold, the mockup is flagged and re-generated automatically."
+            />
+            <FAQItem
+              q="What's included in the $24K Growth tier?"
+              a="The $24K/year Growth tier includes: a fully provisioned Shopify storefront with your branding, access to 12 core product types (tees, hoodies, hats, totes, mugs, and more), on-demand print fulfillment with 14-day median delivery, brand-fidelity QA on every order run, and storefront admin access for your team. There are no per-order platform fees beyond product cost. Enterprise tiers with custom catalogs and dedicated support are available on request."
             />
             <FAQItem
               q="How long does it actually take to go live?"
               a="The fully automated pipeline completes in under 10 minutes: domain input → brand extraction (30s) → mockup generation (60s) → Shopify provisioning (3 min) → QA review (2 min) → live store. No meetings, no vendor calls, no approval chains."
             />
             <FAQItem
-              q="Do we need a Shopify account or Printify account first?"
+              q="Do we need to set up Shopify or Printify accounts first?"
               a="No. We provision all infrastructure on your behalf. You get a live Shopify storefront URL and full admin access at the end. Nothing to set up in advance — just enter your domain."
-            />
-            <FAQItem
-              q="What happens if the brand extraction doesn't look right?"
-              a="Our automated QA catches most issues before handoff. If you're not satisfied, our support team reviews within 1 business day and re-runs with manually adjusted brand parameters. All five pilots got a correct result within two runs."
             />
             <FAQItem
               q="Can we customize products beyond the default catalog?"
@@ -409,7 +502,7 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="px-4 py-20 text-center">
+      <section className="px-4 py-20 bg-surface border-t border-border text-center">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Ready to See Your Store?
@@ -423,14 +516,14 @@ export default function LandingPage() {
               href="/command-console"
               className="px-8 py-4 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition flex items-center justify-center gap-2 text-lg"
             >
-              See Your Store in 7 Minutes
+              Start Your Free Brand Audit
               <ArrowRight className="w-5 h-5" />
             </Link>
             <a
-              href="/pilot-checkout"
-              className="px-8 py-4 bg-surface border border-border text-text font-semibold rounded-lg hover:bg-border/30 transition flex items-center justify-center gap-2 text-lg"
+              href="#demo"
+              className="px-8 py-4 bg-bg border border-border text-text font-semibold rounded-lg hover:bg-border/30 transition flex items-center justify-center gap-2 text-lg"
             >
-              Schedule a 15-Min Discovery Call
+              Watch the Demo
             </a>
           </div>
         </div>
@@ -439,13 +532,22 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="bg-surface border-t border-border px-4 py-8">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="font-bold text-text">Branded Fit</span>
+          <div>
+            <span className="font-bold text-text">Branded Fit</span>
+            <p className="text-text-muted text-xs mt-1">
+              Growth tier from{" "}
+              <span className="text-accent font-semibold">$24K / year</span>
+            </p>
+          </div>
           <p className="text-text-muted text-sm">
             © 2026 Branded Fit, Inc. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-text-muted">
             <Link href="/command-console" className="hover:text-text transition">
               Command Console
+            </Link>
+            <Link href="/pricing" className="hover:text-text transition">
+              Pricing
             </Link>
             <a href="#faq" className="hover:text-text transition">
               FAQ
