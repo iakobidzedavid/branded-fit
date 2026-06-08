@@ -74,6 +74,7 @@ branded-fit/
     2026-06-08_analytics_seed_final_report.md
     2026-06-08_analytics_seed_report.md
     2026-06-08_analytics_seed_v2_report.md
+    2026-06-08_analytics_step23_step24_instrumentation.md
     2026-06-08_e2e_funnel_test_report.md
     2026-06-08_entonomy_brand_audit.md
     DELIVERABLES_CHECKLIST.md
