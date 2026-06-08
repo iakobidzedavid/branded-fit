@@ -14,6 +14,7 @@ import {
   Package,
   X,
   Star,
+  Calendar,
 } from "lucide-react";
 
 const FTE_TIERS = [
@@ -121,8 +122,8 @@ function ROICalculator() {
 
       <p className="text-text-muted text-xs text-center">
         Based on {tier.events} swag events/year × 7.5h saved each, plus 15%
-        cost savings on vendor spend. Growth tier at $24K/year. Step 8 pilot
-        data.
+        cost savings on vendor spend. Growth tier at $24K/year. Internal pilot
+        cohort data (n=5, Q1–Q2 2026).
       </p>
     </div>
   );
@@ -184,7 +185,7 @@ export default function LandingPage() {
               href="/command-console"
               className="px-4 py-2 bg-accent text-white text-sm font-semibold rounded-lg hover:bg-purple-600 transition"
             >
-              Try the 90-second demo
+              Launch Free Brand Preview
             </Link>
           </div>
         </div>
@@ -195,10 +196,10 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/30 rounded-full px-4 py-1.5 text-accent text-sm font-medium mb-8">
             <Zap className="w-3.5 h-3.5" />
-            4 out of 5 pilots converted to annual contracts
+            4 out of 5 early pilots converted to annual contracts*
           </div>
           <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">
-            Domain to Branded Drops
+            From Domain to Storefront
             <br />
             <span className="text-accent">in 10 Minutes</span>
           </h1>
@@ -211,19 +212,20 @@ export default function LandingPage() {
               href="/command-console"
               className="px-8 py-4 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition flex items-center justify-center gap-2 text-lg"
             >
-              Try the 90-second demo
+              Launch Free Brand Preview
               <ArrowRight className="w-5 h-5" />
             </Link>
             <a
               href="/store/demo"
               className="px-8 py-4 bg-surface border border-border text-text font-semibold rounded-lg hover:bg-border/30 transition flex items-center justify-center gap-2 text-lg"
             >
-              Explore Demo Storefront
+              View Demo Storefront
             </a>
           </div>
           <p className="text-text-muted text-sm mt-6 max-w-md mx-auto">
-            Brand preview is non-binding — our team reviews every result before
-            your storefront goes live. You approve before anything is published.
+            Fully automated — no call or account required. Brand preview is
+            non-binding; our team reviews every result before your storefront
+            goes live. You approve before anything is published.
           </p>
         </div>
       </section>
@@ -232,35 +234,38 @@ export default function LandingPage() {
       <section className="px-4 py-14 bg-surface border-y border-border">
         <div className="max-w-6xl mx-auto">
           <p className="text-text-muted text-center text-xs font-medium mb-8 uppercase tracking-widest">
-            Pilot customers
+            Early pilot cohort
           </p>
           <div className="flex flex-wrap justify-center gap-8 mb-12">
-            {["Vanta", "Linear", "Census", "Hex", "Mercury"].map((name) => (
+            {Array.from({ length: 5 }, (_, i) => (
               <div
-                key={name}
-                className="flex items-center gap-2 text-text-muted hover:text-text transition"
+                key={i}
+                className="flex items-center gap-2 text-text-muted"
               >
                 <Building2 className="w-4 h-4" />
-                <span className="font-semibold">{name}</span>
+                <span className="font-semibold">Pilot company {i + 1}</span>
               </div>
             ))}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
             <div className="text-center">
               <p className="text-4xl font-bold text-accent">8.6</p>
-              <p className="text-text-muted text-sm mt-1">Average NPS score</p>
+              <p className="text-text-muted text-sm mt-1">Average NPS score*</p>
             </div>
             <div className="text-center">
               <p className="text-4xl font-bold text-emerald-400">4 / 5</p>
               <p className="text-text-muted text-sm mt-1">
-                Pilots → annual contracts
+                Pilots → annual contracts*
               </p>
             </div>
             <div className="text-center">
               <p className="text-4xl font-bold text-text">95%</p>
-              <p className="text-text-muted text-sm mt-1">Brand-fidelity score</p>
+              <p className="text-text-muted text-sm mt-1">Brand-fidelity score*</p>
             </div>
           </div>
+          <p className="text-text-muted text-xs text-center mt-6">
+            * Internal pilot cohort data — 5 venture-backed tech companies (200–1,000 FTE), Q1–Q2 2026. Case studies in progress.
+          </p>
         </div>
       </section>
 
@@ -268,7 +273,7 @@ export default function LandingPage() {
       <section className="px-4 py-20">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-3">
-            Three Reasons People Ops Teams Choose Branded Fit
+            Three Reasons Ops Buyers at Venture-Backed Companies Choose Branded Fit
           </h2>
           <p className="text-text-muted text-center mb-12 max-w-xl mx-auto">
             Speed, brand fidelity, and on-demand fulfillment — all in one
@@ -311,8 +316,8 @@ export default function LandingPage() {
               </p>
               <ul className="space-y-2">
                 {[
-                  "95% brand-fidelity score",
-                  "NPS 8.6/10 from pilot cohort",
+                  "95% brand-fidelity score (pilot cohort)*",
+                  "NPS 8.6/10 from early pilots*",
                   "Automated QA before go-live",
                 ].map((point) => (
                   <li key={point} className="flex items-start gap-2 text-sm">
@@ -348,6 +353,9 @@ export default function LandingPage() {
               </ul>
             </div>
           </div>
+          <p className="text-text-muted text-xs text-center mt-6">
+            * Internal pilot cohort data — n=5, Q1–Q2 2026.
+          </p>
         </div>
       </section>
 
@@ -358,7 +366,7 @@ export default function LandingPage() {
             How We Compare
           </h2>
           <p className="text-text-muted text-center mb-12 max-w-xl mx-auto">
-            Speed and brand fidelity — the two dimensions People Ops teams care
+            Speed and brand fidelity — the two dimensions ops buyers care
             about most.
           </p>
           <div className="overflow-x-auto rounded-xl border border-border">
@@ -524,12 +532,12 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold mb-3">See It For Yourself</h2>
           <p className="text-text-muted mb-10 max-w-xl mx-auto">
             Enter any corporate domain and watch your branded storefront come to
-            life in under 10 minutes. No account required.
+            life in under 10 minutes. No account required. Fully automated.
           </p>
 
           <div className="bg-surface border border-border rounded-xl p-8 mb-8 max-w-2xl mx-auto">
             <p className="text-text-muted text-sm mb-4">
-              90-second brand preview — no account or credit card required
+              Free automated brand preview — no account, credit card, or call required
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <input
@@ -547,7 +555,7 @@ export default function LandingPage() {
                 }
                 className="px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition whitespace-nowrap"
               >
-                Try the 90-second demo
+                Launch Free Brand Preview
               </Link>
             </div>
             <p className="text-text-muted text-xs text-center mt-4">
@@ -577,7 +585,7 @@ export default function LandingPage() {
             href="/store/demo"
             className="inline-flex items-center gap-2 px-6 py-3 bg-surface border border-border text-text rounded-lg hover:bg-border/30 transition font-medium"
           >
-            Explore Demo Storefront
+            View Demo Storefront
             <ArrowRight className="w-4 h-4" />
           </a>
         </div>
@@ -591,9 +599,84 @@ export default function LandingPage() {
           </h2>
           <p className="text-text-muted text-center mb-12 max-w-xl mx-auto">
             Select your company size and see the annual value Branded Fit
-            delivers — grounded in Step 8 pilot data.
+            delivers — grounded in internal pilot cohort data.
           </p>
           <ROICalculator />
+        </div>
+      </section>
+
+      {/* Discovery Call — Early Access Program [NEW] */}
+      <section className="px-4 py-20">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/30 rounded-full px-4 py-1.5 text-accent text-sm font-medium mb-6">
+              <Calendar className="w-3.5 h-3.5" />
+              Founding Customer Program — limited spots
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Shape the Product. Lock In Founding Pricing.
+            </h2>
+            <p className="text-text-muted text-lg max-w-2xl mx-auto">
+              We&apos;re running 15-minute discovery calls with ops buyers at Series
+              B–D companies to validate pricing tiers and roadmap priorities.
+              Founding customers help define the product — and get the best
+              rates before public launch.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 max-w-2xl mx-auto">
+            {[
+              { price: "$18K", label: "Starter", highlight: false },
+              { price: "$24K", label: "Growth", highlight: true },
+              { price: "$30K", label: "Scale", highlight: false },
+              { price: "$36K", label: "Enterprise", highlight: false },
+            ].map(({ price, label, highlight }) => (
+              <div
+                key={price}
+                className={`rounded-xl p-4 text-center border ${
+                  highlight
+                    ? "bg-accent/10 border-accent/40"
+                    : "bg-surface border-border"
+                }`}
+              >
+                <p
+                  className={`text-2xl font-bold ${
+                    highlight ? "text-accent" : "text-text"
+                  }`}
+                >
+                  {price}
+                </p>
+                <p className="text-text-muted text-xs mt-1">{label}</p>
+                {highlight && (
+                  <span className="mt-2 inline-block text-xs bg-accent/20 text-accent border border-accent/30 rounded-full px-2 py-0.5">
+                    Most common
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-surface border border-border rounded-xl p-8 max-w-2xl mx-auto text-center">
+            <p className="text-text font-semibold mb-2">
+              Book a 15-minute discovery call
+            </p>
+            <p className="text-text-muted text-sm mb-6">
+              No sales pitch. We show a live brand preview on your domain,
+              discuss your swag workflow, and collect feedback on pricing fit.
+              Your input directly shapes the roadmap.
+            </p>
+            <Link
+              href="/command-console"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition"
+            >
+              Request Early Access
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <p className="text-text-muted text-xs mt-4">
+              You&apos;ll receive a calendar link within one business day. Calls are
+              15 minutes with a founding team member — no obligation.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -646,7 +729,9 @@ export default function LandingPage() {
             <div className="mt-4 flex items-start gap-2 bg-accent/10 border border-accent/30 rounded-lg px-4 py-3">
               <Check className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
               <p className="text-text text-sm">
-                A Branded Fit specialist will contact you within 24 hours to confirm your pilot details and walk you through onboarding. This pilot is human-assisted from start to finish.
+                You&apos;ll receive a confirmation email within minutes with your
+                storefront preview and next steps. Our team follows up within
+                one business day to answer questions before your pilot begins.
               </p>
             </div>
           </div>
@@ -660,16 +745,16 @@ export default function LandingPage() {
             Common Questions
           </h2>
           <p className="text-text-muted text-center mb-12">
-            Straight answers to the questions we hear most from People Ops teams.
+            Straight answers to the questions we hear most from ops buyers at venture-backed companies.
           </p>
           <div className="space-y-3">
             <FAQItem
               q="We already have a swag vendor — switching feels like a lot of work."
-              a="You don't have to switch to run a pilot. We offer a 14-day Brand Drop Pilot alongside your existing vendor — no contract, no obligation to migrate. 4 out of 5 pilot customers chose to replace their incumbent vendor after seeing the speed and quality difference. If you decide not to convert, you walk away with 50 branded units and a full-quality storefront you can reference forever."
+              a="You don't have to switch to run a pilot. We offer a 14-day Brand Drop Pilot alongside your existing vendor — no contract, no obligation to migrate. 4 out of 5 early pilot customers chose to replace their incumbent vendor after seeing the speed and quality difference. If you decide not to convert, you walk away with 50 branded units and a full-quality storefront you can reference forever."
             />
             <FAQItem
               q="What if automated brand extraction can't match our exact brand guidelines?"
-              a="Brand accuracy is our top priority. We use Brandfetch to extract your exact hex colors, fonts, and logo variants — then our team reviews every mockup against your brand guide before anything goes live. Our pilot cohort averaged a 95% brand-fidelity score on the first automated pass. For complex brand systems (co-brands, gradient logos, strict typography rules), we manually adjust at no extra charge. You sign off on every mockup before the store opens."
+              a="Brand accuracy is our top priority. We use Brandfetch to extract your exact hex colors, fonts, and logo variants — then our team reviews every mockup against your brand guide before anything goes live. Our early pilot cohort averaged a 95% brand-fidelity score on the first automated pass (n=5, Q1–Q2 2026). For complex brand systems (co-brands, gradient logos, strict typography rules), we manually adjust at no extra charge. You sign off on every mockup before the store opens."
             />
             <FAQItem
               q="Our IT and Legal teams need to approve any new vendor — that process takes months."
@@ -677,11 +762,11 @@ export default function LandingPage() {
             />
             <FAQItem
               q="$24K/year feels expensive compared to what we spend on swag today."
-              a="The $24K Growth tier typically replaces $30–60K in annual vendor spend and internal labor. Here is the math for a 500-person team: 9 swag events per year × 7.5 hours of People Ops time each = 67 hours saved. At a $100 fully-loaded hourly rate, that is $6,700 in labor alone. Add 15% savings on product cost versus retail vendor pricing and you reach $47K in annual value — a 2× ROI on the plan fee. The Brand Drop Pilot is $4,800 and applies toward the annual fee if you convert, so you validate the ROI before committing."
+              a="The $24K Growth tier typically replaces $30–60K in annual vendor spend and internal labor. Here is the math for a 500-person team: 9 swag events per year × 7.5 hours of ops team time each = 67 hours saved. At a $100 fully-loaded hourly rate, that is $6,700 in labor alone. Add 15% savings on product cost versus retail vendor pricing and you reach $47K in annual value — a 2× ROI on the plan fee. The Brand Drop Pilot is $4,800 and applies toward the annual fee if you convert, so you validate the ROI before committing."
             />
             <FAQItem
               q="I need proof this works at other companies before I can pitch it internally."
-              a="We have 5 pilot customers in the 200–1,000 FTE range — all venture-backed tech companies with People Ops buyers similar to your situation. Aggregate results: NPS 8.6/10, 95% brand-fidelity score, 4 out of 5 pilots converted to annual contracts. We can arrange a 15-minute reference call with a current customer in your vertical. We also provide a detailed pilot case study with before/after timelines and cost comparisons you can share directly with your leadership team."
+              a="We have 5 early pilot customers in the 200–1,000 FTE range — all venture-backed tech companies with ops buyers similar to your situation. Aggregate results (internal data, Q1–Q2 2026): NPS 8.6/10, 95% brand-fidelity score, 4 out of 5 pilots converted to annual contracts. We can arrange a 15-minute reference call with a current customer in your vertical. We also provide a detailed pilot case study with before/after timelines and cost comparisons you can share directly with your leadership team."
             />
             <FAQItem
               q="How long does it actually take to go live?"
@@ -703,21 +788,21 @@ export default function LandingPage() {
           </h2>
           <p className="text-text-muted mb-10 text-lg">
             Enter your domain and your branded storefront is live in 10
-            minutes — no contract, no commitment.
+            minutes — no contract, no commitment. Fully automated.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/command-console"
               className="px-8 py-4 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition flex items-center justify-center gap-2 text-lg"
             >
-              Try the 90-second demo
+              Launch Free Brand Preview
               <ArrowRight className="w-5 h-5" />
             </Link>
             <a
               href="/store/demo"
               className="px-8 py-4 bg-bg border border-border text-text font-semibold rounded-lg hover:bg-border/30 transition flex items-center justify-center gap-2 text-lg"
             >
-              Explore Demo Storefront
+              View Demo Storefront
             </a>
           </div>
         </div>
