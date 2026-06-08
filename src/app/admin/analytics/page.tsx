@@ -15,19 +15,21 @@ export const metadata: Metadata = {
 };
 
 const FUNNEL_STAGES = [
-  "domain_submitted",
-  "brand_extraction_completed",
-  "storefront_generated",
-  "storefront_published",
+  "domain_submission",
+  "brand_extraction_complete",
+  "mockup_generation_complete",
+  "storefront_generation_complete",
+  "product_view",
 ] as const;
 
 type FunnelStageName = (typeof FUNNEL_STAGES)[number];
 
 const STAGE_META: Record<FunnelStageName, { label: string; color: string }> = {
-  domain_submitted: { label: "Domain Submitted", color: "#a855f7" },
-  brand_extraction_completed: { label: "Brand Extracted", color: "#3b82f6" },
-  storefront_generated: { label: "Storefront Generated", color: "#10b981" },
-  storefront_published: { label: "Storefront Published", color: "#f59e0b" },
+  domain_submission: { label: "Domain Submitted", color: "#a855f7" },
+  brand_extraction_complete: { label: "Brand Extracted", color: "#3b82f6" },
+  mockup_generation_complete: { label: "Mockup Generated", color: "#8b5cf6" },
+  storefront_generation_complete: { label: "Storefront Ready", color: "#10b981" },
+  product_view: { label: "Product Viewed", color: "#f59e0b" },
 };
 
 const DAILY_SERIES: EventSeries[] = FUNNEL_STAGES.map((stage) => ({
@@ -89,10 +91,11 @@ async function fetchAnalytics(customerId?: string): Promise<AnalyticsData> {
     }
 
     const stageCounts: Record<FunnelStageName, number> = {
-      domain_submitted: 0,
-      brand_extraction_completed: 0,
-      storefront_generated: 0,
-      storefront_published: 0,
+      domain_submission: 0,
+      brand_extraction_complete: 0,
+      mockup_generation_complete: 0,
+      storefront_generation_complete: 0,
+      product_view: 0,
     };
 
     events.forEach((e) => {
@@ -101,7 +104,7 @@ async function fetchAnalytics(customerId?: string): Promise<AnalyticsData> {
       }
     });
 
-    const topCount = stageCounts.domain_submitted;
+    const topCount = stageCounts.domain_submission;
 
     const funnelEntries: FunnelEntry[] = FUNNEL_STAGES.map((stage, i) => {
       const prevStage = i > 0 ? FUNNEL_STAGES[i - 1] : null;
@@ -150,7 +153,7 @@ async function fetchAnalytics(customerId?: string): Promise<AnalyticsData> {
 
     const endToEndConversion =
       topCount > 0
-        ? Math.round((stageCounts.storefront_published / topCount) * 100)
+        ? Math.round((stageCounts.storefront_generation_complete / topCount) * 100)
         : 0;
 
     return {

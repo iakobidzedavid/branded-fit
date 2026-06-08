@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const FUNNEL_STAGES = [
-  "domain_submitted",
-  "brand_extraction_completed",
-  "storefront_generated",
-  "storefront_published",
+  "domain_submission",
+  "brand_extraction_complete",
+  "mockup_generation_complete",
+  "storefront_generation_complete",
+  "product_view",
 ] as const;
 
 type FunnelStageName = (typeof FUNNEL_STAGES)[number];
@@ -77,10 +78,11 @@ export async function GET(request: NextRequest) {
     }
 
     const stageCounts: Record<FunnelStageName, number> = {
-      domain_submitted: 0,
-      brand_extraction_completed: 0,
-      storefront_generated: 0,
-      storefront_published: 0,
+      domain_submission: 0,
+      brand_extraction_complete: 0,
+      mockup_generation_complete: 0,
+      storefront_generation_complete: 0,
+      product_view: 0,
     };
 
     (events ?? []).forEach((e) => {
@@ -89,7 +91,7 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    const topCount = stageCounts.domain_submitted;
+    const topCount = stageCounts.domain_submission;
 
     const funnel = FUNNEL_STAGES.map((stage, i) => {
       const prevStage = i > 0 ? FUNNEL_STAGES[i - 1] : null;
@@ -106,7 +108,7 @@ export async function GET(request: NextRequest) {
 
     const endToEndConversion =
       topCount > 0
-        ? Math.round((stageCounts.storefront_published / topCount) * 100)
+        ? Math.round((stageCounts.storefront_generation_complete / topCount) * 100)
         : 0;
 
     const hourKeys = buildHourKeys(48);

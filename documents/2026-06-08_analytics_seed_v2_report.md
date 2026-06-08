@@ -1,50 +1,79 @@
-# Analytics Seed v2 — 25-Event Funnel Dataset
+# Analytics Seed v3 + Dashboard Alignment Report
 
-**Date:** 2026-06-08  
-**Endpoint:** `POST /api/admin/seed-analytics`  
+**Date:** 2026-06-08
+**Endpoint:** `POST /api/admin/seed-analytics`
 **Verification:** `GET /api/admin/seed-analytics`
 
-## Overview
+## Problem Fixed: Event Name Mismatch
 
-Updated the analytics seed to cover all 8 funnel event types distributed across 5 sessions spanning 7 days (168 hours). Total: 25 events.
+The previous seed used legacy event names (`domain_submitted`,
+`brand_extraction_completed`, `storefront_generated`, `storefront_published`)
+that did not match what the Command Console and Storefront Preview actually emit.
+The dashboard FUNNEL_STAGES also used these legacy names, so real traffic never
+appeared in the funnel chart. This update aligns the seed data, dashboard, and
+all API routes to use the correct event names.
 
-## Event Distribution
+## Event Name Mapping
 
-| Event Type                 | Count | Expected |
-|----------------------------|-------|----------|
-| `domain_submitted`         | 5     | 5        |
-| `brand_extraction_started` | 5     | 5        |
-| `brand_extraction_completed`| 4    | 4        |
-| `storefront_generated`     | 3     | 3        |
-| `storefront_published`     | 2     | 2        |
-| `demo_viewed`              | 3     | 3        |
-| `pilot_cta_clicked`        | 2     | 2        |
-| `email_opened`             | 1     | 1        |
-| **TOTAL**                  | **25**| **25**   |
+| Old (broken) | New (correct) | Source |
+|---|---|---|
+| `domain_submitted` | `domain_submission` | Command Console fires `domain_submission` |
+| `brand_extraction_completed` | `brand_extraction_complete` | Console fires `brand_extraction_complete` |
+| `storefront_generated` | `mockup_generation_complete` | Console fires `mockup_generation_complete` |
+| `storefront_published` | `storefront_generation_complete` | Console fires `storefront_generation_complete` |
+| (absent) | `product_view` | Store page fires `product_view` |
 
-## Sessions
+## Files Changed
 
-| Session ID   | Domain         | Funnel Stage Reached     | Hours Ago |
-|--------------|----------------|--------------------------|-----------|
-| sess-v2-01   | acme.com       | Full + engagement events | ~160h     |
-| sess-v2-02   | techcorp.io    | Full + engagement events | ~120h     |
-| sess-v2-03   | buildfast.co   | storefront_generated     | ~80h      |
-| sess-v2-04   | startupco.io   | brand_extraction_completed | ~50h   |
-| sess-v2-05   | launchpad.co   | brand_extraction_started (failed) | ~20h |
+| File | Change |
+|---|---|
+| `src/app/api/admin/seed-analytics/route.ts` | 31-event v3 seed with correct event names; cleans up v2 legacy sessions |
+| `src/app/admin/analytics/page.tsx` | Updated FUNNEL_STAGES (5 stages), STAGE_META, stageCounts, endToEndConversion |
+| `src/app/api/admin/analytics/route.ts` | Updated FUNNEL_STAGES and stageCounts |
+| `src/app/api/analytics/events/route.ts` | Updated FUNNEL_STAGES, STAGE_META, and stageCounts |
 
-## Conversion Funnel Rates
+## Seed Data: 31 Events Across 4 Sessions
 
-- domain_submitted → brand_extraction_started: 5/5 = **100%**
-- brand_extraction_started → brand_extraction_completed: 4/5 = **80%**
-- brand_extraction_completed → storefront_generated: 3/4 = **75%**
-- storefront_generated → storefront_published: 2/3 = **67%**
-- storefront_published → demo_viewed: 2/2 = **100%** (of those who published)
-- demo_viewed → pilot_cta_clicked: 2/3 = **67%**
+### Pipeline sessions (3 complete + 1 partial)
+
+| Session | Domain | Age | Events | Status |
+|---|---|---|---|---|
+| sess-v3-01 | ramp.com | ~72h ago | 7 | Full pipeline, fidelity 92.4% |
+| sess-v3-02 | notion.so | ~48h ago | 7 | Full pipeline, fidelity 95.1% |
+| sess-v3-03 | stripe.com | ~24h ago | 7 | Full pipeline, fidelity 97.3% |
+| sess-v3-04 | figma.com | ~8h ago | 4 | Partial — dropped after mockup_generation_start |
+
+Each complete session fires 7 events:
+`domain_submission → brand_extraction_start → brand_extraction_complete →
+mockup_generation_start → mockup_generation_complete →
+storefront_generation_start → storefront_generation_complete`
+
+### Storefront events (sess-v3-store, ramp.com, ~2h ago)
+
+| Event | Count |
+|---|---|
+| storefront_view | 1 |
+| product_view | 3 |
+| cart_add | 2 |
+
+**Total: 31 events**
+
+## Dashboard Funnel (5-stage)
+
+| Stage | Event name | Label | Count from seed |
+|---|---|---|---|
+| 1 | `domain_submission` | Domain Submitted | 4 |
+| 2 | `brand_extraction_complete` | Brand Extracted | 4 |
+| 3 | `mockup_generation_complete` | Mockup Generated | 3 |
+| 4 | `storefront_generation_complete` | Storefront Ready | 3 |
+| 5 | `product_view` | Product Viewed | 3 |
+
+End-to-end conversion (domain → storefront): **75%**
 
 ## How to Execute
 
 ```bash
-# Seed the database (idempotent — safe to re-run)
+# Seed the database (idempotent — deletes old v3 + legacy v2 sessions first)
 curl -X POST https://branded-fit.vercel.app/api/admin/seed-analytics \
   -H "Authorization: Bearer $ADMIN_PASSWORD"
 
@@ -58,13 +87,14 @@ curl https://branded-fit.vercel.app/api/admin/seed-analytics
 SELECT event_name, COUNT(*) AS cnt
 FROM analytics_events
 WHERE session_id IN (
-  'sess-v2-01','sess-v2-02','sess-v2-03','sess-v2-04','sess-v2-05'
+  'sess-v3-01','sess-v3-02','sess-v3-03','sess-v3-04','sess-v3-store'
 )
 GROUP BY event_name
 ORDER BY event_name;
+-- Expected: 31 rows across 10 distinct event types
 ```
 
-## Files Changed
+## Build Verification
 
-- `supabase/seed.sql` — Updated SQL seed matching v2 event schema
-- `src/app/api/admin/seed-analytics/route.ts` — Updated API seed endpoint with 8 event types, 5 sessions, 7-day span
+- `npx tsc --noEmit` — pass (0 errors)
+- `npm run build` — pass (33 routes compiled, 0 errors)
