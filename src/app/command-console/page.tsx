@@ -441,7 +441,7 @@ export default function CommandConsole() {
                   className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition text-sm"
                 >
                   <PlayCircle className="w-4 h-4" />
-                  Try Demo Storefront &amp; Funnel Test Now
+                  View Live Demo Storefront
                 </a>
               </div>
 
