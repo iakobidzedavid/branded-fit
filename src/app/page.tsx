@@ -221,6 +221,10 @@ export default function LandingPage() {
               Explore Demo Storefront
             </a>
           </div>
+          <p className="text-text-muted text-sm mt-6 max-w-md mx-auto">
+            Brand preview is non-binding — our team reviews every result before
+            your storefront goes live. You approve before anything is published.
+          </p>
         </div>
       </section>
 
@@ -639,9 +643,12 @@ export default function LandingPage() {
               Start Your Brand Drop Pilot
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <p className="text-text-muted text-sm text-center mt-4">
-              A Branded Fit specialist will contact you within 24 hours to confirm your pilot details and walk you through the onboarding.
-            </p>
+            <div className="mt-4 flex items-start gap-2 bg-accent/10 border border-accent/30 rounded-lg px-4 py-3">
+              <Check className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+              <p className="text-text text-sm">
+                A Branded Fit specialist will contact you within 24 hours to confirm your pilot details and walk you through onboarding. This pilot is human-assisted from start to finish.
+              </p>
+            </div>
           </div>
         </div>
       </section>
