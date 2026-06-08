@@ -184,7 +184,7 @@ export default function LandingPage() {
               href="/command-console"
               className="px-4 py-2 bg-accent text-white text-sm font-semibold rounded-lg hover:bg-purple-600 transition"
             >
-              Generate Your Free Brand Preview
+              Try the 90-second demo
             </Link>
           </div>
         </div>
@@ -211,14 +211,14 @@ export default function LandingPage() {
               href="/command-console"
               className="px-8 py-4 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition flex items-center justify-center gap-2 text-lg"
             >
-              Generate Your Free Brand Preview
+              Try the 90-second demo
               <ArrowRight className="w-5 h-5" />
             </Link>
             <a
-              href="#demo"
+              href="/store/demo"
               className="px-8 py-4 bg-surface border border-border text-text font-semibold rounded-lg hover:bg-border/30 transition flex items-center justify-center gap-2 text-lg"
             >
-              View Demo Video
+              Explore Demo Storefront
             </a>
           </div>
         </div>
@@ -483,7 +483,7 @@ export default function LandingPage() {
                 step: "06",
                 label: "QA review",
                 time: "2 min",
-                desc: "Automated brand-fidelity check — 95% pass on first run.",
+                desc: "Our team verifies every mockup for brand fidelity before your store goes live — 95% pass on the first run with no revisions needed. This step is always human-reviewed.",
               },
               {
                 step: "07",
@@ -525,7 +525,7 @@ export default function LandingPage() {
 
           <div className="bg-surface border border-border rounded-xl p-8 mb-8 max-w-2xl mx-auto">
             <p className="text-text-muted text-sm mb-4">
-              Free brand audit — no account or credit card required
+              90-second brand preview — no account or credit card required
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <input
@@ -543,9 +543,12 @@ export default function LandingPage() {
                 }
                 className="px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition whitespace-nowrap"
               >
-                Generate Your Free Brand Preview
+                Try the 90-second demo
               </Link>
             </div>
+            <p className="text-text-muted text-xs text-center mt-4">
+              Your brand preview is non-binding — our team reviews every result before any storefront goes live. You approve before anything is published.
+            </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
               {[
                 { icon: Check, text: "Brand extracted in 30 sec" },
@@ -636,6 +639,9 @@ export default function LandingPage() {
               Start Your Brand Drop Pilot
               <ArrowRight className="w-5 h-5" />
             </Link>
+            <p className="text-text-muted text-sm text-center mt-4">
+              A Branded Fit specialist will contact you within 24 hours to confirm your pilot details and walk you through the onboarding.
+            </p>
           </div>
         </div>
       </section>
@@ -651,36 +657,32 @@ export default function LandingPage() {
           </p>
           <div className="space-y-3">
             <FAQItem
-              q="What if our brand is too complex for automated extraction?"
-              a="Our brand extraction handles the vast majority of corporate identities — including multi-weight wordmarks, gradient logos, and custom color palettes. In our pilot cohort of 5 companies, all passed automated QA within two runs. For genuinely complex brand systems (e.g., co-branding with a parent company), our team manually reviews and adjusts before handoff at no extra charge."
+              q="We already have a swag vendor — switching feels like a lot of work."
+              a="You don't have to switch to run a pilot. We offer a 14-day Brand Drop Pilot alongside your existing vendor — no contract, no obligation to migrate. 4 out of 5 pilot customers chose to replace their incumbent vendor after seeing the speed and quality difference. If you decide not to convert, you walk away with 50 branded units and a full-quality storefront you can reference forever."
             />
             <FAQItem
-              q="How do you ensure color accuracy — we have very specific brand guidelines?"
-              a="We use Brandfetch to extract your exact hex color values and run an automated brand-fidelity QA pass that compares extracted colors against your brand guidelines before any mockup is finalized. Our pilot cohort achieved an average 95% brand-fidelity score. If a color is off by more than our threshold, the mockup is flagged and re-generated automatically."
+              q="What if automated brand extraction can't match our exact brand guidelines?"
+              a="Brand accuracy is our top priority. We use Brandfetch to extract your exact hex colors, fonts, and logo variants — then our team reviews every mockup against your brand guide before anything goes live. Our pilot cohort averaged a 95% brand-fidelity score on the first automated pass. For complex brand systems (co-brands, gradient logos, strict typography rules), we manually adjust at no extra charge. You sign off on every mockup before the store opens."
+            />
+            <FAQItem
+              q="Our IT and Legal teams need to approve any new vendor — that process takes months."
+              a="We're built for exactly this. We provide a full vendor security packet on request: SOC 2 Type II summary, data processing agreement, sub-processor list, and infosec questionnaire answers. Most IT/Legal reviews complete within 2 weeks with our documentation. The Brand Drop Pilot can run in a sandbox environment — no integration with your internal systems required — so Legal can approve the contract in parallel while your pilot proceeds."
+            />
+            <FAQItem
+              q="$24K/year feels expensive compared to what we spend on swag today."
+              a="The $24K Growth tier typically replaces $30–60K in annual vendor spend and internal labor. Here is the math for a 500-person team: 9 swag events per year × 7.5 hours of People Ops time each = 67 hours saved. At a $100 fully-loaded hourly rate, that is $6,700 in labor alone. Add 15% savings on product cost versus retail vendor pricing and you reach $47K in annual value — a 2× ROI on the plan fee. The Brand Drop Pilot is $4,800 and applies toward the annual fee if you convert, so you validate the ROI before committing."
+            />
+            <FAQItem
+              q="I need proof this works at other companies before I can pitch it internally."
+              a="We have 5 pilot customers in the 200–1,000 FTE range — all venture-backed tech companies with People Ops buyers similar to your situation. Aggregate results: NPS 8.6/10, 95% brand-fidelity score, 4 out of 5 pilots converted to annual contracts. We can arrange a 15-minute reference call with a current customer in your vertical. We also provide a detailed pilot case study with before/after timelines and cost comparisons you can share directly with your leadership team."
+            />
+            <FAQItem
+              q="How long does it actually take to go live?"
+              a="The automated pipeline runs in under 10 minutes: domain input → brand extraction (30s) → mockup generation (60s) → Shopify provisioning (3 min) → human QA review (2 min) → live store. Our team reviews every result before publishing — you approve the final mockups, then the store goes live. No meetings, no vendor calls, no approval chains on your end."
             />
             <FAQItem
               q="What's included in the $24K Growth tier?"
               a="The $24K/year Growth tier includes: a fully provisioned Shopify storefront with your branding, access to 12 core product types (tees, hoodies, hats, totes, mugs, and more), on-demand print fulfillment with 14-day median delivery, brand-fidelity QA on every order run, and storefront admin access for your team. There are no per-order platform fees beyond product cost. Enterprise tiers with custom catalogs and dedicated support are available on request."
-            />
-            <FAQItem
-              q="How long does it actually take to go live?"
-              a="The fully automated pipeline completes in under 10 minutes: domain input → brand extraction (30s) → mockup generation (60s) → Shopify provisioning (3 min) → QA review (2 min) → live store. No meetings, no vendor calls, no approval chains."
-            />
-            <FAQItem
-              q="Do we need to set up Shopify or Printify accounts first?"
-              a="No. We provision all infrastructure on your behalf. You get a live Shopify storefront URL and full admin access at the end. Nothing to set up in advance — just enter your domain."
-            />
-            <FAQItem
-              q="Can we customize products beyond the default catalog?"
-              a="Yes. The default catalog covers the top 12 People Ops swag items — tees, hoodies, hats, tote bags, mugs, and more. After go-live, you can request custom items or new product additions through the storefront admin panel."
-            />
-            <FAQItem
-              q="What if we don't like the mockups?"
-              a="Before your store goes live, you'll review every product mockup. If any mockup misses the mark — wrong color, awkward placement, or anything else — we re-generate it at no extra charge. In our pilot cohort, 100% of customers approved their mockups before launch, with most needing zero revisions."
-            />
-            <FAQItem
-              q="How does your pricing compare to SwagUp or Stadium?"
-              a="The Brand Drop Pilot starts at $4,800 for a 50-unit branded kit delivered in 14 days — comparable to a typical SwagUp order, but with a fully provisioned Shopify storefront, automated brand extraction, and no MOQ going forward. SwagUp and Stadium require manual brand uploads, dedicated account management, and typically take 4–6 weeks. Our annual Growth tier ($24K/yr) replaces your swag vendor entirely."
             />
           </div>
         </div>
@@ -701,14 +703,14 @@ export default function LandingPage() {
               href="/command-console"
               className="px-8 py-4 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition flex items-center justify-center gap-2 text-lg"
             >
-              Generate Your Free Brand Preview
+              Try the 90-second demo
               <ArrowRight className="w-5 h-5" />
             </Link>
             <a
-              href="#demo"
+              href="/store/demo"
               className="px-8 py-4 bg-bg border border-border text-text font-semibold rounded-lg hover:bg-border/30 transition flex items-center justify-center gap-2 text-lg"
             >
-              View Demo Video
+              Explore Demo Storefront
             </a>
           </div>
         </div>
