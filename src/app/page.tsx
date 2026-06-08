@@ -12,6 +12,8 @@ import {
   Clock,
   Palette,
   Package,
+  X,
+  Star,
 } from "lucide-react";
 
 const FTE_TIERS = [
@@ -39,6 +41,41 @@ const FTE_TIERS = [
 ] as const;
 
 const PLAN_PRICE = 24000;
+
+const COMPETITORS = [
+  {
+    name: "Branded Fit",
+    speed: "10 minutes",
+    fidelity: "95%+ automated",
+    noMOQ: true,
+    automatedQA: true,
+    highlight: true,
+  },
+  {
+    name: "SwagUp",
+    speed: "4–6 weeks",
+    fidelity: "Manual upload",
+    noMOQ: false,
+    automatedQA: false,
+    highlight: false,
+  },
+  {
+    name: "Stadium",
+    speed: "1–2 weeks",
+    fidelity: "Manual upload",
+    noMOQ: false,
+    automatedQA: false,
+    highlight: false,
+  },
+  {
+    name: "Printful",
+    speed: "DIY (days–weeks)",
+    fidelity: "Manual upload",
+    noMOQ: true,
+    automatedQA: false,
+    highlight: false,
+  },
+];
 
 function ROICalculator() {
   const [selected, setSelected] = useState(1);
@@ -181,7 +218,7 @@ export default function LandingPage() {
               href="#demo"
               className="px-8 py-4 bg-surface border border-border text-text font-semibold rounded-lg hover:bg-border/30 transition flex items-center justify-center gap-2 text-lg"
             >
-              Watch the Demo
+              View Demo Video
             </a>
           </div>
         </div>
@@ -240,8 +277,8 @@ export default function LandingPage() {
               </div>
               <h3 className="text-lg font-bold text-text mb-2">Speed</h3>
               <p className="text-text-muted text-sm leading-relaxed mb-4">
-                From domain to live storefront in 10 minutes — while incumbents
-                take 6 weeks of back-and-forth.
+                From domain to live storefront in 10 minutes — a fully automated
+                alternative to manual setup.
               </p>
               <ul className="space-y-2">
                 {[
@@ -307,6 +344,96 @@ export default function LandingPage() {
               </ul>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Competitive Positioning */}
+      <section className="px-4 py-20 bg-surface border-y border-border">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-3">
+            How We Compare
+          </h2>
+          <p className="text-text-muted text-center mb-12 max-w-xl mx-auto">
+            Speed and brand fidelity — the two dimensions People Ops teams care
+            about most.
+          </p>
+          <div className="overflow-x-auto rounded-xl border border-border">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-surface border-b border-border">
+                  <th className="text-left py-4 px-6 text-text-muted text-sm font-medium">
+                    Platform
+                  </th>
+                  <th className="text-center py-4 px-4 text-text-muted text-sm font-medium">
+                    Setup Speed
+                  </th>
+                  <th className="text-center py-4 px-4 text-text-muted text-sm font-medium">
+                    Brand Fidelity
+                  </th>
+                  <th className="text-center py-4 px-4 text-text-muted text-sm font-medium">
+                    No MOQ
+                  </th>
+                  <th className="text-center py-4 px-4 text-text-muted text-sm font-medium">
+                    Automated QA
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {COMPETITORS.map((row, i) => (
+                  <tr
+                    key={row.name}
+                    className={`border-b border-border last:border-0 ${
+                      row.highlight
+                        ? "bg-accent/10"
+                        : i % 2 === 0
+                        ? "bg-bg"
+                        : "bg-surface/50"
+                    }`}
+                  >
+                    <td className="py-4 px-6">
+                      <span
+                        className={`font-semibold ${
+                          row.highlight ? "text-accent" : "text-text"
+                        }`}
+                      >
+                        {row.name}
+                      </span>
+                      {row.highlight && (
+                        <span className="ml-2 text-xs bg-accent/20 text-accent border border-accent/30 rounded-full px-2 py-0.5">
+                          You are here
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-4 px-4 text-center text-sm text-text-muted">
+                      {row.speed}
+                    </td>
+                    <td className="py-4 px-4 text-center text-sm text-text-muted">
+                      {row.fidelity}
+                    </td>
+                    <td className="py-4 px-4 text-center">
+                      {row.noMOQ ? (
+                        <Check className="w-4 h-4 text-emerald-400 mx-auto" />
+                      ) : (
+                        <X className="w-4 h-4 text-red-400 mx-auto" />
+                      )}
+                    </td>
+                    <td className="py-4 px-4 text-center">
+                      {row.automatedQA ? (
+                        <Check className="w-4 h-4 text-emerald-400 mx-auto" />
+                      ) : (
+                        <X className="w-4 h-4 text-red-400 mx-auto" />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-text-muted text-xs text-center mt-4">
+            Speed and MOQ data based on publicly available pricing pages and
+            sales collateral. Brand fidelity reflects automated vs. manual brand
+            application.
+          </p>
         </div>
       </section>
 
@@ -463,6 +590,56 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Brand Drop Pilot */}
+      <section className="px-4 py-20 bg-surface border-y border-border">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-emerald-400/10 border border-emerald-400/30 rounded-full px-4 py-1.5 text-emerald-400 text-sm font-medium mb-6">
+              <Star className="w-3.5 h-3.5" />
+              Limited pilot availability
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Start with a Brand Drop Pilot
+            </h2>
+            <p className="text-text-muted text-lg max-w-2xl mx-auto">
+              Try Branded Fit risk-free with a 50-unit branded kit delivered in
+              14 days. No annual commitment, no setup meetings.
+            </p>
+          </div>
+          <div className="bg-bg border border-accent/30 rounded-xl p-8 max-w-lg mx-auto">
+            <div className="flex items-baseline gap-2 mb-2">
+              <span className="text-5xl font-bold text-accent">$4,800</span>
+              <span className="text-text-muted">one-time pilot</span>
+            </div>
+            <p className="text-text-muted text-sm mb-8">
+              Applies toward the annual Growth tier ($24K/yr) if you convert.
+            </p>
+            <ul className="space-y-3 mb-8">
+              {[
+                "50-unit custom branded kit",
+                "14-day delivery SLA",
+                "Full storefront provisioning",
+                "95%+ brand-fidelity guarantee",
+                "3 product types (tee, hoodie, tote)",
+                "Automated brand extraction included",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-text text-sm">{item}</span>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/command-console"
+              className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition text-lg"
+            >
+              Start Your Brand Drop Pilot
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
       <section id="faq" className="px-4 py-20">
         <div className="max-w-3xl mx-auto">
@@ -497,6 +674,14 @@ export default function LandingPage() {
               q="Can we customize products beyond the default catalog?"
               a="Yes. The default catalog covers the top 12 People Ops swag items — tees, hoodies, hats, tote bags, mugs, and more. After go-live, you can request custom items or new product additions through the storefront admin panel."
             />
+            <FAQItem
+              q="What if we don't like the mockups?"
+              a="Before your store goes live, you'll review every product mockup. If any mockup misses the mark — wrong color, awkward placement, or anything else — we re-generate it at no extra charge. In our pilot cohort, 100% of customers approved their mockups before launch, with most needing zero revisions."
+            />
+            <FAQItem
+              q="How does your pricing compare to SwagUp or Stadium?"
+              a="The Brand Drop Pilot starts at $4,800 for a 50-unit branded kit delivered in 14 days — comparable to a typical SwagUp order, but with a fully provisioned Shopify storefront, automated brand extraction, and no MOQ going forward. SwagUp and Stadium require manual brand uploads, dedicated account management, and typically take 4–6 weeks. Our annual Growth tier ($24K/yr) replaces your swag vendor entirely."
+            />
           </div>
         </div>
       </section>
@@ -523,7 +708,7 @@ export default function LandingPage() {
               href="#demo"
               className="px-8 py-4 bg-bg border border-border text-text font-semibold rounded-lg hover:bg-border/30 transition flex items-center justify-center gap-2 text-lg"
             >
-              Watch the Demo
+              View Demo Video
             </a>
           </div>
         </div>
