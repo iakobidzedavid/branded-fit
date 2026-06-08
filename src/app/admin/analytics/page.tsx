@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import type { Metadata } from "next";
 import FunnelChart, { FunnelEntry } from "@/components/FunnelChart";
 import TimeSeriesChart, {
   HourlyDataPoint,
@@ -8,7 +8,11 @@ import EventSummaryCards, {
   EventTypeCount,
 } from "@/components/EventSummaryCards";
 import EventTypeTable, { EventTypeRow } from "@/components/EventTypeTable";
-import AdminLogin from "@/components/AdminLogin";
+
+export const metadata: Metadata = {
+  title: "Analytics Dashboard - Branded Fit",
+  description: "Pipeline conversion funnel and event analytics",
+};
 
 const FUNNEL_STAGES = [
   "domain_submitted",
@@ -203,16 +207,6 @@ export default async function AdminAnalytics({
 }: {
   searchParams: Promise<{ customerId?: string }>;
 }) {
-  const adminPassword = process.env.ADMIN_PASSWORD;
-
-  if (adminPassword) {
-    const cookieStore = await cookies();
-    const session = cookieStore.get("admin_session");
-    if (!session || session.value !== adminPassword) {
-      return <AdminLogin />;
-    }
-  }
-
   const params = await searchParams;
   const customerId = params.customerId?.trim() || undefined;
 
