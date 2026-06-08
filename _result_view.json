@@ -1,52 +1,53 @@
 {
   "view_type": "report",
-  "headline": "Created 6 production-ready discovery call email templates + interview script for pilot validation.",
+  "headline": "GTM Readiness Audit: Business Model & Messaging Deficits Mapped to 12-Item Remediation Plan (T3 Execution)",
   "primary_stat": {
-    "label": "Templates Created",
-    "value": 6
+    "label": "GTM Readiness Target",
+    "value": "2.5-3.0/10 (from 1.8/10)"
   },
   "highlights": [
-    "Initial Discovery Invitation – warm outreach to scheduled call",
-    "Pre-Call Brief – 24-hour confirmation with call roadmap",
-    "Post-Call WTP Yes – fast-track to pilot commitment",
-    "Post-Call Conditional – objection handling + trade-off options",
-    "Pilot Formalization – SOW, checklist, and kickoff logistics",
-    "Cold Reengagement – for non-responsive warm leads",
-    "30-40 min interview script with price anchoring & commitment questions",
-    "Post-call logging template for CRM tracking (10+ fields)",
-    "Key messaging anchors table for price/speed/quality positioning",
-    "Success metrics: 80% WTP signal, 60% pilot conversion targets"
+    "Business Model Gap: Pricing framework validation requires 3 evidence streams—credit-burn rate from paying pilots, independent WTP study (15-20 People Ops leaders), and win/loss pricing objection tracking",
+    "Messaging Readiness Gap: Core value narrative ('3x faster, 2x cheaper, 95% brand fidelity') must be tested in discovery calls; requires messaging playbook, sales deck, one-pager, and async demo video",
+    "Launch Infrastructure: Analytics dashboard code-complete; gap is real customer data seeding once T3 pilots launch (2-week effort)",
+    "8-Week Execution Timeline: BM track (3 workstreams) and MSG track (3 workstreams) run parallel; critical path is WTP study + messaging playbook (6-8 weeks)",
+    "Decision Framework: Go/pivot/no-go decision gate at T3 Week 7-8 based on pricing validation (median WTP ≥$20K, ≥70% resonance on messaging narrative)",
+    "Resource Allocation: 420-530 total hours (10-13 FTE-weeks) across Product Head, Strategic Analyst, Sales Ops, Marketing, Data Engineer, Discovery Lead",
+    "Risk Mitigation: 5 key risks identified (sparse pilot data, low WTP response rates, late objection stabilization, narrative non-resonance, playbook adoption gaps) with contingencies",
+    "Success Metrics: Credit-burn ≤$200/mo per customer, median WTP ≥$20K (60%+ willing at $24K anchor), ≥70% narrative resonance, ≥80% closing rate at $24K",
+    "T4 Runway: By end of T3, will have market-validated pricing, tested messaging, and real customer usage data enabling 10+ pilot scaling by T4"
   ],
   "links": [
     {
-      "label": "View Full Templates",
-      "url": "documents/discovery_call_email_templates.md"
+      "label": "View Full GTM Readiness Audit",
+      "url": "https://github.com/iakobidzedavid/branded-fit/blob/main/documents/2026-06-08_gtm_readiness_audit_and_remediation_plan.md"
     }
   ],
   "next_actions": [
     {
-      "label": "Schedule discovery calls with 5+ warm leads",
-      "task_template": "conduct_discovery_calls",
+      "label": "Kick off Business Model track: Instrument pilot customer credit consumption and begin WTP study recruiting",
+      "task_template": "gtm_execution_task",
       "args": {
-        "template_file": "documents/discovery_call_email_templates.md",
-        "target_calls": 5,
-        "call_duration_min": 30
+        "track": "Business Model",
+        "items": ["BM-1: Credit-burn instrumentation", "BM-2: WTP study recruiting", "BM-3: Pricing objection logging"],
+        "start_week": "T3 Week 1"
       }
     },
     {
-      "label": "Log call outcomes in tracking sheet",
-      "task_template": "discovery_call_tracking",
+      "label": "Finalize Messaging track: Complete narrative testing in discovery calls, create playbook, design sales collateral",
+      "task_template": "gtm_execution_task",
       "args": {
-        "template_file": "documents/discovery_call_email_templates.md",
-        "fields": ["prospect_name", "company", "wtp_signal", "pilot_intent"]
+        "track": "Messaging Readiness",
+        "items": ["MSG-1: Narrative testing (embedded in T2 discovery)", "MSG-2: Messaging playbook v1", "MSG-3: Sales deck + collateral"],
+        "start_week": "T2 Week 4 (concurrent with BM)"
       }
     },
     {
-      "label": "Synthesize discovery findings (n≥3 calls) into go/pivot/no-go decision",
-      "task_template": "discovery_synthesis",
+      "label": "Schedule mid-cycle review: T3 Week 4 preliminary findings memo (credit-burn trends, WTP data, objection patterns)",
+      "task_template": "governance_task",
       "args": {
-        "min_calls": 3,
-        "output": "decision_document"
+        "meeting": "T3 Mid-Cycle Executive Review",
+        "date": "T3 Week 4",
+        "deliverable": "Preliminary findings memo (BM-1, BM-2 early results, MSG-1 narrative resonance)"
       }
     }
   ]
