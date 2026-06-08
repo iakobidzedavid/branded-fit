@@ -1,0 +1,53 @@
+{
+  "view_type": "report",
+  "headline": "Created 6 production-ready discovery call email templates + interview script for pilot validation.",
+  "primary_stat": {
+    "label": "Templates Created",
+    "value": 6
+  },
+  "highlights": [
+    "Initial Discovery Invitation – warm outreach to scheduled call",
+    "Pre-Call Brief – 24-hour confirmation with call roadmap",
+    "Post-Call WTP Yes – fast-track to pilot commitment",
+    "Post-Call Conditional – objection handling + trade-off options",
+    "Pilot Formalization – SOW, checklist, and kickoff logistics",
+    "Cold Reengagement – for non-responsive warm leads",
+    "30-40 min interview script with price anchoring & commitment questions",
+    "Post-call logging template for CRM tracking (10+ fields)",
+    "Key messaging anchors table for price/speed/quality positioning",
+    "Success metrics: 80% WTP signal, 60% pilot conversion targets"
+  ],
+  "links": [
+    {
+      "label": "View Full Templates",
+      "url": "documents/discovery_call_email_templates.md"
+    }
+  ],
+  "next_actions": [
+    {
+      "label": "Schedule discovery calls with 5+ warm leads",
+      "task_template": "conduct_discovery_calls",
+      "args": {
+        "template_file": "documents/discovery_call_email_templates.md",
+        "target_calls": 5,
+        "call_duration_min": 30
+      }
+    },
+    {
+      "label": "Log call outcomes in tracking sheet",
+      "task_template": "discovery_call_tracking",
+      "args": {
+        "template_file": "documents/discovery_call_email_templates.md",
+        "fields": ["prospect_name", "company", "wtp_signal", "pilot_intent"]
+      }
+    },
+    {
+      "label": "Synthesize discovery findings (n≥3 calls) into go/pivot/no-go decision",
+      "task_template": "discovery_synthesis",
+      "args": {
+        "min_calls": 3,
+        "output": "decision_document"
+      }
+    }
+  ]
+}
