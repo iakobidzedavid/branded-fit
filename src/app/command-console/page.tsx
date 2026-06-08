@@ -433,7 +433,7 @@ export default function CommandConsole() {
                   </div>
                   <div className="bg-bg rounded-lg p-3 flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    <span className="text-xs text-text-muted">Quote request CTA</span>
+                    <span className="text-xs text-text-muted">Instant automated quote</span>
                   </div>
                 </div>
                 <a
@@ -441,7 +441,7 @@ export default function CommandConsole() {
                   className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition text-sm"
                 >
                   <PlayCircle className="w-4 h-4" />
-                  View Demo Storefront &amp; Funnel Test
+                  Try Demo Storefront &amp; Funnel Test Now
                 </a>
               </div>
 
