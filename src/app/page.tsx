@@ -184,7 +184,7 @@ export default function LandingPage() {
               href="/command-console"
               className="px-4 py-2 bg-accent text-white text-sm font-semibold rounded-lg hover:bg-purple-600 transition"
             >
-              Start Your Free Brand Audit
+              Generate Your Free Brand Preview
             </Link>
           </div>
         </div>
@@ -211,7 +211,7 @@ export default function LandingPage() {
               href="/command-console"
               className="px-8 py-4 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition flex items-center justify-center gap-2 text-lg"
             >
-              Start Your Free Brand Audit
+              Generate Your Free Brand Preview
               <ArrowRight className="w-5 h-5" />
             </Link>
             <a
@@ -543,7 +543,7 @@ export default function LandingPage() {
                 }
                 className="px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition whitespace-nowrap"
               >
-                Start Your Free Brand Audit
+                Generate Your Free Brand Preview
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
@@ -701,7 +701,7 @@ export default function LandingPage() {
               href="/command-console"
               className="px-8 py-4 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition flex items-center justify-center gap-2 text-lg"
             >
-              Start Your Free Brand Audit
+              Generate Your Free Brand Preview
               <ArrowRight className="w-5 h-5" />
             </Link>
             <a
