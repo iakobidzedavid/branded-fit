@@ -65,24 +65,24 @@ const DEMO_STORE: StoreData = {
 const FUNNEL_EVENTS = [
   { type: "domain_submitted", stage: "Stage 1 · Intake" },
   { type: "brand_extraction_started", stage: "Stage 2 · Brand Intelligence" },
-  { type: "brand_extraction_complete", stage: "Stage 2 · Brand Intelligence" },
+  { type: "brand_extraction_completed", stage: "Stage 2 · Brand Intelligence" },
   { type: "mockup_generation_started", stage: "Stage 3 · Visual Engine" },
-  { type: "mockup_generation_complete", stage: "Stage 3 · Visual Engine" },
+  { type: "mockup_generation_completed", stage: "Stage 3 · Visual Engine" },
   { type: "storefront_generation_started", stage: "Stage 4 · Infrastructure" },
-  { type: "storefront_generation_complete", stage: "Stage 4 · Infrastructure" },
-  { type: "storefront_view", stage: "Stage 5 · Engagement" },
+  { type: "storefront_generation_completed", stage: "Stage 4 · Infrastructure" },
+  { type: "storefront_published", stage: "Stage 5 · Publish" },
 ];
 
 // Representative latencies for demo mode (ms from pipeline start)
 const DEMO_OFFSETS: Record<string, number> = {
   domain_submitted: 0,
   brand_extraction_started: 1180,
-  brand_extraction_complete: 6340,
+  brand_extraction_completed: 6340,
   mockup_generation_started: 6590,
-  mockup_generation_complete: 19210,
+  mockup_generation_completed: 19210,
   storefront_generation_started: 19480,
-  storefront_generation_complete: 28850,
-  storefront_view: 29140,
+  storefront_generation_completed: 28850,
+  storefront_published: 29140,
 };
 
 function buildDemoFunnelData(): FunnelState {
@@ -419,7 +419,17 @@ export default function StorefrontPreview() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ domain: store.domain }),
       });
-      setPublishStatus(res.ok ? "published" : "failed");
+      if (res.ok) {
+        setPublishStatus("published");
+        logEvent(
+          "storefront_published",
+          store.domain,
+          { store_id: store.id, shopify_url: store.shopifyUrl ?? null },
+          "Stage 5 · Publish",
+        );
+      } else {
+        setPublishStatus("failed");
+      }
     } catch {
       setPublishStatus("failed");
     }
