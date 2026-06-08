@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import FunnelChart, { FunnelEntry } from "@/components/FunnelChart";
 import TimeSeriesChart, {
   HourlyDataPoint,
@@ -6,6 +7,8 @@ import TimeSeriesChart, {
 import EventSummaryCards, {
   EventTypeCount,
 } from "@/components/EventSummaryCards";
+import EventTypeTable, { EventTypeRow } from "@/components/EventTypeTable";
+import AdminLogin from "@/components/AdminLogin";
 
 const FUNNEL_STAGES = [
   "domain_submitted",
@@ -23,7 +26,7 @@ const STAGE_META: Record<FunnelStageName, { label: string; color: string }> = {
   storefront_published: { label: "Storefront Published", color: "#f59e0b" },
 };
 
-const HOURLY_SERIES: EventSeries[] = FUNNEL_STAGES.map((stage) => ({
+const DAILY_SERIES: EventSeries[] = FUNNEL_STAGES.map((stage) => ({
   key: stage,
   label: STAGE_META[stage].label,
   color: STAGE_META[stage].color,
@@ -33,22 +36,23 @@ interface AnalyticsData {
   funnelEntries: FunnelEntry[];
   timeSeriesData: HourlyDataPoint[];
   summaryCards: EventTypeCount[];
+  eventCountRows: EventTypeRow[];
   endToEndConversion: number;
   isLive: boolean;
 }
 
-function buildHourKeys(windowHours: number): string[] {
+function buildDayKeys(days: number): string[] {
   const keys: string[] = [];
   const now = new Date();
-  for (let i = windowHours - 1; i >= 0; i--) {
+  for (let i = days - 1; i >= 0; i--) {
     const d = new Date(now);
-    d.setUTCHours(d.getUTCHours() - i, 0, 0, 0);
-    keys.push(d.toISOString().slice(0, 13));
+    d.setUTCDate(d.getUTCDate() - i);
+    keys.push(d.toISOString().slice(0, 10));
   }
   return keys;
 }
 
-async function fetchAnalytics(): Promise<AnalyticsData> {
+async function fetchAnalytics(customerId?: string): Promise<AnalyticsData> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -61,14 +65,19 @@ async function fetchAnalytics(): Promise<AnalyticsData> {
     const client = createClient(supabaseUrl, supabaseKey);
 
     const since = new Date();
-    since.setDate(since.getDate() - 7);
-    since.setHours(0, 0, 0, 0);
+    since.setUTCDate(since.getUTCDate() - 7);
+    since.setUTCHours(0, 0, 0, 0);
 
-    const { data: events, error } = await client
+    let query = client
       .from("analytics_events")
-      .select("event_name, created_at")
-      .in("event_name", FUNNEL_STAGES as unknown as string[])
+      .select("event_name, customer_id, created_at")
       .gte("created_at", since.toISOString());
+
+    if (customerId) {
+      query = query.eq("customer_id", customerId);
+    }
+
+    const { data: events, error } = await query;
 
     if (error || !events) {
       console.error("Admin analytics page query error:", error);
@@ -83,7 +92,7 @@ async function fetchAnalytics(): Promise<AnalyticsData> {
     };
 
     events.forEach((e) => {
-      if (e.event_name in stageCounts) {
+      if (e.event_name && e.event_name in stageCounts) {
         stageCounts[e.event_name as FunnelStageName] += 1;
       }
     });
@@ -101,20 +110,20 @@ async function fetchAnalytics(): Promise<AnalyticsData> {
         conversionRate:
           prevCount > 0
             ? Math.round((stageCounts[stage] / prevCount) * 100)
-            : i === 0 ? 100 : 0,
+            : i === 0
+            ? 100
+            : 0,
       };
     });
 
-    const hourKeys = buildHourKeys(48);
-    const timeSeriesData: HourlyDataPoint[] = hourKeys.map((key) => {
-      const hourEvents = events.filter(
-        (e) => e.created_at?.slice(0, 13) === key
+    const dayKeys = buildDayKeys(7);
+    const timeSeriesData: HourlyDataPoint[] = dayKeys.map((key) => {
+      const dayEvents = events.filter(
+        (e) => e.created_at?.slice(0, 10) === key
       );
-      const row: HourlyDataPoint = {
-        hour: key.slice(5).replace("T", " ") + ":00",
-      };
+      const row: HourlyDataPoint = { hour: key.slice(5) };
       FUNNEL_STAGES.forEach((stage) => {
-        row[stage] = hourEvents.filter((e) => e.event_name === stage).length;
+        row[stage] = dayEvents.filter((e) => e.event_name === stage).length;
       });
       return row;
     });
@@ -126,12 +135,28 @@ async function fetchAnalytics(): Promise<AnalyticsData> {
       color: STAGE_META[stage].color,
     }));
 
+    const eventCountMap: Record<string, number> = {};
+    events.forEach((e) => {
+      const name = e.event_name ?? "unknown";
+      eventCountMap[name] = (eventCountMap[name] ?? 0) + 1;
+    });
+    const eventCountRows: EventTypeRow[] = Object.entries(eventCountMap)
+      .map(([type, count]) => ({ type, count }))
+      .sort((a, b) => b.count - a.count);
+
     const endToEndConversion =
       topCount > 0
         ? Math.round((stageCounts.storefront_published / topCount) * 100)
         : 0;
 
-    return { funnelEntries, timeSeriesData, summaryCards, endToEndConversion, isLive: true };
+    return {
+      funnelEntries,
+      timeSeriesData,
+      summaryCards,
+      eventCountRows,
+      endToEndConversion,
+      isLive: true,
+    };
   } catch (e) {
     console.error("Admin analytics page error:", e);
     return buildFallback();
@@ -147,11 +172,9 @@ function buildFallback(): AnalyticsData {
     conversionRate: i === 0 ? 100 : 0,
   }));
 
-  const hourKeys = buildHourKeys(48);
-  const timeSeriesData: HourlyDataPoint[] = hourKeys.map((key) => {
-    const row: HourlyDataPoint = {
-      hour: key.slice(5).replace("T", " ") + ":00",
-    };
+  const dayKeys = buildDayKeys(7);
+  const timeSeriesData: HourlyDataPoint[] = dayKeys.map((key) => {
+    const row: HourlyDataPoint = { hour: key.slice(5) };
     FUNNEL_STAGES.forEach((stage) => {
       row[stage] = 0;
     });
@@ -165,21 +188,51 @@ function buildFallback(): AnalyticsData {
     color: STAGE_META[stage].color,
   }));
 
-  return { funnelEntries, timeSeriesData, summaryCards, endToEndConversion: 0, isLive: false };
+  return {
+    funnelEntries,
+    timeSeriesData,
+    summaryCards,
+    eventCountRows: [],
+    endToEndConversion: 0,
+    isLive: false,
+  };
 }
 
-export default async function AdminAnalytics() {
-  const { funnelEntries, timeSeriesData, summaryCards, endToEndConversion, isLive } =
-    await fetchAnalytics();
+export default async function AdminAnalytics({
+  searchParams,
+}: {
+  searchParams: Promise<{ customerId?: string }>;
+}) {
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
+  if (adminPassword) {
+    const cookieStore = await cookies();
+    const session = cookieStore.get("admin_session");
+    if (!session || session.value !== adminPassword) {
+      return <AdminLogin />;
+    }
+  }
+
+  const params = await searchParams;
+  const customerId = params.customerId?.trim() || undefined;
+
+  const {
+    funnelEntries,
+    timeSeriesData,
+    summaryCards,
+    eventCountRows,
+    endToEndConversion,
+    isLive,
+  } = await fetchAnalytics(customerId);
 
   return (
     <div className="min-h-screen bg-bg text-text px-4 py-10">
       <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
           <div>
             <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
             <p className="text-text-muted mt-1 text-sm">
-              Pipeline conversion funnel · Hourly event volume
+              Pipeline conversion funnel · 7-day event volume
             </p>
           </div>
           <span
@@ -191,6 +244,35 @@ export default async function AdminAnalytics() {
           >
             {isLive ? "Live data" : "No data"}
           </span>
+        </div>
+
+        <div className="bg-surface border border-border rounded-xl p-4 mb-8">
+          <form method="get" className="flex items-center gap-3">
+            <label className="text-sm text-text-muted whitespace-nowrap">
+              Filter by customer
+            </label>
+            <input
+              type="text"
+              name="customerId"
+              defaultValue={customerId ?? ""}
+              placeholder="customer_id (optional)"
+              className="flex-1 bg-bg border border-border rounded-lg px-3 py-1.5 text-sm text-text placeholder-text-muted focus:border-accent focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="px-4 py-1.5 text-sm bg-accent text-white rounded-lg hover:opacity-90 transition-opacity"
+            >
+              Apply
+            </button>
+            {customerId && (
+              <a
+                href="/admin/analytics"
+                className="text-sm text-text-muted hover:text-text transition-colors"
+              >
+                Clear
+              </a>
+            )}
+          </form>
         </div>
 
         <div className="mb-8">
@@ -205,9 +287,16 @@ export default async function AdminAnalytics() {
           <FunnelChart data={funnelEntries} />
         </div>
 
+        <div className="bg-surface border border-border rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-bold mb-1">Daily Event Volume</h2>
+          <p className="text-text-muted text-xs mb-6">Last 7 days</p>
+          <TimeSeriesChart data={timeSeriesData} series={DAILY_SERIES} />
+        </div>
+
         <div className="bg-surface border border-border rounded-xl p-6">
-          <h2 className="text-lg font-bold mb-6">Hourly Event Volume</h2>
-          <TimeSeriesChart data={timeSeriesData} series={HOURLY_SERIES} />
+          <h2 className="text-lg font-bold mb-1">Event Count by Type</h2>
+          <p className="text-text-muted text-xs mb-6">Last 7 days · all event types</p>
+          <EventTypeTable rows={eventCountRows} />
         </div>
       </div>
     </div>
