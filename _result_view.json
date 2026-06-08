@@ -1,45 +1,42 @@
 {
   "view_type": "report",
-  "headline": "Competitive intelligence matrix: 10 competitors analyzed; 2 defensible advantages identified for Branded Fit",
+  "headline": "Competitive intelligence matrix & defensible advantage analysis for 10 major competitors; identified 2 moats",
   "primary_stat": {
-    "label": "Competitive Gap",
-    "value": "Only platform with < 10min provisioning + 95%+ fidelity at $24K/yr"
+    "label": "Competitors Analyzed",
+    "value": 10
   },
   "highlights": [
-    "Competitive matrix CSV: 10 competitors × 9 attributes (pricing, positioning, features, time-to-live, fidelity)",
-    "Finding #1: No competitor offers true autonomous brand extraction; all require 1-20 hours manual setup",
-    "Finding #2: Market shows inverse relationship between fidelity and scalability; Branded Fit breaks this trade-off",
-    "Finding #3: 'Employee self-serve' claims misleading; most implement approval workflows or restricted catalogs",
-    "Advantage #1: Autonomous Provisioning (API integration moat, 96% faster than competitors, defensible 12-18mo)",
-    "Advantage #2: Fidelity at Mid-Market Price (breaks $5-15K/mo enterprise model, $24K/yr affordability)",
-    "Battle cards developed for Merchology, Bonusly, Printful, Stadium objection handling",
-    "GTM recommendations: Lead with speed+fidelity combo, target mid-market People Ops leaders, use trial to prove accuracy",
-    "Vulnerability analysis: Brandfetch accuracy risk, competitor speed matching in 6-12mo, price compression threat",
-    "Competitive scorecard: Branded Fit leads on Speed/Autonomy/Price/Scale; Merchology leads on Fidelity (custom); Bonusly leads on HRIS"
+    "SwagUp, Swag.com, Stadium, Printful, Printfection, Brilliant, Merchology, Bonusly, Karma, Bulu Box",
+    "Branded Fit identified in unique upper-right quadrant: <10min provisioning + 95% fidelity + $24K/yr",
+    "Defensible Advantage #1: Autonomous brand extraction (Brandfetch API) - no competitor has replicated",
+    "Defensible Advantage #2: Enterprise fidelity at mid-market pricing (3-7x cheaper than Merchology)",
+    "No direct competitor identified; Merchology is closest (custom design) but 21-28 days slower",
+    "Competitive positioning ready for GTM messaging: '3x faster + 2-3x cheaper than Merchology'",
+    "Economic moat: Brandfetch licensing ($20-30K/yr) too expensive for SMB competitors to justify",
+    "Threat assessment: Bonusly & Brilliant (Workday) are medium risk 18-month horizon",
+    "Created 3 comprehensive research documents for sales & marketing enablement",
+    "All competitor data sourced from public websites, not proprietary research"
   ],
   "next_actions": [
     {
-      "label": "Develop battle cards for sales team",
-      "task_template": "gtm_sales_enablement",
+      "label": "Update website with competitor comparisons",
+      "task_template": "content_task",
       "args": {
-        "competitors": ["Merchology", "Bonusly", "Printful", "Stadium"],
-        "format": "1-page PDF per competitor with objection responses"
+        "description": "Add 3 side-by-side comparison charts (vs Merchology, Stadium, Bonusly) to landing page using data from competitor_analysis_detailed.md"
       }
     },
     {
-      "label": "Create 30-second video positioning",
-      "task_template": "content_video",
+      "label": "Create discovery call playbook",
+      "task_template": "sales_operations_task",
       "args": {
-        "theme": "10-min provisioning demo",
-        "comparison": "vs. Merchology (21-28 days), Bonusly (5-20 days)"
+        "description": "Map each competitor to objection handling framework using talking points from competitive_intelligence_summary.md"
       }
     },
     {
-      "label": "Build ROI calculator",
-      "task_template": "gtm_calculator",
+      "label": "Build ROI calculator on landing page",
+      "task_template": "frontend_development_task",
       "args": {
-        "inputs": ["current merch platform", "annual spend", "team size"],
-        "output": "time/cost savings vs. Branded Fit"
+        "description": "Interactive tool showing cost/time savings vs top 3 alternatives (Merchology, Stadium, Bonusly) with company size inputs"
       }
     }
   ]
