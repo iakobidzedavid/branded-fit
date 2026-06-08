@@ -39,7 +39,7 @@ function logEvent(event_type: string, fields: Record<string, unknown>): void {
       const raw = localStorage.getItem("bf_funnel_test");
       if (raw) stored = JSON.parse(raw);
 
-      if (event_type === "domain_submitted") {
+      if (event_type === "domain_submission") {
         stored = { domain, startedAt: firedAt, events: {} };
       } else {
         if (!stored.events) stored.events = {};
@@ -133,6 +133,9 @@ export default function CommandConsole() {
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const submitTimeRef = useRef<number | null>(null);
   const firedEventsRef = useRef<Set<string>>(new Set());
+  const pipeline1StartTimeRef = useRef<number | null>(null);
+  const pipeline2StartTimeRef = useRef<number | null>(null);
+  const pipeline3StartTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
     return () => {
@@ -145,79 +148,103 @@ export default function CommandConsole() {
   useEffect(() => {
     if (!orchestrationState) return;
 
-    const elapsedMs = submitTimeRef.current ? Date.now() - submitTimeRef.current : null;
+    const now = Date.now();
 
-    // Brand extraction started (Pipeline 1)
+    // brand_extraction_start (Pipeline 1 in_progress)
     if (
       orchestrationState.pipeline1.status === "in_progress" &&
-      !firedEventsRef.current.has("brand_extraction_started")
+      !firedEventsRef.current.has("brand_extraction_start")
     ) {
-      firedEventsRef.current.add("brand_extraction_started");
-      logEvent("brand_extraction_started", { domain });
+      firedEventsRef.current.add("brand_extraction_start");
+      pipeline1StartTimeRef.current = now;
+      logEvent("brand_extraction_start", {
+        domain,
+        pipeline_stage: "brand_extraction",
+      });
     }
 
-    // Brand extraction complete (Pipeline 1)
+    // brand_extraction_complete (Pipeline 1 done/failed)
     if (
       (orchestrationState.pipeline1.status === "completed" ||
         orchestrationState.pipeline1.status === "failed") &&
       !firedEventsRef.current.has("brand_extraction_complete")
     ) {
       firedEventsRef.current.add("brand_extraction_complete");
+      const duration_ms =
+        pipeline1StartTimeRef.current != null ? now - pipeline1StartTimeRef.current : undefined;
+      const isFailed = orchestrationState.pipeline1.status === "failed";
       logEvent("brand_extraction_complete", {
         domain,
-        status: orchestrationState.pipeline1.status,
+        pipeline_stage: "brand_extraction",
+        ...(duration_ms !== undefined && { duration_ms }),
         fidelity_score: orchestrationState.brandData?.confidence ?? null,
-        time_ms: elapsedMs,
+        ...(isFailed && { error_message: orchestrationState.pipeline1.message }),
       });
     }
 
-    // Mockup generation started (Pipeline 2)
+    // mockup_generation_start (Pipeline 2 in_progress)
     if (
       orchestrationState.pipeline2.status === "in_progress" &&
-      !firedEventsRef.current.has("mockup_generation_started")
+      !firedEventsRef.current.has("mockup_generation_start")
     ) {
-      firedEventsRef.current.add("mockup_generation_started");
-      logEvent("mockup_generation_started", { domain });
+      firedEventsRef.current.add("mockup_generation_start");
+      pipeline2StartTimeRef.current = now;
+      logEvent("mockup_generation_start", {
+        domain,
+        pipeline_stage: "mockup_generation",
+      });
     }
 
-    // Mockup generation complete (Pipeline 2)
+    // mockup_generation_complete (Pipeline 2 done/failed)
     if (
       (orchestrationState.pipeline2.status === "completed" ||
         orchestrationState.pipeline2.status === "failed") &&
       !firedEventsRef.current.has("mockup_generation_complete")
     ) {
       firedEventsRef.current.add("mockup_generation_complete");
+      const duration_ms =
+        pipeline2StartTimeRef.current != null ? now - pipeline2StartTimeRef.current : undefined;
+      const isFailed = orchestrationState.pipeline2.status === "failed";
       const productMatch = orchestrationState.pipeline2.message.match(/(\d+) products/);
       logEvent("mockup_generation_complete", {
         domain,
-        status: orchestrationState.pipeline2.status,
+        pipeline_stage: "mockup_generation",
+        ...(duration_ms !== undefined && { duration_ms }),
         product_count: productMatch ? parseInt(productMatch[1], 10) : null,
-        time_ms: elapsedMs,
+        ...(isFailed && { error_message: orchestrationState.pipeline2.message }),
       });
     }
 
-    // Storefront generation started (Pipeline 3)
+    // storefront_generation_start (Pipeline 3 in_progress)
     if (
       orchestrationState.pipeline3.status === "in_progress" &&
-      !firedEventsRef.current.has("storefront_generation_started")
+      !firedEventsRef.current.has("storefront_generation_start")
     ) {
-      firedEventsRef.current.add("storefront_generation_started");
-      logEvent("storefront_generation_started", { domain });
+      firedEventsRef.current.add("storefront_generation_start");
+      pipeline3StartTimeRef.current = now;
+      logEvent("storefront_generation_start", {
+        domain,
+        pipeline_stage: "storefront_generation",
+      });
     }
 
-    // Storefront generation complete (Pipeline 3)
+    // storefront_generation_complete (Pipeline 3 done/failed)
     if (
       (orchestrationState.pipeline3.status === "completed" ||
         orchestrationState.pipeline3.status === "failed") &&
       !firedEventsRef.current.has("storefront_generation_complete")
     ) {
       firedEventsRef.current.add("storefront_generation_complete");
+      const duration_ms =
+        pipeline3StartTimeRef.current != null ? now - pipeline3StartTimeRef.current : undefined;
+      const isFailed = orchestrationState.pipeline3.status === "failed";
       logEvent("storefront_generation_complete", {
         domain,
-        status: orchestrationState.pipeline3.status,
+        pipeline_stage: "storefront_generation",
+        ...(duration_ms !== undefined && { duration_ms }),
         storefront_url: orchestrationState.storefront?.url ?? null,
         product_count: orchestrationState.storefront?.productCount ?? null,
-        time_ms: elapsedMs,
+        ...(isFailed && { error_message: orchestrationState.pipeline3.message }),
       });
     }
   }, [orchestrationState, domain]);
@@ -300,7 +327,10 @@ export default function CommandConsole() {
     setCompletedAt(null);
     submitTimeRef.current = Date.now();
     firedEventsRef.current = new Set();
-    logEvent("domain_submitted", { domain: cleanDomain });
+    pipeline1StartTimeRef.current = null;
+    pipeline2StartTimeRef.current = null;
+    pipeline3StartTimeRef.current = null;
+    logEvent("domain_submission", { domain: cleanDomain });
 
     try {
       const res = await fetch("/api/orchestrate", {
