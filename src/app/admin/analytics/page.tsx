@@ -15,20 +15,24 @@ export const metadata: Metadata = {
 };
 
 const FUNNEL_STAGES = [
-  "domain_submission",
-  "brand_extraction_complete",
-  "mockup_generation_complete",
-  "storefront_generation_complete",
+  "domain_submitted",
+  "brand_extraction_started",
+  "brand_extraction_completed",
+  "mockup_generation_completed",
+  "storefront_generation_completed",
+  "storefront_published",
   "product_view",
 ] as const;
 
 type FunnelStageName = (typeof FUNNEL_STAGES)[number];
 
 const STAGE_META: Record<FunnelStageName, { label: string; color: string }> = {
-  domain_submission: { label: "Domain Submitted", color: "#a855f7" },
-  brand_extraction_complete: { label: "Brand Extracted", color: "#3b82f6" },
-  mockup_generation_complete: { label: "Mockup Generated", color: "#8b5cf6" },
-  storefront_generation_complete: { label: "Storefront Ready", color: "#10b981" },
+  domain_submitted: { label: "Domain Submitted", color: "#a855f7" },
+  brand_extraction_started: { label: "Extraction Started", color: "#6366f1" },
+  brand_extraction_completed: { label: "Brand Extracted", color: "#3b82f6" },
+  mockup_generation_completed: { label: "Mockups Generated", color: "#8b5cf6" },
+  storefront_generation_completed: { label: "Storefront Ready", color: "#06b6d4" },
+  storefront_published: { label: "Storefront Published", color: "#10b981" },
   product_view: { label: "Product Viewed", color: "#f59e0b" },
 };
 
@@ -44,6 +48,7 @@ interface AnalyticsData {
   summaryCards: EventTypeCount[];
   eventCountRows: EventTypeRow[];
   endToEndConversion: number;
+  avgPipelineDuration: number | null;
   isLive: boolean;
 }
 
@@ -56,6 +61,13 @@ function buildDayKeys(days: number): string[] {
     keys.push(d.toISOString().slice(0, 10));
   }
   return keys;
+}
+
+function formatDuration(seconds: number): string {
+  if (seconds < 60) return `${seconds}s`;
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return s > 0 ? `${m}m ${s}s` : `${m}m`;
 }
 
 type SeedEvent = {
@@ -75,37 +87,40 @@ function buildAutoSeedEvents(): SeedEvent[] {
 
   return [
     // ramp.com — full pipeline (~72h ago)
-    { event_name: "domain_submission", event_type: "domain_submission", domain: "ramp.com", session_id: "sess-v3-01", pipeline_stage: "intake", created_at: t(72), metadata: { source: "landing_page", ab_variant: "A" } },
-    { event_name: "brand_extraction_start", event_type: "brand_extraction_start", domain: "ramp.com", session_id: "sess-v3-01", pipeline_stage: "brand_extraction", created_at: t(72, 18), metadata: { trigger: "auto" } },
-    { event_name: "brand_extraction_complete", event_type: "brand_extraction_complete", domain: "ramp.com", session_id: "sess-v3-01", pipeline_stage: "brand_extraction", created_at: t(72, 72), metadata: { fidelity_score: 92.4, colors_found: 3, logo_found: true, duration_ms: 54000 } },
-    { event_name: "mockup_generation_start", event_type: "mockup_generation_start", domain: "ramp.com", session_id: "sess-v3-01", pipeline_stage: "mockup_generation", created_at: t(72, 74), metadata: { trigger: "auto" } },
-    { event_name: "mockup_generation_complete", event_type: "mockup_generation_complete", domain: "ramp.com", session_id: "sess-v3-01", pipeline_stage: "mockup_generation", created_at: t(72, 138), metadata: { product_count: 6, duration_ms: 64000 } },
-    { event_name: "storefront_generation_start", event_type: "storefront_generation_start", domain: "ramp.com", session_id: "sess-v3-01", pipeline_stage: "storefront_generation", created_at: t(72, 140), metadata: { trigger: "auto" } },
-    { event_name: "storefront_generation_complete", event_type: "storefront_generation_complete", domain: "ramp.com", session_id: "sess-v3-01", pipeline_stage: "storefront_generation", created_at: t(72, 194), metadata: { storefront_url: "https://ramp-merch.myshopify.com", product_count: 6, duration_ms: 54000 } },
+    { event_name: "domain_submitted", event_type: "domain_submitted", domain: "ramp.com", session_id: "sess-v3-01", pipeline_stage: "intake", created_at: t(72), metadata: { source: "landing_page", ab_variant: "A" } },
+    { event_name: "brand_extraction_started", event_type: "brand_extraction_started", domain: "ramp.com", session_id: "sess-v3-01", pipeline_stage: "brand_extraction", created_at: t(72, 18), metadata: { trigger: "auto" } },
+    { event_name: "brand_extraction_completed", event_type: "brand_extraction_completed", domain: "ramp.com", session_id: "sess-v3-01", pipeline_stage: "brand_extraction", created_at: t(72, 72), metadata: { fidelity_score: 92.4, colors_found: 3, logo_found: true, duration_ms: 54000 } },
+    { event_name: "mockup_generation_started", event_type: "mockup_generation_started", domain: "ramp.com", session_id: "sess-v3-01", pipeline_stage: "mockup_generation", created_at: t(72, 74), metadata: { trigger: "auto" } },
+    { event_name: "mockup_generation_completed", event_type: "mockup_generation_completed", domain: "ramp.com", session_id: "sess-v3-01", pipeline_stage: "mockup_generation", created_at: t(72, 138), metadata: { product_count: 6, duration_ms: 64000 } },
+    { event_name: "storefront_generation_started", event_type: "storefront_generation_started", domain: "ramp.com", session_id: "sess-v3-01", pipeline_stage: "storefront_generation", created_at: t(72, 140), metadata: { trigger: "auto" } },
+    { event_name: "storefront_generation_completed", event_type: "storefront_generation_completed", domain: "ramp.com", session_id: "sess-v3-01", pipeline_stage: "storefront_generation", created_at: t(72, 194), metadata: { storefront_url: "https://ramp-merch.myshopify.com", product_count: 6, duration_ms: 54000 } },
+    { event_name: "storefront_published", event_type: "storefront_published", domain: "ramp.com", session_id: "sess-v3-01", pipeline_stage: "storefront_generation", created_at: t(72, 220), metadata: { storefront_url: "https://ramp-merch.myshopify.com" } },
 
     // notion.so — full pipeline (~48h ago)
-    { event_name: "domain_submission", event_type: "domain_submission", domain: "notion.so", session_id: "sess-v3-02", pipeline_stage: "intake", created_at: t(48), metadata: { source: "referral", ab_variant: "B" } },
-    { event_name: "brand_extraction_start", event_type: "brand_extraction_start", domain: "notion.so", session_id: "sess-v3-02", pipeline_stage: "brand_extraction", created_at: t(48, 22), metadata: { trigger: "auto" } },
-    { event_name: "brand_extraction_complete", event_type: "brand_extraction_complete", domain: "notion.so", session_id: "sess-v3-02", pipeline_stage: "brand_extraction", created_at: t(48, 88), metadata: { fidelity_score: 95.1, colors_found: 5, logo_found: true, duration_ms: 66000 } },
-    { event_name: "mockup_generation_start", event_type: "mockup_generation_start", domain: "notion.so", session_id: "sess-v3-02", pipeline_stage: "mockup_generation", created_at: t(48, 90), metadata: { trigger: "auto" } },
-    { event_name: "mockup_generation_complete", event_type: "mockup_generation_complete", domain: "notion.so", session_id: "sess-v3-02", pipeline_stage: "mockup_generation", created_at: t(48, 158), metadata: { product_count: 8, duration_ms: 68000 } },
-    { event_name: "storefront_generation_start", event_type: "storefront_generation_start", domain: "notion.so", session_id: "sess-v3-02", pipeline_stage: "storefront_generation", created_at: t(48, 160), metadata: { trigger: "auto" } },
-    { event_name: "storefront_generation_complete", event_type: "storefront_generation_complete", domain: "notion.so", session_id: "sess-v3-02", pipeline_stage: "storefront_generation", created_at: t(48, 211), metadata: { storefront_url: "https://notion-merch.myshopify.com", product_count: 8, duration_ms: 51000 } },
+    { event_name: "domain_submitted", event_type: "domain_submitted", domain: "notion.so", session_id: "sess-v3-02", pipeline_stage: "intake", created_at: t(48), metadata: { source: "referral", ab_variant: "B" } },
+    { event_name: "brand_extraction_started", event_type: "brand_extraction_started", domain: "notion.so", session_id: "sess-v3-02", pipeline_stage: "brand_extraction", created_at: t(48, 22), metadata: { trigger: "auto" } },
+    { event_name: "brand_extraction_completed", event_type: "brand_extraction_completed", domain: "notion.so", session_id: "sess-v3-02", pipeline_stage: "brand_extraction", created_at: t(48, 88), metadata: { fidelity_score: 95.1, colors_found: 5, logo_found: true, duration_ms: 66000 } },
+    { event_name: "mockup_generation_started", event_type: "mockup_generation_started", domain: "notion.so", session_id: "sess-v3-02", pipeline_stage: "mockup_generation", created_at: t(48, 90), metadata: { trigger: "auto" } },
+    { event_name: "mockup_generation_completed", event_type: "mockup_generation_completed", domain: "notion.so", session_id: "sess-v3-02", pipeline_stage: "mockup_generation", created_at: t(48, 158), metadata: { product_count: 8, duration_ms: 68000 } },
+    { event_name: "storefront_generation_started", event_type: "storefront_generation_started", domain: "notion.so", session_id: "sess-v3-02", pipeline_stage: "storefront_generation", created_at: t(48, 160), metadata: { trigger: "auto" } },
+    { event_name: "storefront_generation_completed", event_type: "storefront_generation_completed", domain: "notion.so", session_id: "sess-v3-02", pipeline_stage: "storefront_generation", created_at: t(48, 211), metadata: { storefront_url: "https://notion-merch.myshopify.com", product_count: 8, duration_ms: 51000 } },
+    { event_name: "storefront_published", event_type: "storefront_published", domain: "notion.so", session_id: "sess-v3-02", pipeline_stage: "storefront_generation", created_at: t(48, 240), metadata: { storefront_url: "https://notion-merch.myshopify.com" } },
 
     // stripe.com — full pipeline (~24h ago)
-    { event_name: "domain_submission", event_type: "domain_submission", domain: "stripe.com", session_id: "sess-v3-03", pipeline_stage: "intake", created_at: t(24), metadata: { source: "direct", ab_variant: "A" } },
-    { event_name: "brand_extraction_start", event_type: "brand_extraction_start", domain: "stripe.com", session_id: "sess-v3-03", pipeline_stage: "brand_extraction", created_at: t(24, 15), metadata: { trigger: "auto" } },
-    { event_name: "brand_extraction_complete", event_type: "brand_extraction_complete", domain: "stripe.com", session_id: "sess-v3-03", pipeline_stage: "brand_extraction", created_at: t(24, 65), metadata: { fidelity_score: 97.3, colors_found: 4, logo_found: true, duration_ms: 50000 } },
-    { event_name: "mockup_generation_start", event_type: "mockup_generation_start", domain: "stripe.com", session_id: "sess-v3-03", pipeline_stage: "mockup_generation", created_at: t(24, 67), metadata: { trigger: "auto" } },
-    { event_name: "mockup_generation_complete", event_type: "mockup_generation_complete", domain: "stripe.com", session_id: "sess-v3-03", pipeline_stage: "mockup_generation", created_at: t(24, 127), metadata: { product_count: 7, duration_ms: 60000 } },
-    { event_name: "storefront_generation_start", event_type: "storefront_generation_start", domain: "stripe.com", session_id: "sess-v3-03", pipeline_stage: "storefront_generation", created_at: t(24, 129), metadata: { trigger: "auto" } },
-    { event_name: "storefront_generation_complete", event_type: "storefront_generation_complete", domain: "stripe.com", session_id: "sess-v3-03", pipeline_stage: "storefront_generation", created_at: t(24, 183), metadata: { storefront_url: "https://stripe-merch.myshopify.com", product_count: 7, duration_ms: 54000 } },
+    { event_name: "domain_submitted", event_type: "domain_submitted", domain: "stripe.com", session_id: "sess-v3-03", pipeline_stage: "intake", created_at: t(24), metadata: { source: "direct", ab_variant: "A" } },
+    { event_name: "brand_extraction_started", event_type: "brand_extraction_started", domain: "stripe.com", session_id: "sess-v3-03", pipeline_stage: "brand_extraction", created_at: t(24, 15), metadata: { trigger: "auto" } },
+    { event_name: "brand_extraction_completed", event_type: "brand_extraction_completed", domain: "stripe.com", session_id: "sess-v3-03", pipeline_stage: "brand_extraction", created_at: t(24, 65), metadata: { fidelity_score: 97.3, colors_found: 4, logo_found: true, duration_ms: 50000 } },
+    { event_name: "mockup_generation_started", event_type: "mockup_generation_started", domain: "stripe.com", session_id: "sess-v3-03", pipeline_stage: "mockup_generation", created_at: t(24, 67), metadata: { trigger: "auto" } },
+    { event_name: "mockup_generation_completed", event_type: "mockup_generation_completed", domain: "stripe.com", session_id: "sess-v3-03", pipeline_stage: "mockup_generation", created_at: t(24, 127), metadata: { product_count: 7, duration_ms: 60000 } },
+    { event_name: "storefront_generation_started", event_type: "storefront_generation_started", domain: "stripe.com", session_id: "sess-v3-03", pipeline_stage: "storefront_generation", created_at: t(24, 129), metadata: { trigger: "auto" } },
+    { event_name: "storefront_generation_completed", event_type: "storefront_generation_completed", domain: "stripe.com", session_id: "sess-v3-03", pipeline_stage: "storefront_generation", created_at: t(24, 183), metadata: { storefront_url: "https://stripe-merch.myshopify.com", product_count: 7, duration_ms: 54000 } },
+    { event_name: "storefront_published", event_type: "storefront_published", domain: "stripe.com", session_id: "sess-v3-03", pipeline_stage: "storefront_generation", created_at: t(24, 200), metadata: { storefront_url: "https://stripe-merch.myshopify.com" } },
 
-    // figma.com — partial: dropped after mockup generation (~8h ago)
-    { event_name: "domain_submission", event_type: "domain_submission", domain: "figma.com", session_id: "sess-v3-04", pipeline_stage: "intake", created_at: t(8), metadata: { source: "email_campaign", ab_variant: "C" } },
-    { event_name: "brand_extraction_start", event_type: "brand_extraction_start", domain: "figma.com", session_id: "sess-v3-04", pipeline_stage: "brand_extraction", created_at: t(8, 26), metadata: { trigger: "auto" } },
-    { event_name: "brand_extraction_complete", event_type: "brand_extraction_complete", domain: "figma.com", session_id: "sess-v3-04", pipeline_stage: "brand_extraction", created_at: t(8, 94), metadata: { fidelity_score: 81.6, colors_found: 2, logo_found: true, duration_ms: 68000 } },
-    { event_name: "mockup_generation_start", event_type: "mockup_generation_start", domain: "figma.com", session_id: "sess-v3-04", pipeline_stage: "mockup_generation", created_at: t(8, 96), metadata: { trigger: "auto" } },
+    // figma.com — partial: dropped after mockup_generation_started (~8h ago)
+    { event_name: "domain_submitted", event_type: "domain_submitted", domain: "figma.com", session_id: "sess-v3-04", pipeline_stage: "intake", created_at: t(8), metadata: { source: "email_campaign", ab_variant: "C" } },
+    { event_name: "brand_extraction_started", event_type: "brand_extraction_started", domain: "figma.com", session_id: "sess-v3-04", pipeline_stage: "brand_extraction", created_at: t(8, 26), metadata: { trigger: "auto" } },
+    { event_name: "brand_extraction_completed", event_type: "brand_extraction_completed", domain: "figma.com", session_id: "sess-v3-04", pipeline_stage: "brand_extraction", created_at: t(8, 94), metadata: { fidelity_score: 81.6, colors_found: 2, logo_found: true, duration_ms: 68000 } },
+    { event_name: "mockup_generation_started", event_type: "mockup_generation_started", domain: "figma.com", session_id: "sess-v3-04", pipeline_stage: "mockup_generation", created_at: t(8, 96), metadata: { trigger: "auto" } },
 
     // ramp.com storefront visits — product_view + cart_add (~2h ago)
     { event_name: "storefront_view", event_type: "storefront_view", domain: "ramp.com", session_id: "sess-v3-store", created_at: t(2), metadata: { store_id: "ramp-001", status: "draft" } },
@@ -121,7 +136,6 @@ function buildAutoSeedEvents(): SeedEvent[] {
 async function autoSeedIfEmpty(client: any, sinceISO: string): Promise<void> {
   const SEED_SESSION_IDS = ["sess-v3-01", "sess-v3-02", "sess-v3-03", "sess-v3-04", "sess-v3-store"];
 
-  // Remove any stale v3 seed rows so created_at timestamps are fresh.
   await client.from("analytics_events").delete().in("session_id", SEED_SESSION_IDS);
 
   const events = buildAutoSeedEvents();
@@ -131,6 +145,13 @@ async function autoSeedIfEmpty(client: any, sinceISO: string): Promise<void> {
   }
   void sinceISO;
 }
+
+type AnalyticsEvent = {
+  event_name?: string | null;
+  customer_id?: string | null;
+  created_at?: string | null;
+  session_id?: string | null;
+};
 
 async function fetchAnalytics(customerId?: string): Promise<AnalyticsData> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -145,13 +166,13 @@ async function fetchAnalytics(customerId?: string): Promise<AnalyticsData> {
     const client = createClient(supabaseUrl, supabaseKey);
 
     const since = new Date();
-    since.setUTCDate(since.getUTCDate() - 7);
+    since.setUTCDate(since.getUTCDate() - 30);
     since.setUTCHours(0, 0, 0, 0);
     const sinceISO = since.toISOString();
 
     let query = client
       .from("analytics_events")
-      .select("event_name, customer_id, created_at")
+      .select("event_name, customer_id, created_at, session_id")
       .gte("created_at", sinceISO);
 
     if (customerId) {
@@ -165,17 +186,14 @@ async function fetchAnalytics(customerId?: string): Promise<AnalyticsData> {
       return buildFallback();
     }
 
-    // Auto-seed when no funnel data exists (checks for domain_submission events,
-    // not total count — prevents stale v2-named seeds from blocking the seed).
     const hasFunnelData = initialEvents?.some(
-      (e) => e.event_name === "domain_submission"
+      (e: AnalyticsEvent) => e.event_name === "domain_submitted"
     );
     if (!customerId && !hasFunnelData) {
       await autoSeedIfEmpty(client, sinceISO);
-      // Re-query to get the freshly seeded data.
       const { data: seededEvents, error: seededError } = await client
         .from("analytics_events")
-        .select("event_name, customer_id, created_at")
+        .select("event_name, customer_id, created_at, session_id")
         .gte("created_at", sinceISO);
       if (seededError || !seededEvents) {
         return buildFallback();
@@ -194,15 +212,14 @@ async function fetchAnalytics(customerId?: string): Promise<AnalyticsData> {
   }
 }
 
-function buildAnalyticsResult(
-  events: { event_name?: string | null; customer_id?: string | null; created_at?: string | null }[],
-  isLive: boolean
-): AnalyticsData {
+function buildAnalyticsResult(events: AnalyticsEvent[], isLive: boolean): AnalyticsData {
   const stageCounts: Record<FunnelStageName, number> = {
-    domain_submission: 0,
-    brand_extraction_complete: 0,
-    mockup_generation_complete: 0,
-    storefront_generation_complete: 0,
+    domain_submitted: 0,
+    brand_extraction_started: 0,
+    brand_extraction_completed: 0,
+    mockup_generation_completed: 0,
+    storefront_generation_completed: 0,
+    storefront_published: 0,
     product_view: 0,
   };
 
@@ -212,7 +229,7 @@ function buildAnalyticsResult(
     }
   });
 
-  const topCount = stageCounts.domain_submission;
+  const topCount = stageCounts.domain_submitted;
 
   const funnelEntries: FunnelEntry[] = FUNNEL_STAGES.map((stage, i) => {
     const prevStage = i > 0 ? FUNNEL_STAGES[i - 1] : null;
@@ -231,7 +248,7 @@ function buildAnalyticsResult(
     };
   });
 
-  const dayKeys = buildDayKeys(7);
+  const dayKeys = buildDayKeys(30);
   const timeSeriesData: HourlyDataPoint[] = dayKeys.map((key) => {
     const dayEvents = events.filter(
       (e) => e.created_at?.slice(0, 10) === key
@@ -261,8 +278,34 @@ function buildAnalyticsResult(
 
   const endToEndConversion =
     topCount > 0
-      ? Math.round((stageCounts.storefront_generation_complete / topCount) * 100)
+      ? Math.round((stageCounts.storefront_published / topCount) * 100)
       : 0;
+
+  // Compute average pipeline duration: domain_submitted → storefront_published per session
+  const sessionTimings: Record<string, { submitted?: string; published?: string }> = {};
+  events.forEach((e) => {
+    if (!e.session_id || !e.created_at) return;
+    if (!sessionTimings[e.session_id]) sessionTimings[e.session_id] = {};
+    if (e.event_name === "domain_submitted" && !sessionTimings[e.session_id].submitted) {
+      sessionTimings[e.session_id].submitted = e.created_at;
+    }
+    if (e.event_name === "storefront_published" && !sessionTimings[e.session_id].published) {
+      sessionTimings[e.session_id].published = e.created_at;
+    }
+  });
+
+  const durations: number[] = [];
+  Object.values(sessionTimings).forEach(({ submitted, published }) => {
+    if (submitted && published) {
+      const diffMs = new Date(published).getTime() - new Date(submitted).getTime();
+      if (diffMs > 0) durations.push(diffMs / 1000);
+    }
+  });
+
+  const avgPipelineDuration =
+    durations.length > 0
+      ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
+      : null;
 
   return {
     funnelEntries,
@@ -270,6 +313,7 @@ function buildAnalyticsResult(
     summaryCards,
     eventCountRows,
     endToEndConversion,
+    avgPipelineDuration,
     isLive,
   };
 }
@@ -283,7 +327,7 @@ function buildFallback(): AnalyticsData {
     conversionRate: i === 0 ? 100 : 0,
   }));
 
-  const dayKeys = buildDayKeys(7);
+  const dayKeys = buildDayKeys(30);
   const timeSeriesData: HourlyDataPoint[] = dayKeys.map((key) => {
     const row: HourlyDataPoint = { hour: key.slice(5) };
     FUNNEL_STAGES.forEach((stage) => {
@@ -305,6 +349,7 @@ function buildFallback(): AnalyticsData {
     summaryCards,
     eventCountRows: [],
     endToEndConversion: 0,
+    avgPipelineDuration: null,
     isLive: false,
   };
 }
@@ -323,6 +368,7 @@ export default async function AdminAnalytics({
     summaryCards,
     eventCountRows,
     endToEndConversion,
+    avgPipelineDuration,
     isLive,
   } = await fetchAnalytics(customerId);
 
@@ -333,7 +379,7 @@ export default async function AdminAnalytics({
           <div>
             <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
             <p className="text-text-muted mt-1 text-sm">
-              Pipeline conversion funnel · 7-day event volume
+              Pipeline conversion funnel · 30-day event volume
             </p>
           </div>
           <span
@@ -376,27 +422,58 @@ export default async function AdminAnalytics({
           </form>
         </div>
 
+        {/* Pipeline KPI metrics */}
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div
+            className="bg-surface rounded-xl p-5 border"
+            style={{ borderColor: "#10b98140" }}
+          >
+            <p className="text-xs text-text-muted mb-1">Funnel Completion Rate</p>
+            <p className="text-3xl font-bold" style={{ color: "#10b981" }}>
+              {endToEndConversion}%
+            </p>
+            <p className="text-xs text-text-muted mt-2">
+              domain_submitted → storefront_published
+            </p>
+          </div>
+          <div
+            className="bg-surface rounded-xl p-5 border"
+            style={{ borderColor: "#a855f740" }}
+          >
+            <p className="text-xs text-text-muted mb-1">Avg Pipeline Duration</p>
+            <p className="text-3xl font-bold text-accent">
+              {avgPipelineDuration != null
+                ? formatDuration(avgPipelineDuration)
+                : "—"}
+            </p>
+            <p className="text-xs text-text-muted mt-2">
+              domain_submitted → storefront_published
+              {avgPipelineDuration != null && (
+                <span className="ml-1 opacity-60">({avgPipelineDuration}s)</span>
+              )}
+            </p>
+          </div>
+        </div>
+
         <div className="mb-8">
-          <EventSummaryCards
-            events={summaryCards}
-            endToEndRate={endToEndConversion}
-          />
+          <EventSummaryCards events={summaryCards} />
         </div>
 
         <div className="bg-surface border border-border rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-bold mb-6">Conversion Funnel</h2>
+          <h2 className="text-lg font-bold mb-1">Conversion Funnel</h2>
+          <p className="text-text-muted text-xs mb-6">7 stages with drop-off counts</p>
           <FunnelChart data={funnelEntries} />
         </div>
 
         <div className="bg-surface border border-border rounded-xl p-6 mb-6">
           <h2 className="text-lg font-bold mb-1">Daily Event Volume</h2>
-          <p className="text-text-muted text-xs mb-6">Last 7 days</p>
+          <p className="text-text-muted text-xs mb-6">Last 30 days · event count by type</p>
           <TimeSeriesChart data={timeSeriesData} series={DAILY_SERIES} />
         </div>
 
         <div className="bg-surface border border-border rounded-xl p-6">
           <h2 className="text-lg font-bold mb-1">Event Count by Type</h2>
-          <p className="text-text-muted text-xs mb-6">Last 7 days · all event types</p>
+          <p className="text-text-muted text-xs mb-6">Last 30 days · all event types</p>
           <EventTypeTable rows={eventCountRows} />
         </div>
       </div>
