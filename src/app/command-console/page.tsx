@@ -422,7 +422,14 @@ export default function CommandConsole() {
                     </p>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+                <a
+                  href="/store/demo"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition text-sm mb-5"
+                >
+                  <PlayCircle className="w-4 h-4" />
+                  Explore Demo Storefront &amp; Funnel Test
+                </a>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="bg-bg rounded-lg p-3 flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                     <span className="text-xs text-text-muted">8 funnel events tracked</span>
@@ -436,13 +443,6 @@ export default function CommandConsole() {
                     <span className="text-xs text-text-muted">Instant automated quote</span>
                   </div>
                 </div>
-                <a
-                  href="/store/demo"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition text-sm"
-                >
-                  <PlayCircle className="w-4 h-4" />
-                  View Live Demo Storefront
-                </a>
               </div>
 
               <div className="relative flex items-center gap-4">
