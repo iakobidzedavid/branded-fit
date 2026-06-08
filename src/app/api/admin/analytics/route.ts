@@ -2,13 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 
 const FUNNEL_STAGES = [
   "domain_submitted",
-  "brand_extraction_complete",
-  "mockup_generation_complete",
-  "storefront_generation_complete",
-  "user_clicks_publish",
+  "brand_extraction_completed",
+  "storefront_generated",
+  "storefront_published",
 ] as const;
 
 type FunnelStageName = (typeof FUNNEL_STAGES)[number];
+
+function buildHourKeys(windowHours: number): string[] {
+  const keys: string[] = [];
+  const now = new Date();
+  for (let i = windowHours - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setUTCHours(d.getUTCHours() - i, 0, 0, 0);
+    keys.push(d.toISOString().slice(0, 13));
+  }
+  return keys;
+}
 
 function buildEmptyResponse() {
   const funnel = FUNNEL_STAGES.map((stage, i) => ({
@@ -17,15 +27,11 @@ function buildEmptyResponse() {
     conversionRate: i === 0 ? 100 : 0,
   }));
 
-  const days: string[] = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    days.push(d.toISOString().split("T")[0]);
-  }
-
-  const timeSeries = days.map((date) => {
-    const row: Record<string, unknown> = { date };
+  const hourKeys = buildHourKeys(48);
+  const timeSeries = hourKeys.map((key) => {
+    const row: Record<string, unknown> = {
+      hour: key.slice(5).replace("T", " ") + ":00",
+    };
     FUNNEL_STAGES.forEach((stage) => {
       row[stage] = 0;
     });
@@ -72,10 +78,9 @@ export async function GET(request: NextRequest) {
 
     const stageCounts: Record<FunnelStageName, number> = {
       domain_submitted: 0,
-      brand_extraction_complete: 0,
-      mockup_generation_complete: 0,
-      storefront_generation_complete: 0,
-      user_clicks_publish: 0,
+      brand_extraction_completed: 0,
+      storefront_generated: 0,
+      storefront_published: 0,
     };
 
     (events ?? []).forEach((e) => {
@@ -101,25 +106,19 @@ export async function GET(request: NextRequest) {
 
     const endToEndConversion =
       topCount > 0
-        ? Math.round(
-            (stageCounts.storefront_generation_complete / topCount) * 100
-          )
+        ? Math.round((stageCounts.storefront_published / topCount) * 100)
         : 0;
 
-    const days: string[] = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      days.push(d.toISOString().split("T")[0]);
-    }
-
-    const timeSeries = days.map((date) => {
-      const dayEvents = (events ?? []).filter((e) =>
-        e.created_at?.startsWith(date)
+    const hourKeys = buildHourKeys(48);
+    const timeSeries = hourKeys.map((key) => {
+      const hourEvents = (events ?? []).filter(
+        (e) => e.created_at?.slice(0, 13) === key
       );
-      const row: Record<string, unknown> = { date };
+      const row: Record<string, unknown> = {
+        hour: key.slice(5).replace("T", " ") + ":00",
+      };
       FUNNEL_STAGES.forEach((stage) => {
-        row[stage] = dayEvents.filter((e) => e.event_name === stage).length;
+        row[stage] = hourEvents.filter((e) => e.event_name === stage).length;
       });
       return row;
     });

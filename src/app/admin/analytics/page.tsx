@@ -7,85 +7,171 @@ import EventSummaryCards, {
   EventTypeCount,
 } from "@/components/EventSummaryCards";
 
-const FUNNEL_DATA: FunnelEntry[] = [
-  {
-    stage: "domain_submitted",
-    label: "Domain Submitted",
-    count: 28,
-    conversionRate: 100,
-    color: "#a855f7",
-  },
-  {
-    stage: "brand_extraction_complete",
-    label: "Brand Extracted",
-    count: 21,
-    conversionRate: 75,
-    color: "#3b82f6",
-  },
-  {
-    stage: "mockup_generation_complete",
-    label: "Mockup Generated",
-    count: 16,
-    conversionRate: 76,
-    color: "#10b981",
-  },
-  {
-    stage: "storefront_generation_complete",
-    label: "Storefront Created",
-    count: 12,
-    conversionRate: 75,
-    color: "#f59e0b",
-  },
-  {
-    stage: "user_clicks_publish",
-    label: "Store Viewed",
-    count: 8,
-    conversionRate: 67,
-    color: "#ec4899",
-  },
-];
+const FUNNEL_STAGES = [
+  "domain_submitted",
+  "brand_extraction_completed",
+  "storefront_generated",
+  "storefront_published",
+] as const;
 
-const HOURLY_DATA: HourlyDataPoint[] = [
-  { hour: "08:00", domain_submitted: 1, brand_extraction_complete: 0, mockup_generation_complete: 0, storefront_generation_complete: 0, user_clicks_publish: 0 },
-  { hour: "09:00", domain_submitted: 3, brand_extraction_complete: 1, mockup_generation_complete: 0, storefront_generation_complete: 0, user_clicks_publish: 0 },
-  { hour: "10:00", domain_submitted: 5, brand_extraction_complete: 3, mockup_generation_complete: 2, storefront_generation_complete: 0, user_clicks_publish: 0 },
-  { hour: "11:00", domain_submitted: 4, brand_extraction_complete: 4, mockup_generation_complete: 2, storefront_generation_complete: 1, user_clicks_publish: 0 },
-  { hour: "12:00", domain_submitted: 2, brand_extraction_complete: 2, mockup_generation_complete: 3, storefront_generation_complete: 2, user_clicks_publish: 1 },
-  { hour: "13:00", domain_submitted: 1, brand_extraction_complete: 2, mockup_generation_complete: 1, storefront_generation_complete: 2, user_clicks_publish: 1 },
-  { hour: "14:00", domain_submitted: 4, brand_extraction_complete: 1, mockup_generation_complete: 2, storefront_generation_complete: 1, user_clicks_publish: 1 },
-  { hour: "15:00", domain_submitted: 5, brand_extraction_complete: 3, mockup_generation_complete: 1, storefront_generation_complete: 1, user_clicks_publish: 2 },
-  { hour: "16:00", domain_submitted: 3, brand_extraction_complete: 3, mockup_generation_complete: 2, storefront_generation_complete: 2, user_clicks_publish: 1 },
-  { hour: "17:00", domain_submitted: 0, brand_extraction_complete: 2, mockup_generation_complete: 2, storefront_generation_complete: 1, user_clicks_publish: 1 },
-  { hour: "18:00", domain_submitted: 0, brand_extraction_complete: 0, mockup_generation_complete: 1, storefront_generation_complete: 1, user_clicks_publish: 1 },
-  { hour: "19:00", domain_submitted: 0, brand_extraction_complete: 0, mockup_generation_complete: 0, storefront_generation_complete: 1, user_clicks_publish: 0 },
-];
+type FunnelStageName = (typeof FUNNEL_STAGES)[number];
 
-const HOURLY_SERIES: EventSeries[] = [
-  { key: "domain_submitted", label: "Domain Submitted", color: "#a855f7" },
-  { key: "brand_extraction_complete", label: "Brand Extracted", color: "#3b82f6" },
-  { key: "mockup_generation_complete", label: "Mockup Generated", color: "#10b981" },
-  { key: "storefront_generation_complete", label: "Storefront Created", color: "#f59e0b" },
-  { key: "user_clicks_publish", label: "Store Viewed", color: "#ec4899" },
-];
+const STAGE_META: Record<FunnelStageName, { label: string; color: string }> = {
+  domain_submitted: { label: "Domain Submitted", color: "#a855f7" },
+  brand_extraction_completed: { label: "Brand Extracted", color: "#3b82f6" },
+  storefront_generated: { label: "Storefront Generated", color: "#10b981" },
+  storefront_published: { label: "Storefront Published", color: "#f59e0b" },
+};
 
-const EVENT_TYPE_SUMMARY: EventTypeCount[] = [
-  { type: "domain_submitted", label: "Domain Submitted", count: 28, color: "#a855f7" },
-  { type: "brand_extraction_complete", label: "Brand Extracted", count: 21, color: "#3b82f6" },
-  { type: "mockup_generation_complete", label: "Mockup Generated", count: 16, color: "#10b981" },
-  { type: "storefront_generation_complete", label: "Storefront Created", count: 12, color: "#f59e0b" },
-  { type: "user_clicks_publish", label: "Store Viewed", count: 8, color: "#ec4899" },
-  { type: "mockup_viewed", label: "Mockup Viewed", count: 45, color: "#06b6d4" },
-  { type: "storefront_clicked", label: "Storefront Clicked", count: 32, color: "#84cc16" },
-  { type: "faq_opened", label: "FAQ Opened", count: 18, color: "#f97316" },
-  { type: "headline_variant_seen", label: "Headline Variant Seen", count: 73, color: "#8b5cf6" },
-  { type: "pilot_checkout_viewed", label: "Pilot Checkout Viewed", count: 12, color: "#14b8a6" },
-];
+const HOURLY_SERIES: EventSeries[] = FUNNEL_STAGES.map((stage) => ({
+  key: stage,
+  label: STAGE_META[stage].label,
+  color: STAGE_META[stage].color,
+}));
 
-const END_TO_END_RATE = Math.round(
-  (FUNNEL_DATA[FUNNEL_DATA.length - 1].count / FUNNEL_DATA[0].count) * 100
-);
+interface AnalyticsData {
+  funnelEntries: FunnelEntry[];
+  timeSeriesData: HourlyDataPoint[];
+  summaryCards: EventTypeCount[];
+  endToEndConversion: number;
+  isLive: boolean;
+}
 
-export default function AdminAnalytics() {
+function buildHourKeys(windowHours: number): string[] {
+  const keys: string[] = [];
+  const now = new Date();
+  for (let i = windowHours - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setUTCHours(d.getUTCHours() - i, 0, 0, 0);
+    keys.push(d.toISOString().slice(0, 13));
+  }
+  return keys;
+}
+
+async function fetchAnalytics(): Promise<AnalyticsData> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    return buildFallback();
+  }
+
+  try {
+    const { createClient } = await import("@supabase/supabase-js");
+    const client = createClient(supabaseUrl, supabaseKey);
+
+    const since = new Date();
+    since.setDate(since.getDate() - 7);
+    since.setHours(0, 0, 0, 0);
+
+    const { data: events, error } = await client
+      .from("analytics_events")
+      .select("event_name, created_at")
+      .in("event_name", FUNNEL_STAGES as unknown as string[])
+      .gte("created_at", since.toISOString());
+
+    if (error || !events) {
+      console.error("Admin analytics page query error:", error);
+      return buildFallback();
+    }
+
+    const stageCounts: Record<FunnelStageName, number> = {
+      domain_submitted: 0,
+      brand_extraction_completed: 0,
+      storefront_generated: 0,
+      storefront_published: 0,
+    };
+
+    events.forEach((e) => {
+      if (e.event_name in stageCounts) {
+        stageCounts[e.event_name as FunnelStageName] += 1;
+      }
+    });
+
+    const topCount = stageCounts.domain_submitted;
+
+    const funnelEntries: FunnelEntry[] = FUNNEL_STAGES.map((stage, i) => {
+      const prevStage = i > 0 ? FUNNEL_STAGES[i - 1] : null;
+      const prevCount = prevStage ? stageCounts[prevStage] : stageCounts[stage];
+      return {
+        stage,
+        label: STAGE_META[stage].label,
+        color: STAGE_META[stage].color,
+        count: stageCounts[stage],
+        conversionRate:
+          prevCount > 0
+            ? Math.round((stageCounts[stage] / prevCount) * 100)
+            : i === 0 ? 100 : 0,
+      };
+    });
+
+    const hourKeys = buildHourKeys(48);
+    const timeSeriesData: HourlyDataPoint[] = hourKeys.map((key) => {
+      const hourEvents = events.filter(
+        (e) => e.created_at?.slice(0, 13) === key
+      );
+      const row: HourlyDataPoint = {
+        hour: key.slice(5).replace("T", " ") + ":00",
+      };
+      FUNNEL_STAGES.forEach((stage) => {
+        row[stage] = hourEvents.filter((e) => e.event_name === stage).length;
+      });
+      return row;
+    });
+
+    const summaryCards: EventTypeCount[] = FUNNEL_STAGES.map((stage) => ({
+      type: stage,
+      label: STAGE_META[stage].label,
+      count: stageCounts[stage],
+      color: STAGE_META[stage].color,
+    }));
+
+    const endToEndConversion =
+      topCount > 0
+        ? Math.round((stageCounts.storefront_published / topCount) * 100)
+        : 0;
+
+    return { funnelEntries, timeSeriesData, summaryCards, endToEndConversion, isLive: true };
+  } catch (e) {
+    console.error("Admin analytics page error:", e);
+    return buildFallback();
+  }
+}
+
+function buildFallback(): AnalyticsData {
+  const funnelEntries: FunnelEntry[] = FUNNEL_STAGES.map((stage, i) => ({
+    stage,
+    label: STAGE_META[stage].label,
+    color: STAGE_META[stage].color,
+    count: 0,
+    conversionRate: i === 0 ? 100 : 0,
+  }));
+
+  const hourKeys = buildHourKeys(48);
+  const timeSeriesData: HourlyDataPoint[] = hourKeys.map((key) => {
+    const row: HourlyDataPoint = {
+      hour: key.slice(5).replace("T", " ") + ":00",
+    };
+    FUNNEL_STAGES.forEach((stage) => {
+      row[stage] = 0;
+    });
+    return row;
+  });
+
+  const summaryCards: EventTypeCount[] = FUNNEL_STAGES.map((stage) => ({
+    type: stage,
+    label: STAGE_META[stage].label,
+    count: 0,
+    color: STAGE_META[stage].color,
+  }));
+
+  return { funnelEntries, timeSeriesData, summaryCards, endToEndConversion: 0, isLive: false };
+}
+
+export default async function AdminAnalytics() {
+  const { funnelEntries, timeSeriesData, summaryCards, endToEndConversion, isLive } =
+    await fetchAnalytics();
+
   return (
     <div className="min-h-screen bg-bg text-text px-4 py-10">
       <div className="max-w-5xl mx-auto">
@@ -96,26 +182,32 @@ export default function AdminAnalytics() {
               Pipeline conversion funnel · Hourly event volume
             </p>
           </div>
-          <span className="px-3 py-1 text-xs rounded-full border border-border text-text-muted">
-            Mock data
+          <span
+            className={`px-3 py-1 text-xs rounded-full border ${
+              isLive
+                ? "border-emerald-500/40 text-emerald-400"
+                : "border-border text-text-muted"
+            }`}
+          >
+            {isLive ? "Live data" : "No data"}
           </span>
         </div>
 
         <div className="mb-8">
           <EventSummaryCards
-            events={EVENT_TYPE_SUMMARY}
-            endToEndRate={END_TO_END_RATE}
+            events={summaryCards}
+            endToEndRate={endToEndConversion}
           />
         </div>
 
         <div className="bg-surface border border-border rounded-xl p-6 mb-6">
           <h2 className="text-lg font-bold mb-6">Conversion Funnel</h2>
-          <FunnelChart data={FUNNEL_DATA} />
+          <FunnelChart data={funnelEntries} />
         </div>
 
         <div className="bg-surface border border-border rounded-xl p-6">
           <h2 className="text-lg font-bold mb-6">Hourly Event Volume</h2>
-          <TimeSeriesChart data={HOURLY_DATA} series={HOURLY_SERIES} />
+          <TimeSeriesChart data={timeSeriesData} series={HOURLY_SERIES} />
         </div>
       </div>
     </div>
