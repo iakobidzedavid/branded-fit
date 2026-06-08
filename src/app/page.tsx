@@ -249,23 +249,25 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
             <div className="text-center">
-              <p className="text-4xl font-bold text-accent">8.6</p>
-              <p className="text-text-muted text-sm mt-1">Average NPS score*</p>
+              <p className="text-4xl font-bold text-accent">8.6<span className="text-base align-super text-accent/60">†</span></p>
+              <p className="text-text-muted text-sm mt-1">Average NPS score</p>
             </div>
             <div className="text-center">
-              <p className="text-4xl font-bold text-emerald-400">4 / 5</p>
+              <p className="text-4xl font-bold text-emerald-400">4 / 5<span className="text-base align-super text-emerald-400/60">†</span></p>
               <p className="text-text-muted text-sm mt-1">
-                Pilots → annual contracts*
+                Pilots → annual contracts
               </p>
             </div>
             <div className="text-center">
-              <p className="text-4xl font-bold text-text">95%</p>
-              <p className="text-text-muted text-sm mt-1">Brand-fidelity score*</p>
+              <p className="text-4xl font-bold text-text">95%<span className="text-base align-super text-text/40">†</span></p>
+              <p className="text-text-muted text-sm mt-1">Brand-fidelity score</p>
             </div>
           </div>
-          <p className="text-text-muted text-xs text-center mt-6">
-            * Internal pilot cohort data — 5 venture-backed tech companies (200–1,000 FTE), Q1–Q2 2026. Case studies in progress.
-          </p>
+          <div className="mt-6 max-w-xl mx-auto bg-bg border border-border rounded-lg px-5 py-3">
+            <p className="text-text-muted text-xs text-center leading-relaxed">
+              <span className="font-semibold text-text-muted">† Data source:</span> Internal pilot cohort — 5 venture-backed tech companies (200–1,000 FTE), Q1–Q2 2026 (n=5). NPS measured via post-pilot survey; brand-fidelity score = % mockups passing automated QA on first pass. Sample size is small; case studies in progress.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -273,11 +275,14 @@ export default function LandingPage() {
       <section className="px-4 py-20">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-3">
-            Three Reasons Ops Buyers at Venture-Backed Companies Choose Branded Fit
+            Three Reasons Ops and People Teams at Venture-Backed Companies Choose Branded Fit
           </h2>
-          <p className="text-text-muted text-center mb-12 max-w-xl mx-auto">
+          <p className="text-text-muted text-center mb-3 max-w-xl mx-auto">
             Speed, brand fidelity, and on-demand fulfillment — all in one
             fully automated platform.
+          </p>
+          <p className="text-text-muted text-center mb-12 max-w-xl mx-auto text-xs border border-border bg-surface rounded-lg px-4 py-2">
+            We are actively validating our beachhead segment through discovery calls with ops, people ops, and culture buyers at Series B–D companies. Early access cohort, Q1–Q2 2026.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-surface border border-border rounded-xl p-6">
@@ -316,8 +321,8 @@ export default function LandingPage() {
               </p>
               <ul className="space-y-2">
                 {[
-                  "95% brand-fidelity score (pilot cohort)*",
-                  "NPS 8.6/10 from early pilots*",
+                  "95% brand-fidelity score — pilot cohort†",
+                  "NPS 8.6/10 from early pilots†",
                   "Automated QA before go-live",
                 ].map((point) => (
                   <li key={point} className="flex items-start gap-2 text-sm">
@@ -353,9 +358,11 @@ export default function LandingPage() {
               </ul>
             </div>
           </div>
-          <p className="text-text-muted text-xs text-center mt-6">
-            * Internal pilot cohort data — n=5, Q1–Q2 2026.
-          </p>
+          <div className="mt-6 max-w-xl mx-auto bg-surface border border-border rounded-lg px-5 py-3">
+            <p className="text-text-muted text-xs text-center leading-relaxed">
+              <span className="font-semibold text-text-muted">† Methodology:</span> Brand-fidelity score = % of product mockups passing automated QA on first pass without manual revision. NPS collected via post-pilot survey. Both metrics from internal pilot cohort (n=5 companies, Q1–Q2 2026). Small sample; findings directional.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -745,7 +752,7 @@ export default function LandingPage() {
             Common Questions
           </h2>
           <p className="text-text-muted text-center mb-12">
-            Straight answers to the questions we hear most from ops buyers at venture-backed companies.
+            Straight answers to the questions we hear most from ops and people teams at venture-backed companies (early access cohort).
           </p>
           <div className="space-y-3">
             <FAQItem
