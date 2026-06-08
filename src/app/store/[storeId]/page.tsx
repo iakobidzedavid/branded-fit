@@ -264,9 +264,11 @@ function getOrCreateCustomerId(): string {
 function logEvent(
   event_type: string,
   domain: string,
-  metadata?: Record<string, unknown>
+  metadata?: Record<string, unknown>,
+  pipeline_stage?: string,
 ): void {
   const firedAt = Date.now();
+  const user_id = getOrCreateCustomerId();
 
   if (typeof window !== "undefined") {
     try {
@@ -288,9 +290,12 @@ function logEvent(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      event_name: event_type,
       event_type,
-      customer_id: getOrCreateCustomerId(),
+      user_id,
+      customer_id: user_id,
       domain,
+      pipeline_stage: pipeline_stage ?? undefined,
       timestamp: new Date(firedAt).toISOString(),
       ...(metadata ? { metadata } : {}),
     }),
@@ -334,6 +339,12 @@ export default function StorefrontPreview() {
     "idle" | "publishing" | "published" | "failed"
   >("idle");
   const [quoteRequested, setQuoteRequested] = useState(false);
+  const [cart, setCart] = useState<Record<string, number>>({});
+  const cartCount = Object.values(cart).reduce((a, b) => a + b, 0);
+  const cartTotal = Object.entries(cart).reduce((total, [id, qty]) => {
+    const product = DEMO_PRODUCTS.find((p) => p.id === id);
+    return total + (product?.price ?? 0) * qty;
+  }, 0);
 
   const viewFired = useRef(false);
 
@@ -359,13 +370,32 @@ export default function StorefrontPreview() {
     logEvent("storefront_view", store.domain, { store_id: store.id, status: store.status });
   }, [store]);
 
-  const handleProductClick = (product: Product) => {
+  const handleProductView = (product: Product) => {
     if (!store) return;
-    logEvent("product_clicked", store.domain, {
+    logEvent("product_view", store.domain, {
       sku: product.sku,
       product_name: product.name,
       price: product.price,
-    });
+    }, "Stage 5 · Engagement");
+  };
+
+  const handleAddToCart = (product: Product) => {
+    if (!store) return;
+    setCart((prev) => ({ ...prev, [product.id]: (prev[product.id] ?? 0) + 1 }));
+    logEvent("cart_add", store.domain, {
+      sku: product.sku,
+      product_name: product.name,
+      price: product.price,
+    }, "Stage 5 · Engagement");
+  };
+
+  const handleCheckout = () => {
+    if (!store) return;
+    logEvent("checkout_start", store.domain, {
+      cart_items: cartCount,
+      cart_total: cartTotal,
+    }, "Stage 5 · Engagement");
+    window.location.href = `/pilot-checkout?domain=${encodeURIComponent(store.domain)}`;
   };
 
   const handleRequestQuote = () => {
@@ -582,10 +612,10 @@ export default function StorefrontPreview() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {DEMO_PRODUCTS.map((product) => (
-              <button
+              <div
                 key={product.id}
-                onClick={() => handleProductClick(product)}
-                className="bg-surface border-2 border-border rounded-lg p-5 text-left hover:border-accent/50 transition group"
+                className="bg-surface border-2 border-border rounded-lg p-5 hover:border-accent/50 transition group cursor-pointer"
+                onClick={() => handleProductView(product)}
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <p className="text-text font-semibold text-sm group-hover:text-accent transition">
@@ -596,13 +626,45 @@ export default function StorefrontPreview() {
                   </span>
                 </div>
                 <p className="text-text-muted text-xs mb-3">{product.description}</p>
-                <span className="text-xs font-mono px-2 py-0.5 rounded bg-bg text-text-muted border border-border">
-                  {product.sku}
-                </span>
-              </button>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-bg text-text-muted border border-border">
+                    {product.sku}
+                  </span>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
+                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition"
+                  >
+                    <ShoppingBag size={12} />
+                    {(cart[product.id] ?? 0) > 0
+                      ? `In cart (${cart[product.id]})`
+                      : "Add to Cart"}
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
         </div>
+
+        {cartCount > 0 && (
+          <div className="bg-surface border-2 border-accent/40 rounded-lg p-4 mb-6 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2 min-w-0">
+              <ShoppingBag size={16} className="text-accent flex-shrink-0" />
+              <span className="text-text text-sm font-semibold">
+                {cartCount} item{cartCount !== 1 ? "s" : ""} in cart
+              </span>
+              <span className="text-text-muted text-sm font-mono">
+                ${cartTotal.toFixed(2)}
+              </span>
+            </div>
+            <button
+              onClick={handleCheckout}
+              className="flex-shrink-0 flex items-center gap-1.5 px-5 py-2 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition text-sm"
+            >
+              <Zap size={14} />
+              Checkout
+            </button>
+          </div>
+        )}
 
         <a
           href="/command-console"
