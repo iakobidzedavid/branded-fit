@@ -68,6 +68,8 @@ branded-fit/
     2026-06-05_analytics_timeseries_verification.md
     2026-06-05_deployment-log.md
     2026-06-05_test-results.md
+    2026-06-08_analytics_dashboard_deployment_verification.md
+    2026-06-08_analytics_seed_report.md
     2026-06-08_e2e_funnel_test_report.md
     DELIVERABLES_CHECKLIST.md
   public/
@@ -84,6 +86,10 @@ branded-fit/
       pilot-checkout/
       store/
       test-suite/
+    components/
+      EventSummaryCards.tsx
+      FunnelChart.tsx
+      TimeSeriesChart.tsx
     lib/
       analytics.ts
       database.types.ts
