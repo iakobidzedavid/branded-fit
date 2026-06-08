@@ -165,8 +165,12 @@ async function fetchAnalytics(customerId?: string): Promise<AnalyticsData> {
       return buildFallback();
     }
 
-    // Auto-seed if the database has fewer than 5 events and no customer filter.
-    if (!customerId && (!initialEvents || initialEvents.length < 5)) {
+    // Auto-seed when no funnel data exists (checks for domain_submission events,
+    // not total count — prevents stale v2-named seeds from blocking the seed).
+    const hasFunnelData = initialEvents?.some(
+      (e) => e.event_name === "domain_submission"
+    );
+    if (!customerId && !hasFunnelData) {
       await autoSeedIfEmpty(client, sinceISO);
       // Re-query to get the freshly seeded data.
       const { data: seededEvents, error: seededError } = await client

@@ -1,74 +1,85 @@
--- Seed: analytics_events for MVBP funnel validation (v2)
--- Five sessions across 5 domains, 7-day span (168h)
--- 25 events across 8 funnel stages:
---   domain_submitted (5), brand_extraction_started (5),
---   brand_extraction_completed (4), storefront_generated (3),
---   storefront_published (2), demo_viewed (3),
---   pilot_cta_clicked (2), email_opened (1)
+-- Seed: analytics_events for MVBP funnel validation (v3)
+-- Four pipeline sessions across 4 domains, 72h span
+-- Event names match what Command Console and Storefront Preview actually emit:
+--   domain_submission, brand_extraction_start, brand_extraction_complete,
+--   mockup_generation_start, mockup_generation_complete,
+--   storefront_generation_start, storefront_generation_complete,
+--   storefront_view, product_view, cart_add
 --
--- Session types:
---   sess-v2-01 (acme.com):      full pipeline + email_opened + demo_viewed + pilot_cta_clicked
---   sess-v2-02 (techcorp.io):   full pipeline + demo_viewed + pilot_cta_clicked
---   sess-v2-03 (buildfast.co):  through storefront_generated + demo_viewed
---   sess-v2-04 (startupco.io):  through brand_extraction_completed
---   sess-v2-05 (launchpad.co):  domain_submitted + brand_extraction_started only
+-- Sessions:
+--   sess-v3-01 (ramp.com):   full pipeline, ~72h ago, 7 events
+--   sess-v3-02 (notion.so):  full pipeline, ~48h ago, 7 events
+--   sess-v3-03 (stripe.com): full pipeline, ~24h ago, 7 events
+--   sess-v3-04 (figma.com):  partial (dropped after mockup_generation_start), ~8h ago, 4 events
+--   sess-v3-store (ramp.com): storefront visits, ~2h ago, 8 events
+-- Total: 33 events
 
 TRUNCATE TABLE analytics_events RESTART IDENTITY;
 
--- ── acme.com — sess-v2-01: full pipeline + engagement events, ~160h ago ───────
+-- ── ramp.com — sess-v3-01: full pipeline, ~72h ago ──────────────────────────
+
+INSERT INTO analytics_events (event_name, event_type, domain, session_id, pipeline_stage, created_at, metadata) VALUES
+  ('domain_submission',              'domain_submission',              'ramp.com', 'sess-v3-01', 'intake',                NOW() - INTERVAL '72 hours',                          '{"source":"landing_page","ab_variant":"A"}'),
+  ('brand_extraction_start',         'brand_extraction_start',         'ramp.com', 'sess-v3-01', 'brand_extraction',      NOW() - INTERVAL '72 hours' + INTERVAL '18 seconds',  '{"trigger":"auto"}'),
+  ('brand_extraction_complete',      'brand_extraction_complete',      'ramp.com', 'sess-v3-01', 'brand_extraction',      NOW() - INTERVAL '72 hours' + INTERVAL '72 seconds',  '{"fidelity_score":92.4,"colors_found":3,"logo_found":true,"duration_ms":54000}'),
+  ('mockup_generation_start',        'mockup_generation_start',        'ramp.com', 'sess-v3-01', 'mockup_generation',     NOW() - INTERVAL '72 hours' + INTERVAL '74 seconds',  '{"trigger":"auto"}'),
+  ('mockup_generation_complete',     'mockup_generation_complete',     'ramp.com', 'sess-v3-01', 'mockup_generation',     NOW() - INTERVAL '72 hours' + INTERVAL '138 seconds', '{"product_count":6,"duration_ms":64000}'),
+  ('storefront_generation_start',    'storefront_generation_start',    'ramp.com', 'sess-v3-01', 'storefront_generation', NOW() - INTERVAL '72 hours' + INTERVAL '140 seconds', '{"trigger":"auto"}'),
+  ('storefront_generation_complete', 'storefront_generation_complete', 'ramp.com', 'sess-v3-01', 'storefront_generation', NOW() - INTERVAL '72 hours' + INTERVAL '194 seconds', '{"storefront_url":"https://ramp-merch.myshopify.com","product_count":6,"duration_ms":54000}');
+
+-- ── notion.so — sess-v3-02: full pipeline, ~48h ago ─────────────────────────
+
+INSERT INTO analytics_events (event_name, event_type, domain, session_id, pipeline_stage, created_at, metadata) VALUES
+  ('domain_submission',              'domain_submission',              'notion.so', 'sess-v3-02', 'intake',                NOW() - INTERVAL '48 hours',                          '{"source":"referral","ab_variant":"B"}'),
+  ('brand_extraction_start',         'brand_extraction_start',         'notion.so', 'sess-v3-02', 'brand_extraction',      NOW() - INTERVAL '48 hours' + INTERVAL '22 seconds',  '{"trigger":"auto"}'),
+  ('brand_extraction_complete',      'brand_extraction_complete',      'notion.so', 'sess-v3-02', 'brand_extraction',      NOW() - INTERVAL '48 hours' + INTERVAL '88 seconds',  '{"fidelity_score":95.1,"colors_found":5,"logo_found":true,"duration_ms":66000}'),
+  ('mockup_generation_start',        'mockup_generation_start',        'notion.so', 'sess-v3-02', 'mockup_generation',     NOW() - INTERVAL '48 hours' + INTERVAL '90 seconds',  '{"trigger":"auto"}'),
+  ('mockup_generation_complete',     'mockup_generation_complete',     'notion.so', 'sess-v3-02', 'mockup_generation',     NOW() - INTERVAL '48 hours' + INTERVAL '158 seconds', '{"product_count":8,"duration_ms":68000}'),
+  ('storefront_generation_start',    'storefront_generation_start',    'notion.so', 'sess-v3-02', 'storefront_generation', NOW() - INTERVAL '48 hours' + INTERVAL '160 seconds', '{"trigger":"auto"}'),
+  ('storefront_generation_complete', 'storefront_generation_complete', 'notion.so', 'sess-v3-02', 'storefront_generation', NOW() - INTERVAL '48 hours' + INTERVAL '211 seconds', '{"storefront_url":"https://notion-merch.myshopify.com","product_count":8,"duration_ms":51000}');
+
+-- ── stripe.com — sess-v3-03: full pipeline, ~24h ago ────────────────────────
+
+INSERT INTO analytics_events (event_name, event_type, domain, session_id, pipeline_stage, created_at, metadata) VALUES
+  ('domain_submission',              'domain_submission',              'stripe.com', 'sess-v3-03', 'intake',                NOW() - INTERVAL '24 hours',                          '{"source":"direct","ab_variant":"A"}'),
+  ('brand_extraction_start',         'brand_extraction_start',         'stripe.com', 'sess-v3-03', 'brand_extraction',      NOW() - INTERVAL '24 hours' + INTERVAL '15 seconds',  '{"trigger":"auto"}'),
+  ('brand_extraction_complete',      'brand_extraction_complete',      'stripe.com', 'sess-v3-03', 'brand_extraction',      NOW() - INTERVAL '24 hours' + INTERVAL '65 seconds',  '{"fidelity_score":97.3,"colors_found":4,"logo_found":true,"duration_ms":50000}'),
+  ('mockup_generation_start',        'mockup_generation_start',        'stripe.com', 'sess-v3-03', 'mockup_generation',     NOW() - INTERVAL '24 hours' + INTERVAL '67 seconds',  '{"trigger":"auto"}'),
+  ('mockup_generation_complete',     'mockup_generation_complete',     'stripe.com', 'sess-v3-03', 'mockup_generation',     NOW() - INTERVAL '24 hours' + INTERVAL '127 seconds', '{"product_count":7,"duration_ms":60000}'),
+  ('storefront_generation_start',    'storefront_generation_start',    'stripe.com', 'sess-v3-03', 'storefront_generation', NOW() - INTERVAL '24 hours' + INTERVAL '129 seconds', '{"trigger":"auto"}'),
+  ('storefront_generation_complete', 'storefront_generation_complete', 'stripe.com', 'sess-v3-03', 'storefront_generation', NOW() - INTERVAL '24 hours' + INTERVAL '183 seconds', '{"storefront_url":"https://stripe-merch.myshopify.com","product_count":7,"duration_ms":54000}');
+
+-- ── figma.com — sess-v3-04: partial, dropped after mockup start, ~8h ago ────
+
+INSERT INTO analytics_events (event_name, event_type, domain, session_id, pipeline_stage, created_at, metadata) VALUES
+  ('domain_submission',     'domain_submission',     'figma.com', 'sess-v3-04', 'intake',            NOW() - INTERVAL '8 hours',                         '{"source":"email_campaign","ab_variant":"C"}'),
+  ('brand_extraction_start','brand_extraction_start','figma.com', 'sess-v3-04', 'brand_extraction',  NOW() - INTERVAL '8 hours' + INTERVAL '26 seconds', '{"trigger":"auto"}'),
+  ('brand_extraction_complete','brand_extraction_complete','figma.com','sess-v3-04','brand_extraction',NOW() - INTERVAL '8 hours' + INTERVAL '94 seconds','{"fidelity_score":81.6,"colors_found":2,"logo_found":true,"duration_ms":68000}'),
+  ('mockup_generation_start','mockup_generation_start','figma.com','sess-v3-04','mockup_generation',  NOW() - INTERVAL '8 hours' + INTERVAL '96 seconds', '{"trigger":"auto"}');
+
+-- ── ramp.com storefront — sess-v3-store: product_view + cart_add, ~2h ago ───
 
 INSERT INTO analytics_events (event_name, event_type, domain, session_id, created_at, metadata) VALUES
-  ('domain_submitted',           'domain_submitted',           'acme.com', 'sess-v2-01', NOW() - INTERVAL '160 hours',                              '{"source":"landing_page","ab_variant":"A"}'),
-  ('brand_extraction_started',   'brand_extraction_started',   'acme.com', 'sess-v2-01', NOW() - INTERVAL '160 hours' + INTERVAL '28 seconds',      '{"trigger":"auto"}'),
-  ('brand_extraction_completed', 'brand_extraction_completed', 'acme.com', 'sess-v2-01', NOW() - INTERVAL '160 hours' + INTERVAL '90 seconds',      '{"fidelity_score":91.5,"colors_found":3,"logo_found":true}'),
-  ('storefront_generated',       'storefront_generated',       'acme.com', 'sess-v2-01', NOW() - INTERVAL '160 hours' + INTERVAL '4 minutes',       '{"product_count":6,"template":"minimal"}'),
-  ('storefront_published',       'storefront_published',       'acme.com', 'sess-v2-01', NOW() - INTERVAL '160 hours' + INTERVAL '7 minutes',       '{"storefront_url":"https://acme-merch.myshopify.com"}'),
-  ('email_opened',               'email_opened',               'acme.com', 'sess-v2-01', NOW() - INTERVAL '155 hours',                              '{"campaign":"welcome_series","email_id":"welcome-001"}'),
-  ('demo_viewed',                'demo_viewed',                'acme.com', 'sess-v2-01', NOW() - INTERVAL '150 hours',                              '{"demo_variant":"B","duration_seconds":142}'),
-  ('pilot_cta_clicked',          'pilot_cta_clicked',          'acme.com', 'sess-v2-01', NOW() - INTERVAL '145 hours',                              '{"cta_location":"demo_page","plan":"starter"}');
-
--- ── techcorp.io — sess-v2-02: full pipeline + engagement events, ~120h ago ────
-
-INSERT INTO analytics_events (event_name, event_type, domain, session_id, created_at, metadata) VALUES
-  ('domain_submitted',           'domain_submitted',           'techcorp.io', 'sess-v2-02', NOW() - INTERVAL '120 hours',                           '{"source":"referral","ab_variant":"B"}'),
-  ('brand_extraction_started',   'brand_extraction_started',   'techcorp.io', 'sess-v2-02', NOW() - INTERVAL '120 hours' + INTERVAL '25 seconds',   '{"trigger":"auto"}'),
-  ('brand_extraction_completed', 'brand_extraction_completed', 'techcorp.io', 'sess-v2-02', NOW() - INTERVAL '120 hours' + INTERVAL '80 seconds',   '{"fidelity_score":94.1,"colors_found":5,"logo_found":true}'),
-  ('storefront_generated',       'storefront_generated',       'techcorp.io', 'sess-v2-02', NOW() - INTERVAL '120 hours' + INTERVAL '3 minutes',    '{"product_count":8,"template":"minimal"}'),
-  ('storefront_published',       'storefront_published',       'techcorp.io', 'sess-v2-02', NOW() - INTERVAL '120 hours' + INTERVAL '6 minutes',    '{"storefront_url":"https://techcorp-merch.myshopify.com"}'),
-  ('demo_viewed',                'demo_viewed',                'techcorp.io', 'sess-v2-02', NOW() - INTERVAL '115 hours',                           '{"demo_variant":"A","duration_seconds":98}'),
-  ('pilot_cta_clicked',          'pilot_cta_clicked',          'techcorp.io', 'sess-v2-02', NOW() - INTERVAL '110 hours',                           '{"cta_location":"pricing_section","plan":"growth"}');
-
--- ── buildfast.co — sess-v2-03: through storefront_generated + demo, ~80h ago ──
-
-INSERT INTO analytics_events (event_name, event_type, domain, session_id, created_at, metadata) VALUES
-  ('domain_submitted',           'domain_submitted',           'buildfast.co', 'sess-v2-03', NOW() - INTERVAL '80 hours',                           '{"source":"email_campaign","ab_variant":"C"}'),
-  ('brand_extraction_started',   'brand_extraction_started',   'buildfast.co', 'sess-v2-03', NOW() - INTERVAL '80 hours' + INTERVAL '22 seconds',   '{"trigger":"auto"}'),
-  ('brand_extraction_completed', 'brand_extraction_completed', 'buildfast.co', 'sess-v2-03', NOW() - INTERVAL '80 hours' + INTERVAL '75 seconds',   '{"fidelity_score":88.7,"colors_found":4,"logo_found":true}'),
-  ('storefront_generated',       'storefront_generated',       'buildfast.co', 'sess-v2-03', NOW() - INTERVAL '80 hours' + INTERVAL '3 minutes 30 seconds', '{"product_count":5,"template":"bold"}'),
-  ('demo_viewed',                'demo_viewed',                'buildfast.co', 'sess-v2-03', NOW() - INTERVAL '75 hours',                           '{"demo_variant":"B","duration_seconds":67}');
-
--- ── startupco.io — sess-v2-04: through brand_extraction_completed, ~50h ago ───
-
-INSERT INTO analytics_events (event_name, event_type, domain, session_id, created_at, metadata) VALUES
-  ('domain_submitted',           'domain_submitted',           'startupco.io', 'sess-v2-04', NOW() - INTERVAL '50 hours',                           '{"source":"direct","ab_variant":"A"}'),
-  ('brand_extraction_started',   'brand_extraction_started',   'startupco.io', 'sess-v2-04', NOW() - INTERVAL '50 hours' + INTERVAL '30 seconds',   '{"trigger":"auto"}'),
-  ('brand_extraction_completed', 'brand_extraction_completed', 'startupco.io', 'sess-v2-04', NOW() - INTERVAL '50 hours' + INTERVAL '85 seconds',   '{"fidelity_score":78.3,"colors_found":2,"logo_found":false}');
-
--- ── launchpad.co — sess-v2-05: failed extraction, ~20h ago ───────────────────
-
-INSERT INTO analytics_events (event_name, event_type, domain, session_id, created_at, metadata) VALUES
-  ('domain_submitted',         'domain_submitted',         'launchpad.co', 'sess-v2-05', NOW() - INTERVAL '20 hours',                             '{"source":"landing_page","ab_variant":"B"}'),
-  ('brand_extraction_started', 'brand_extraction_started', 'launchpad.co', 'sess-v2-05', NOW() - INTERVAL '20 hours' + INTERVAL '31 seconds',     '{"trigger":"auto","error":"brandfetch_timeout"}');
+  ('storefront_view', 'storefront_view', 'ramp.com', 'sess-v3-store', NOW() - INTERVAL '2 hours',                         '{"store_id":"ramp-001","status":"draft"}'),
+  ('product_view',    'product_view',    'ramp.com', 'sess-v3-store', NOW() - INTERVAL '2 hours' + INTERVAL '45 seconds', '{"sku":"BF-TEE-001","product_name":"Premium Tee","price":32.99}'),
+  ('product_view',    'product_view',    'ramp.com', 'sess-v3-store', NOW() - INTERVAL '2 hours' + INTERVAL '82 seconds', '{"sku":"BF-CAP-002","product_name":"Embroidered Cap","price":28.99}'),
+  ('cart_add',        'cart_add',        'ramp.com', 'sess-v3-store', NOW() - INTERVAL '2 hours' + INTERVAL '95 seconds', '{"sku":"BF-TEE-001","product_name":"Premium Tee","price":32.99}'),
+  ('product_view',    'product_view',    'ramp.com', 'sess-v3-store', NOW() - INTERVAL '2 hours' + INTERVAL '130 seconds','{"sku":"BF-HOD-003","product_name":"Zip Hoodie","price":64.99}'),
+  ('cart_add',        'cart_add',        'ramp.com', 'sess-v3-store', NOW() - INTERVAL '2 hours' + INTERVAL '148 seconds','{"sku":"BF-HOD-003","product_name":"Zip Hoodie","price":64.99}'),
+  ('product_view',    'product_view',    'ramp.com', 'sess-v3-store', NOW() - INTERVAL '2 hours' + INTERVAL '185 seconds','{"sku":"BF-TOT-004","product_name":"Tote Bag","price":22.99}'),
+  ('cart_add',        'cart_add',        'ramp.com', 'sess-v3-store', NOW() - INTERVAL '2 hours' + INTERVAL '201 seconds','{"sku":"BF-TOT-004","product_name":"Tote Bag","price":22.99}');
 
 -- Verification query (run after seed to confirm counts):
 -- SELECT event_name, COUNT(*) FROM analytics_events GROUP BY event_name ORDER BY event_name;
 -- Expected:
---   brand_extraction_completed (4)
---   brand_extraction_started   (5)
---   demo_viewed                (3)
---   domain_submitted           (5)
---   email_opened               (1)
---   pilot_cta_clicked          (2)
---   storefront_generated       (3)
---   storefront_published       (2)
---   TOTAL                     (25)
+--   brand_extraction_complete   (4)
+--   brand_extraction_start      (4)
+--   cart_add                    (3)
+--   domain_submission           (4)
+--   mockup_generation_complete  (3)
+--   mockup_generation_start     (4)
+--   product_view                (4)
+--   storefront_generation_complete (3)
+--   storefront_generation_start (3)
+--   storefront_view             (1)
+--   TOTAL                      (33)
