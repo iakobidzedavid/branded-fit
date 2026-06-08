@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
     duration_ms,
     error_message,
     timestamp,
+    context,
     // Legacy fields kept for backward compat
     customer_id,
     properties,
@@ -72,6 +73,13 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (context != null && (typeof context !== "object" || Array.isArray(context))) {
+    return NextResponse.json(
+      { error: "context must be a JSON object" },
+      { status: 400 }
+    );
+  }
+
   const record: Record<string, unknown> = {
     event_name,
     // Mirror into event_type for legacy consumers that query that column.
@@ -89,6 +97,9 @@ export async function POST(request: NextRequest) {
   if (metadata != null && typeof metadata === "object" && !Array.isArray(metadata)) {
     record.metadata = metadata;
   }
+  if (context != null && typeof context === "object" && !Array.isArray(context)) {
+    record.context = context;
+  }
 
   // Analytics persistence is best-effort — DB errors must not surface as 500s.
   try {
@@ -98,7 +109,7 @@ export async function POST(request: NextRequest) {
       .from("analytics_events")
       .insert([record])
       .select(
-        "id, event_name, user_id, domain, pipeline_stage, duration_ms, error_message, timestamp, created_at"
+        "id, event_name, user_id, domain, pipeline_stage, duration_ms, error_message, timestamp, context, created_at"
       );
 
     if (!error) {

@@ -1,9 +1,19 @@
-export type EventType =
+export type FunnelEventType =
   | "domain_submitted"
+  | "brand_extraction_started"
   | "brand_extraction_completed"
+  | "mockup_generation_started"
+  | "mockup_generation_completed"
+  | "storefront_generation_started"
+  | "storefront_generation_completed"
+  | "storefront_published";
+
+export type EventType =
+  | FunnelEventType
+  | "brand_extraction_failed"
+  | "mockup_generation_failed"
+  | "storefront_generation_failed"
   | "mockup_viewed"
-  | "storefront_generated"
-  | "storefront_published"
   | "storefront_clicked"
   | "faq_opened"
   | "headline_variant_seen"
@@ -16,6 +26,7 @@ export interface TrackEventParams {
   duration_ms?: number;
   error_message?: string;
   user_id?: string;
+  context?: Record<string, unknown>;
 }
 
 export const trackEvent = async (params: TrackEventParams): Promise<void> => {
