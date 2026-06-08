@@ -196,7 +196,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/30 rounded-full px-4 py-1.5 text-accent text-sm font-medium mb-8">
             <Zap className="w-3.5 h-3.5" />
-            4 out of 5 early pilots converted to annual contracts*
+            4 out of 5 early pilots converted to annual contracts†
           </div>
           <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">
             From Domain to Storefront
@@ -263,9 +263,9 @@ export default function LandingPage() {
               <p className="text-text-muted text-sm mt-1">Brand-fidelity score</p>
             </div>
           </div>
-          <div className="mt-6 max-w-xl mx-auto bg-bg border border-border rounded-lg px-5 py-3">
+          <div className="mt-8 max-w-xl mx-auto bg-bg border-2 border-border rounded-lg px-5 py-4">
             <p className="text-text-muted text-xs text-center leading-relaxed">
-              <span className="font-semibold text-text-muted">† Data source:</span> Internal pilot cohort — 5 venture-backed tech companies (200–1,000 FTE), Q1–Q2 2026 (n=5). NPS measured via post-pilot survey; brand-fidelity score = % mockups passing automated QA on first pass. Sample size is small; case studies in progress.
+              <span className="font-semibold text-text">† Data source &amp; methodology:</span> Internal pilot cohort — 5 venture-backed tech companies (200–1,000 FTE), Q1–Q2 2026 (n=5). NPS measured via post-pilot survey; brand-fidelity score = % mockups passing automated QA on first pass; conversion rate = pilots that signed annual contracts. Sample size is small; findings are directional. Case studies in progress.
             </p>
           </div>
         </div>
@@ -275,7 +275,7 @@ export default function LandingPage() {
       <section className="px-4 py-20">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-3">
-            Three Reasons Ops and People Teams at Venture-Backed Companies Choose Branded Fit
+            Three Reasons Ops Buyers at Venture-Backed Companies Choose Branded Fit
           </h2>
           <p className="text-text-muted text-center mb-3 max-w-xl mx-auto">
             Speed, brand fidelity, and on-demand fulfillment — all in one
@@ -737,8 +737,8 @@ export default function LandingPage() {
               <Check className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
               <p className="text-text text-sm">
                 You&apos;ll receive a confirmation email within minutes with your
-                storefront preview and next steps. Our team follows up within
-                one business day to answer questions before your pilot begins.
+                storefront preview and next steps. Automated onboarding guides
+                you through mockup review and store launch — no sales call required.
               </p>
             </div>
           </div>
@@ -752,7 +752,7 @@ export default function LandingPage() {
             Common Questions
           </h2>
           <p className="text-text-muted text-center mb-12">
-            Straight answers to the questions we hear most from ops and people teams at venture-backed companies (early access cohort).
+            Straight answers from our early access cohort — ops and culture buyers at venture-backed companies (beachhead segment, under validation).
           </p>
           <div className="space-y-3">
             <FAQItem
