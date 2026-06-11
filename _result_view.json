@@ -1,93 +1,66 @@
 {
   "view_type": "report",
-  "headline": "MVBP End-to-End Validation Complete: 5 Real Domains Tested, All Pass SLA & Visual QA",
+  "headline": "Discovery call execution framework: 5 email templates + call tracker + 30-min playbook. Ready to conduct 5+ warm-outreach calls.",
   "primary_stat": {
-    "label": "Production Readiness",
-    "value": "✅ GO — Step 23 Pilot Ready"
+    "label": "Deliverables Created",
+    "value": 3
   },
   "highlights": [
-    "All 5 domains (Ramp, Vanta, Linear, Retool, Notion) completed 10-minute SLA: avg 7.84 min, max 8.48 min",
-    "Brand extraction fidelity: 0.93 aggregate (marginal vs. 0.95 target, but 100% visual QA passes)",
-    "Analytics instrumentation: 100% event capture (20/20 events), funnel conversion 100% (5→5→5→5)",
-    "/admin/analytics dashboard renders real funnel data with 5 domains, no placeholder content",
-    "Product deployment: 79 products, 316 SKUs uploaded to Shopify with 100% success rate",
-    "Zero critical blockers; defects identified are minor (color space variance, latency tuning)"
+    "5 production-ready email templates (Template 1: Warm Intro High Intent, Template 2: Gentle Re-Engagement, Template 3: Pilot Offer, Template 4: Objection Reframe, Template 5: Multi-Touch Opener)",
+    "Van Westendorp WTP tracker with 4-anchor ladder ($2K, $4.8K, $24K, $36K) + aggregate synthesis for 5+ calls",
+    "30-minute call structure: Warmup → Current State → Value Prop → Van Westendorp → Objections → Pilot Intent → Close",
+    "Objection library with quick counters (color accuracy, vendor lock-in, multi-brand support, timeline concerns)",
+    "Post-call logging template capturing verbatim quotes on speed, fidelity, fulfillment quality",
+    "Success metrics: 5+ calls, ≥60% pilot intent, top 3 objection themes identified, 2–3 pilots in pipeline",
+    "Call quality checklist (70/30 listen/talk ratio, 4 WTP anchors captured, clear next steps)"
   ],
-  "rows": [
+  "links": [
     {
-      "domain": "ramp.com",
-      "fidelity_score": 0.92,
-      "time_to_live_minutes": 8.3,
-      "product_count": 12,
-      "sku_count": 48,
-      "visual_fidelity_pass": "Y",
-      "notes": "Teal primary extraction accurate; logo clean; minor accent saturation drift (2%)"
+      "label": "Email Templates & Outreach Checklist",
+      "url": "documents/discovery_call_outreach_templates.md"
     },
     {
-      "domain": "vanta.com",
-      "fidelity_score": 0.94,
-      "time_to_live_minutes": 7.9,
-      "product_count": 15,
-      "sku_count": 60,
-      "visual_fidelity_pass": "Y",
-      "notes": "Blue extraction precise; secondary navy rendered; gradient overlay limitation (Printify preview)"
+      "label": "Discovery Calls Tracker (Van Westendorp + Synthesis)",
+      "url": "documents/discovery_calls_tracker.md"
     },
     {
-      "domain": "linear.app",
-      "fidelity_score": 0.96,
-      "time_to_live_minutes": 6.7,
-      "product_count": 18,
-      "sku_count": 72,
-      "visual_fidelity_pass": "Y",
-      "notes": "Monochromatic design extracted flawlessly; typography perfect; fastest execution"
-    },
-    {
-      "domain": "retool.com",
-      "fidelity_score": 0.91,
-      "time_to_live_minutes": 8.8,
-      "product_count": 14,
-      "sku_count": 56,
-      "visual_fidelity_pass": "Y",
-      "notes": "Primary blue excellent; secondary coral 3% saturation variance (acceptable); slowest provisioning"
-    },
-    {
-      "domain": "notion.so",
-      "fidelity_score": 0.93,
-      "time_to_live_minutes": 7.5,
-      "product_count": 20,
-      "sku_count": 80,
-      "visual_fidelity_pass": "Y",
-      "notes": "Gradient extraction strong; icon consistency maintained; minor font-weight OS variance"
+      "label": "30-Minute Call Execution Playbook",
+      "url": "documents/discovery_call_execution_playbook.md"
     }
   ],
   "next_actions": [
     {
-      "label": "Launch Step 23 Pilot",
-      "task_template": "execute_pilot_with_prospects",
+      "label": "Schedule 5+ warm-outreach prospects using email templates",
+      "task_template": "contact_prospect",
       "args": {
-        "prospect_count": "3-5",
-        "source": "warm_outreach_responses",
-        "timeline": "Start within 48 hours",
-        "success_criteria": "NPS ≥7 on brand fidelity, pilot conversion intent ≥50%"
+        "template_num": "1-5",
+        "goal": "Book 5+ discovery calls within 48 hours",
+        "tracking_doc": "documents/discovery_calls_tracker.md"
       }
     },
     {
-      "label": "Validate Pilot Brand Fidelity Feedback",
-      "task_template": "conduct_nps_survey",
+      "label": "Conduct discovery calls following 30-minute playbook",
+      "task_template": "run_discovery_call",
       "args": {
-        "question": "How accurately does the Branded Fit mockup capture your brand?",
-        "scale": "1-10 NPS",
-        "comparison": "Physical product vs. digital mockup",
-        "target": "≥8.0 avg score"
+        "duration_min": 30,
+        "segments": 7,
+        "key_capture": "Van Westendorp anchors, top 3 objections, pilot intent, verbatim quotes"
       }
     },
     {
-      "label": "Optimize Color Extraction (Future Iteration)",
-      "task_template": "calibrate_brandfetch_integration",
+      "label": "Log call data in discovery_calls_tracker.md immediately post-call",
+      "task_template": "data_logging",
       "args": {
-        "priority": "Medium",
-        "focus": "Secondary accent color space conversion (sRGB → CMYK variance)",
-        "expected_improvement": "0.93 → 0.96+ fidelity score"
+        "required_fields": "WTP responses, objection severity, pilot intent + confidence, 2-3 verbatim quotes",
+        "target_completion": "within 1 hour of call end"
+      }
+    },
+    {
+      "label": "Synthesize 5+ calls into WTP distribution, objection patterns, pilot conversion forecast",
+      "task_template": "analysis",
+      "args": {
+        "deliverable": "Aggregate synthesis section in tracker (post-calls 1-5+)",
+        "feeds_into": "Founder decision memo (Step 6)"
       }
     }
   ]
