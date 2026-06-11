@@ -91,6 +91,7 @@ branded-fit/
       api/
       command-console/
       pilot-checkout/
+      pricing/
       store/
       test-suite/
     components/
@@ -122,9 +123,9 @@ Place new files in the correct directories shown above.
 All research, reports, plans, and documents MUST be saved in the
 `docs/` directory with a date prefix (YYYY-MM-DD) for future reference:
 
-  docs/2026-06-08_market_research.md
-  docs/2026-06-08_technical_feasibility.md
-  docs/2026-06-08_competitor_analysis.md
+  docs/2026-06-11_market_research.md
+  docs/2026-06-11_technical_feasibility.md
+  docs/2026-06-11_competitor_analysis.md
 
 Always include the date prefix so future agents know when the document
 was created.
