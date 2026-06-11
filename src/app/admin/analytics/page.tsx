@@ -423,7 +423,7 @@ export default async function AdminAnalytics({
         </div>
 
         {/* Pipeline KPI metrics */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
+        <div id="metrics" className="grid grid-cols-2 gap-4 mb-8">
           <div
             className="bg-surface rounded-xl p-5 border"
             style={{ borderColor: "#10b98140" }}
@@ -459,19 +459,19 @@ export default async function AdminAnalytics({
           <EventSummaryCards events={summaryCards} />
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-6 mb-6">
+        <div id="funnel" className="bg-surface border border-border rounded-xl p-6 mb-6">
           <h2 className="text-lg font-bold mb-1">Conversion Funnel</h2>
           <p className="text-text-muted text-xs mb-6">7 stages with drop-off counts</p>
           <FunnelChart data={funnelEntries} />
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-6 mb-6">
+        <div id="timeseries" className="bg-surface border border-border rounded-xl p-6 mb-6">
           <h2 className="text-lg font-bold mb-1">Daily Event Volume</h2>
           <p className="text-text-muted text-xs mb-6">Last 30 days · event count by type</p>
           <TimeSeriesChart data={timeSeriesData} series={DAILY_SERIES} />
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-6">
+        <div id="events" className="bg-surface border border-border rounded-xl p-6">
           <h2 className="text-lg font-bold mb-1">Event Count by Type</h2>
           <p className="text-text-muted text-xs mb-6">Last 30 days · all event types</p>
           <EventTypeTable rows={eventCountRows} />
