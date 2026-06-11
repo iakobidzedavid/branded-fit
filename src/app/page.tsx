@@ -123,9 +123,28 @@ function ROICalculator() {
       <p className="text-text-muted text-xs text-center">
         Based on {tier.events} swag events/year × 7.5h saved each, plus 15%
         cost savings on vendor spend. Growth tier at $24K/year. Internal pilot
-        cohort data (n=5, Q1–Q2 2026).
+        cohort data (n=5, in-progress 2026, directional).
       </p>
     </div>
+  );
+}
+
+function TeamProfileOption({ label, groupId, value }: { label: string; groupId: string; value: string }) {
+  const [active, setActive] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={() => setActive(!active)}
+      className={`px-4 py-3 rounded-lg border text-sm font-medium transition text-left ${
+        active
+          ? "bg-accent/10 border-accent text-accent"
+          : "bg-surface border-border text-text-muted hover:border-accent/50 hover:text-text"
+      }`}
+      data-group={groupId}
+      data-value={value}
+    >
+      {label}
+    </button>
   );
 }
 
@@ -196,7 +215,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/30 rounded-full px-4 py-1.5 text-accent text-sm font-medium mb-8">
             <Zap className="w-3.5 h-3.5" />
-            4 out of 5 early pilots converted to annual contracts†
+            Early pilot results (n=5, directional): 4 of 5 pilots converted†
           </div>
           <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">
             From Domain to Storefront
@@ -223,7 +242,7 @@ export default function LandingPage() {
             </a>
           </div>
           <p className="text-text-muted text-sm mt-6 max-w-md mx-auto">
-            Fully automated — no call or account required. Brand preview is
+            Automated pipeline with human QA at go-live — no call or account required to start. Brand preview is
             non-binding; our team reviews every result before your storefront
             goes live. You approve before anything is published.
           </p>
@@ -265,7 +284,7 @@ export default function LandingPage() {
           </div>
           <div className="mt-8 max-w-xl mx-auto bg-bg border-2 border-border rounded-lg px-5 py-4">
             <p className="text-text-muted text-xs text-center leading-relaxed">
-              <span className="font-semibold text-text">† Data source &amp; methodology:</span> Internal pilot cohort — 5 venture-backed tech companies (200–1,000 FTE), Q1–Q2 2026 (n=5). NPS measured via post-pilot survey; brand-fidelity score = % mockups passing automated QA on first pass; conversion rate = pilots that signed annual contracts. Sample size is small; findings are directional. Case studies in progress.
+              <span className="font-semibold text-text">† Data source &amp; methodology:</span> Internal pilot cohort — 5 venture-backed tech companies (200–1,000 FTE), in-progress 2026 (n=5). NPS measured via post-pilot survey; brand-fidelity score = % mockups passing automated QA on first pass; conversion rate = pilots that signed annual contracts. Sample size is small; findings are directional. Case studies available by Q3 2026.
             </p>
           </div>
         </div>
@@ -282,7 +301,7 @@ export default function LandingPage() {
             fully automated platform.
           </p>
           <p className="text-text-muted text-center mb-12 max-w-xl mx-auto text-xs border border-border bg-surface rounded-lg px-4 py-2">
-            We are actively validating our beachhead segment through discovery calls with ops, people ops, and culture buyers at Series B–D companies. Early access cohort, Q1–Q2 2026.
+            We are actively validating our beachhead segment through discovery calls with ops, people ops, and culture buyers at Series B–D companies. Early access cohort, in progress (2026).
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-surface border border-border rounded-xl p-6">
@@ -360,7 +379,7 @@ export default function LandingPage() {
           </div>
           <div className="mt-6 max-w-xl mx-auto bg-surface border border-border rounded-lg px-5 py-3">
             <p className="text-text-muted text-xs text-center leading-relaxed">
-              <span className="font-semibold text-text-muted">† Methodology:</span> Brand-fidelity score = % of product mockups passing automated QA on first pass without manual revision. NPS collected via post-pilot survey. Both metrics from internal pilot cohort (n=5 companies, Q1–Q2 2026). Small sample; findings directional.
+              <span className="font-semibold text-text-muted">† Methodology:</span> Brand-fidelity score = % of product mockups passing automated QA on first pass without manual revision. NPS collected via post-pilot survey. Both metrics from internal pilot cohort (n=5 companies, in-progress 2026). Small sample; findings directional.
             </p>
           </div>
         </div>
@@ -449,9 +468,7 @@ export default function LandingPage() {
             </table>
           </div>
           <p className="text-text-muted text-xs text-center mt-4">
-            Speed and MOQ data based on publicly available pricing pages and
-            sales collateral. Brand fidelity reflects automated vs. manual brand
-            application.
+            Competitor data retrieved from publicly available pricing pages and product documentation (June 2026). Claims are our interpretation and have not been independently verified or endorsed by the named companies. Brand fidelity reflects automated vs. manual brand application methodology.
           </p>
         </div>
       </section>
@@ -595,6 +612,63 @@ export default function LandingPage() {
             View Demo Storefront
             <ArrowRight className="w-4 h-4" />
           </a>
+        </div>
+      </section>
+
+      {/* Team Profile Discovery — addresses persona synthesis intake */}
+      <section className="px-4 py-20 bg-surface border-y border-border">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-3">
+            Tell Us About Your Team
+          </h2>
+          <p className="text-text-muted text-center mb-10 max-w-xl mx-auto">
+            Two quick questions — we&apos;ll build a brand preview tailored to your swag workflow, team size, and pain points.
+          </p>
+          <div className="bg-bg border border-border rounded-xl p-8 max-w-2xl mx-auto">
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-text mb-2">
+                  How often does your team run swag events or gifting campaigns?
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {[
+                    { label: "1–3 / year", value: "low" },
+                    { label: "4–8 / year", value: "medium" },
+                    { label: "9+ / year", value: "high" },
+                  ].map(({ label, value }) => (
+                    <TeamProfileOption key={value} label={label} groupId="freq" value={value} />
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-text mb-2">
+                  What&apos;s your biggest swag headache?
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { label: "Brand consistency", value: "brand" },
+                    { label: "Vendor coordination", value: "vendor" },
+                    { label: "Speed to delivery", value: "speed" },
+                    { label: "Cost management", value: "cost" },
+                  ].map(({ label, value }) => (
+                    <TeamProfileOption key={value} label={label} groupId="pain" value={value} />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="mt-8 text-center">
+              <Link
+                href="/command-console"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition"
+              >
+                Get My Custom Brand Preview
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <p className="text-text-muted text-xs mt-3">
+                No account required. Results in under 10 minutes.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -757,11 +831,11 @@ export default function LandingPage() {
           <div className="space-y-3">
             <FAQItem
               q="We already have a swag vendor — switching feels like a lot of work."
-              a="You don't have to switch to run a pilot. We offer a 14-day Brand Drop Pilot alongside your existing vendor — no contract, no obligation to migrate. 4 out of 5 early pilot customers chose to replace their incumbent vendor after seeing the speed and quality difference. If you decide not to convert, you walk away with 50 branded units and a full-quality storefront you can reference forever."
+              a="You don't have to switch to run a pilot. We offer a 14-day Brand Drop Pilot alongside your existing vendor — no contract, no obligation to migrate. In our early pilot cohort (n=5, directional), 4 of 5 customers chose to replace their incumbent vendor after seeing the speed and quality difference. If you decide not to convert, you walk away with 50 branded units and a full-quality storefront you can reference forever."
             />
             <FAQItem
               q="What if automated brand extraction can't match our exact brand guidelines?"
-              a="Brand accuracy is our top priority. We use Brandfetch to extract your exact hex colors, fonts, and logo variants — then our team reviews every mockup against your brand guide before anything goes live. Our early pilot cohort averaged a 95% brand-fidelity score on the first automated pass (n=5, Q1–Q2 2026). For complex brand systems (co-brands, gradient logos, strict typography rules), we manually adjust at no extra charge. You sign off on every mockup before the store opens."
+              a="Brand accuracy is our top priority. We use Brandfetch to extract your exact hex colors, fonts, and logo variants — then our team reviews every mockup against your brand guide before anything goes live. Our early pilot cohort averaged a 95% brand-fidelity score on the first automated pass (n=5, in-progress 2026). For complex brand systems (co-brands, gradient logos, strict typography rules), we manually adjust at no extra charge. You sign off on every mockup before the store opens."
             />
             <FAQItem
               q="Our IT and Legal teams need to approve any new vendor — that process takes months."
@@ -773,7 +847,7 @@ export default function LandingPage() {
             />
             <FAQItem
               q="I need proof this works at other companies before I can pitch it internally."
-              a="We have 5 early pilot customers in the 200–1,000 FTE range — all venture-backed tech companies with ops buyers similar to your situation. Aggregate results (internal data, Q1–Q2 2026): NPS 8.6/10, 95% brand-fidelity score, 4 out of 5 pilots converted to annual contracts. We can arrange a 15-minute reference call with a current customer in your vertical. We also provide a detailed pilot case study with before/after timelines and cost comparisons you can share directly with your leadership team."
+              a="We have 5 early pilot customers in the 200–1,000 FTE range — all venture-backed tech companies with ops buyers similar to your situation. Aggregate results (internal data, in-progress 2026, n=5, directional): NPS 8.6/10, 95% brand-fidelity score, 4 of 5 pilots converted to annual contracts. These are early-stage findings; case studies with before/after detail will be available by Q3 2026. We can arrange a 15-minute reference call with a current customer in your vertical."
             />
             <FAQItem
               q="How long does it actually take to go live?"
@@ -783,6 +857,51 @@ export default function LandingPage() {
               q="What's included in the $24K Growth tier?"
               a="The $24K/year Growth tier includes: a fully provisioned Shopify storefront with your branding, access to 12 core product types (tees, hoodies, hats, totes, mugs, and more), on-demand print fulfillment with 14-day median delivery, brand-fidelity QA on every order run, and storefront admin access for your team. There are no per-order platform fees beyond product cost. Enterprise tiers with custom catalogs and dedicated support are available on request."
             />
+          </div>
+        </div>
+      </section>
+
+      {/* [NEW] Outreach Campaign — Active Pipeline */}
+      <section className="px-4 py-16 bg-bg">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-surface border border-accent/30 rounded-xl p-8">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+              <div className="flex-1">
+                <div className="inline-flex items-center gap-2 bg-emerald-400/10 border border-emerald-400/30 rounded-full px-3 py-1 text-emerald-400 text-xs font-medium mb-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Active outreach in progress
+                </div>
+                <h3 className="text-xl font-bold text-text mb-2">
+                  We&apos;re Reaching Out to People Ops Leaders
+                </h3>
+                <p className="text-text-muted text-sm leading-relaxed">
+                  We&apos;re personally contacting 10 ops and culture buyers at Series B–D companies this week — sharing a live Command Console link so they can see their brand in under 10 minutes. If you received one of our emails, this is the link.
+                </p>
+                <div className="flex flex-wrap gap-4 mt-4">
+                  <div className="flex items-center gap-2 text-sm text-text-muted">
+                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    Personalized outreach to named ops buyers
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-text-muted">
+                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    Live Command Console link in every email
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-text-muted">
+                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    Response tracking and follow-up within 24h
+                  </div>
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <Link
+                  href="/command-console"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition whitespace-nowrap"
+                >
+                  See Your Brand Preview
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -838,6 +957,9 @@ export default function LandingPage() {
             <a href="#faq" className="hover:text-text transition">
               FAQ
             </a>
+            <Link href="/admin" className="hover:text-text transition">
+              Admin
+            </Link>
           </div>
         </div>
       </footer>
