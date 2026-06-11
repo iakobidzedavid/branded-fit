@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { trackEvent, getOrCreateSessionId } from "@/lib/analytics";
 import {
   Check,
   AlertCircle,
@@ -202,6 +203,11 @@ export default function CommandConsole() {
 
     const cleanDomain = domain.toLowerCase().trim();
     const slug = cleanDomain.replace(/\./g, "-");
+    const sessionId = getOrCreateSessionId();
+    const pipelineStart = Date.now();
+
+    trackEvent({ event_name: "domain_submitted", domain: cleanDomain, user_id: sessionId });
+    trackEvent({ event_name: "brand_extraction_started", domain: cleanDomain, user_id: sessionId, pipeline_stage: "brand_intelligence" });
 
     setState({
       phase: "running",
@@ -217,6 +223,9 @@ export default function CommandConsole() {
 
     timeoutsRef.current.push(
       setTimeout(() => {
+        const duration = Date.now() - pipelineStart;
+        trackEvent({ event_name: "brand_extraction_completed", domain: cleanDomain, user_id: sessionId, pipeline_stage: "brand_intelligence", duration_ms: duration });
+        trackEvent({ event_name: "mockup_generation_started", domain: cleanDomain, user_id: sessionId, pipeline_stage: "mockup_generation" });
         setState((prev) => ({
           ...prev,
           pipeline1: {
@@ -233,6 +242,9 @@ export default function CommandConsole() {
 
     timeoutsRef.current.push(
       setTimeout(() => {
+        const duration = Date.now() - pipelineStart;
+        trackEvent({ event_name: "mockup_generation_completed", domain: cleanDomain, user_id: sessionId, pipeline_stage: "mockup_generation", duration_ms: duration });
+        trackEvent({ event_name: "storefront_generation_started", domain: cleanDomain, user_id: sessionId, pipeline_stage: "shopify_provisioning" });
         setState((prev) => ({
           ...prev,
           pipeline2: {
@@ -249,6 +261,8 @@ export default function CommandConsole() {
 
     timeoutsRef.current.push(
       setTimeout(() => {
+        const duration = Date.now() - pipelineStart;
+        trackEvent({ event_name: "storefront_generation_completed", domain: cleanDomain, user_id: sessionId, pipeline_stage: "shopify_provisioning", duration_ms: duration });
         setState((prev) => ({
           ...prev,
           phase: "success",

@@ -14,6 +14,7 @@ import {
   Activity,
   Clock,
   Database,
+  Star,
 } from "lucide-react";
 
 interface StoreData {
@@ -251,6 +252,70 @@ function FunnelTestPanel({ isDemo }: { isDemo: boolean }) {
   );
 }
 
+function BrandFidelityWidget({ domain }: { domain: string }) {
+  const [rating, setRating] = useState<number | null>(null);
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleRate = (score: number) => {
+    if (submitted) return;
+    setRating(score);
+    setSubmitted(true);
+    logEvent("brand_fidelity_feedback", domain, { score, max_score: 5 });
+  };
+
+  const labels: Record<number, string> = {
+    1: "Poor",
+    2: "Fair",
+    3: "Good",
+    4: "Great",
+    5: "Perfect",
+  };
+
+  const active = hovered ?? rating;
+
+  return (
+    <div className="bg-surface border border-border rounded-lg p-5 mb-6">
+      <div className="flex items-center gap-2 mb-3">
+        <Star size={15} className="text-accent" />
+        <p className="text-sm font-semibold text-text">
+          How well does this match your brand?
+        </p>
+      </div>
+      {submitted ? (
+        <div className="flex items-center gap-2 text-emerald-400 text-sm">
+          <CheckCircle2 size={14} />
+          Thanks — you rated this {rating}/5 ({labels[rating!]})
+        </div>
+      ) : (
+        <div className="flex items-center gap-3">
+          <div className="flex gap-1.5">
+            {[1, 2, 3, 4, 5].map((score) => (
+              <button
+                key={score}
+                aria-label={`Rate ${score} out of 5`}
+                onClick={() => handleRate(score)}
+                onMouseEnter={() => setHovered(score)}
+                onMouseLeave={() => setHovered(null)}
+                className={`w-9 h-9 rounded-lg border text-sm font-bold transition-all ${
+                  active !== null && score <= active
+                    ? "bg-accent border-accent text-white"
+                    : "bg-bg border-border text-text-muted hover:border-accent/50"
+                }`}
+              >
+                {score}
+              </button>
+            ))}
+          </div>
+          {active !== null && (
+            <span className="text-text-muted text-xs">{labels[active]}</span>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function getOrCreateCustomerId(): string {
   if (typeof window === "undefined") return "";
   let id = localStorage.getItem("bf_customer_id");
@@ -482,6 +547,9 @@ export default function StorefrontPreview() {
 
         {/* Funnel Test Results — shows event tracking, latency, and persistence */}
         <FunnelTestPanel isDemo={isDemo} />
+
+        {/* Brand fidelity feedback */}
+        <BrandFidelityWidget domain={store.domain} />
 
         {/* Request Quote CTA — prominent, above fold */}
         <div className="bg-surface border-2 border-accent/40 rounded-lg p-6 mb-6">

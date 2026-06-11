@@ -17,7 +17,18 @@ export type EventType =
   | "storefront_clicked"
   | "faq_opened"
   | "headline_variant_seen"
-  | "pilot_checkout_viewed";
+  | "pilot_checkout_viewed"
+  | "brand_fidelity_feedback";
+
+export function getOrCreateSessionId(): string {
+  if (typeof window === "undefined") return "";
+  let id = localStorage.getItem("bf_customer_id");
+  if (!id) {
+    id = `sess_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    localStorage.setItem("bf_customer_id", id);
+  }
+  return id;
+}
 
 export interface TrackEventParams {
   event_name: string;
