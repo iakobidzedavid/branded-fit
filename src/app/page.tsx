@@ -12,7 +12,6 @@ import {
   Clock,
   Palette,
   Package,
-  X,
   Star,
   Calendar,
 } from "lucide-react";
@@ -43,40 +42,6 @@ const FTE_TIERS = [
 
 const PLAN_PRICE = 24000;
 
-const COMPETITORS = [
-  {
-    name: "Branded Fit",
-    speed: "10 minutes",
-    fidelity: "95%+ automated",
-    noMOQ: true,
-    automatedQA: true,
-    highlight: true,
-  },
-  {
-    name: "SwagUp",
-    speed: "4–6 weeks",
-    fidelity: "Manual upload",
-    noMOQ: false,
-    automatedQA: false,
-    highlight: false,
-  },
-  {
-    name: "Stadium",
-    speed: "1–2 weeks",
-    fidelity: "Manual upload",
-    noMOQ: false,
-    automatedQA: false,
-    highlight: false,
-  },
-  {
-    name: "Printful",
-    speed: "DIY (days–weeks)",
-    fidelity: "Manual upload",
-    noMOQ: true,
-    automatedQA: false,
-    highlight: false,
-  },
-];
 
 function ROICalculator() {
   const [selected, setSelected] = useState(1);
@@ -385,91 +350,45 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Competitive Positioning */}
+      {/* Why Branded Fit */}
       <section className="px-4 py-20 bg-surface border-y border-border">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-3">
-            How We Compare
+            What Makes Branded Fit Different
           </h2>
           <p className="text-text-muted text-center mb-12 max-w-xl mx-auto">
-            Speed and brand fidelity — the two dimensions ops buyers care
-            about most.
+            Most swag workflows take weeks of vendor calls, manual uploads, and approval chains. We cut that to 10 minutes.
           </p>
-          <div className="overflow-x-auto rounded-xl border border-border">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-surface border-b border-border">
-                  <th className="text-left py-4 px-6 text-text-muted text-sm font-medium">
-                    Platform
-                  </th>
-                  <th className="text-center py-4 px-4 text-text-muted text-sm font-medium">
-                    Setup Speed
-                  </th>
-                  <th className="text-center py-4 px-4 text-text-muted text-sm font-medium">
-                    Brand Fidelity
-                  </th>
-                  <th className="text-center py-4 px-4 text-text-muted text-sm font-medium">
-                    No MOQ
-                  </th>
-                  <th className="text-center py-4 px-4 text-text-muted text-sm font-medium">
-                    Automated QA
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {COMPETITORS.map((row, i) => (
-                  <tr
-                    key={row.name}
-                    className={`border-b border-border last:border-0 ${
-                      row.highlight
-                        ? "bg-accent/10"
-                        : i % 2 === 0
-                        ? "bg-bg"
-                        : "bg-surface/50"
-                    }`}
-                  >
-                    <td className="py-4 px-6">
-                      <span
-                        className={`font-semibold ${
-                          row.highlight ? "text-accent" : "text-text"
-                        }`}
-                      >
-                        {row.name}
-                      </span>
-                      {row.highlight && (
-                        <span className="ml-2 text-xs bg-accent/20 text-accent border border-accent/30 rounded-full px-2 py-0.5">
-                          You are here
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-4 px-4 text-center text-sm text-text-muted">
-                      {row.speed}
-                    </td>
-                    <td className="py-4 px-4 text-center text-sm text-text-muted">
-                      {row.fidelity}
-                    </td>
-                    <td className="py-4 px-4 text-center">
-                      {row.noMOQ ? (
-                        <Check className="w-4 h-4 text-emerald-400 mx-auto" />
-                      ) : (
-                        <X className="w-4 h-4 text-red-400 mx-auto" />
-                      )}
-                    </td>
-                    <td className="py-4 px-4 text-center">
-                      {row.automatedQA ? (
-                        <Check className="w-4 h-4 text-emerald-400 mx-auto" />
-                      ) : (
-                        <X className="w-4 h-4 text-red-400 mx-auto" />
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            {[
+              {
+                headline: "10-Minute Setup",
+                body: "From domain to live Shopify storefront in one automated pipeline — brand extraction, mockup generation, and product catalog in under 10 minutes.",
+              },
+              {
+                headline: "Automated Brand Extraction",
+                body: "We pull your exact logo, hex colors, and typography from your domain automatically. No manual uploads, no brand guide PDF required.",
+              },
+              {
+                headline: "Human QA Before Every Launch",
+                body: "Our team reviews every mockup for brand fidelity before your store goes live. You approve the final result — nothing publishes without your sign-off.",
+              },
+              {
+                headline: "No Minimums, No Inventory",
+                body: "Print-on-demand fulfillment means your team orders what they need, when they need it. No warehousing risk, no MOQ commitments.",
+              },
+            ].map(({ headline, body }) => (
+              <div key={headline} className="bg-bg border border-border rounded-xl p-6">
+                <div className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="font-semibold text-text mb-1">{headline}</h3>
+                    <p className="text-text-muted text-sm leading-relaxed">{body}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-          <p className="text-text-muted text-xs text-center mt-4">
-            Competitor data retrieved from publicly available pricing pages and product documentation (June 2026). Claims are our interpretation and have not been independently verified or endorsed by the named companies. Brand fidelity reflects automated vs. manual brand application methodology.
-          </p>
         </div>
       </section>
 
@@ -480,8 +399,8 @@ export default function LandingPage() {
             How It Works
           </h2>
           <p className="text-text-muted text-center mb-12 max-w-xl mx-auto">
-            From domain input to live storefront — fully automated, no meetings
-            required.
+            From domain input to live storefront — end-to-end automation with
+            human QA at go-live. No meetings, no vendor calls required.
           </p>
           <div className="space-y-4">
             {[
@@ -556,7 +475,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold mb-3">See It For Yourself</h2>
           <p className="text-text-muted mb-10 max-w-xl mx-auto">
             Enter any corporate domain and watch your branded storefront come to
-            life in under 10 minutes. No account required. Fully automated.
+            life in under 10 minutes. No account required. Automated pipeline with human QA at go-live.
           </p>
 
           <div className="bg-surface border border-border rounded-xl p-8 mb-8 max-w-2xl mx-auto">
@@ -861,36 +780,22 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* [NEW] Outreach Campaign — Active Pipeline */}
+      {/* [NEW] Outreach Campaign — Active Pipeline with Response Tracking */}
       <section className="px-4 py-16 bg-bg">
         <div className="max-w-4xl mx-auto">
           <div className="bg-surface border border-accent/30 rounded-xl p-8">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-8">
               <div className="flex-1">
                 <div className="inline-flex items-center gap-2 bg-emerald-400/10 border border-emerald-400/30 rounded-full px-3 py-1 text-emerald-400 text-xs font-medium mb-3">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Active outreach in progress
+                  Active outreach — Wave 1 in progress
                 </div>
                 <h3 className="text-xl font-bold text-text mb-2">
                   We&apos;re Reaching Out to People Ops Leaders
                 </h3>
                 <p className="text-text-muted text-sm leading-relaxed">
-                  We&apos;re personally contacting 10 ops and culture buyers at Series B–D companies this week — sharing a live Command Console link so they can see their brand in under 10 minutes. If you received one of our emails, this is the link.
+                  10 personalized emails queued to named ops and culture buyers at Series B–D companies — each with a live Command Console link. If you received one of our emails, this is the link.
                 </p>
-                <div className="flex flex-wrap gap-4 mt-4">
-                  <div className="flex items-center gap-2 text-sm text-text-muted">
-                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    Personalized outreach to named ops buyers
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-text-muted">
-                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    Live Command Console link in every email
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-text-muted">
-                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    Response tracking and follow-up within 24h
-                  </div>
-                </div>
               </div>
               <div className="flex-shrink-0">
                 <Link
@@ -899,6 +804,43 @@ export default function LandingPage() {
                 >
                   See Your Brand Preview
                   <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Response Tracking Dashboard */}
+            <div className="border-t border-border pt-6">
+              <p className="text-text-muted text-xs font-semibold uppercase tracking-widest mb-4">
+                Wave 1 Campaign Tracker — June 2026
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                {[
+                  { label: "Prospects Queued", value: "10", color: "text-text" },
+                  { label: "Emails Drafted", value: "10", color: "text-accent" },
+                  { label: "Replies Received", value: "—", color: "text-text-muted" },
+                  { label: "Calls Booked", value: "—", color: "text-text-muted" },
+                ].map(({ label, value, color }) => (
+                  <div key={label} className="bg-bg border border-border rounded-lg p-4 text-center">
+                    <p className={`text-2xl font-bold ${color}`}>{value}</p>
+                    <p className="text-text-muted text-xs mt-1">{label}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="bg-bg border border-border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-text-muted text-xs font-medium">Campaign status</span>
+                  <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Drafts queued — awaiting send approval
+                  </span>
+                </div>
+                <p className="text-text-muted text-xs leading-relaxed">
+                  Prospects validated via Apollo (≥90% confidence). Outreach drafts in Gmail — personalized with prospect name, company, and live Command Console link. Replies tracked via Gmail monitoring; follow-up within 24h of first response. Response data updates here as campaign progresses.
+                </p>
+              </div>
+              <div className="mt-3 text-right">
+                <Link href="/admin" className="text-accent text-xs hover:underline">
+                  View full response tracker in Admin →
                 </Link>
               </div>
             </div>
@@ -914,7 +856,7 @@ export default function LandingPage() {
           </h2>
           <p className="text-text-muted mb-10 text-lg">
             Enter your domain and your branded storefront is live in 10
-            minutes — no contract, no commitment. Fully automated.
+            minutes — no contract, no commitment. Automated setup with human QA review.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
