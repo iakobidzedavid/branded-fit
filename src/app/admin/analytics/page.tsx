@@ -8,6 +8,9 @@ import EventSummaryCards, {
   EventTypeCount,
 } from "@/components/EventSummaryCards";
 import EventTypeTable, { EventTypeRow } from "@/components/EventTypeTable";
+import PipelineMetricsCards, {
+  PipelineMetrics,
+} from "@/components/PipelineMetricsCards";
 
 export const metadata: Metadata = {
   title: "Analytics Dashboard - Branded Fit",
@@ -50,6 +53,7 @@ interface AnalyticsData {
   endToEndConversion: number;
   avgPipelineDuration: number | null;
   isLive: boolean;
+  pipelineMetrics: PipelineMetrics;
 }
 
 function buildDayKeys(days: number): string[] {
@@ -151,6 +155,8 @@ type AnalyticsEvent = {
   customer_id?: string | null;
   created_at?: string | null;
   session_id?: string | null;
+  domain?: string | null;
+  metadata?: Record<string, unknown> | null;
 };
 
 async function fetchAnalytics(customerId?: string): Promise<AnalyticsData> {
@@ -172,7 +178,7 @@ async function fetchAnalytics(customerId?: string): Promise<AnalyticsData> {
 
     let query = client
       .from("analytics_events")
-      .select("event_name, customer_id, created_at, session_id")
+      .select("event_name, customer_id, created_at, session_id, domain, metadata")
       .gte("created_at", sinceISO);
 
     if (customerId) {
@@ -193,7 +199,7 @@ async function fetchAnalytics(customerId?: string): Promise<AnalyticsData> {
       await autoSeedIfEmpty(client, sinceISO);
       const { data: seededEvents, error: seededError } = await client
         .from("analytics_events")
-        .select("event_name, customer_id, created_at, session_id")
+        .select("event_name, customer_id, created_at, session_id, domain, metadata")
         .gte("created_at", sinceISO);
       if (seededError || !seededEvents) {
         return buildFallback();
@@ -307,6 +313,60 @@ function buildAnalyticsResult(events: AnalyticsEvent[], isLive: boolean): Analyt
       ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
       : null;
 
+  const uniqueDomains = new Set(
+    events
+      .filter((e) => e.event_name === "domain_submitted" && e.domain)
+      .map((e) => e.domain as string)
+  );
+
+  const extractionTimes = events
+    .filter((e) => e.event_name === "brand_extraction_completed")
+    .map((e) => {
+      const ms = e.metadata?.duration_ms;
+      return ms != null ? Number(ms) / 1000 : null;
+    })
+    .filter((v): v is number => v !== null);
+
+  const generationTimes = events
+    .filter((e) => e.event_name === "storefront_generation_completed")
+    .map((e) => {
+      const ms = e.metadata?.duration_ms;
+      return ms != null ? Number(ms) / 1000 : null;
+    })
+    .filter((v): v is number => v !== null);
+
+  const fidelityScores = events
+    .filter((e) => e.event_name === "brand_extraction_completed")
+    .map((e) => {
+      const score = e.metadata?.fidelity_score;
+      return score != null ? Number(score) : null;
+    })
+    .filter((v): v is number => v !== null && !isNaN(v));
+
+  const pipelineMetrics: PipelineMetrics = {
+    totalDomains: uniqueDomains.size,
+    totalStorefronts: stageCounts.storefront_generation_completed,
+    avgExtractionTimeSec:
+      extractionTimes.length > 0
+        ? Math.round(
+            extractionTimes.reduce((a, b) => a + b, 0) / extractionTimes.length
+          )
+        : null,
+    avgGenerationTimeSec:
+      generationTimes.length > 0
+        ? Math.round(
+            generationTimes.reduce((a, b) => a + b, 0) / generationTimes.length
+          )
+        : null,
+    avgBrandFidelity:
+      fidelityScores.length > 0
+        ? Math.round(
+            (fidelityScores.reduce((a, b) => a + b, 0) / fidelityScores.length) *
+              10
+          ) / 10
+        : null,
+  };
+
   return {
     funnelEntries,
     timeSeriesData,
@@ -315,43 +375,19 @@ function buildAnalyticsResult(events: AnalyticsEvent[], isLive: boolean): Analyt
     endToEndConversion,
     avgPipelineDuration,
     isLive,
+    pipelineMetrics,
   };
 }
 
 function buildFallback(): AnalyticsData {
-  const funnelEntries: FunnelEntry[] = FUNNEL_STAGES.map((stage, i) => ({
-    stage,
-    label: STAGE_META[stage].label,
-    color: STAGE_META[stage].color,
-    count: 0,
-    conversionRate: i === 0 ? 100 : 0,
+  const mock: AnalyticsEvent[] = buildAutoSeedEvents().map((e) => ({
+    event_name: e.event_name,
+    domain: e.domain,
+    session_id: e.session_id,
+    created_at: e.created_at,
+    metadata: e.metadata,
   }));
-
-  const dayKeys = buildDayKeys(30);
-  const timeSeriesData: HourlyDataPoint[] = dayKeys.map((key) => {
-    const row: HourlyDataPoint = { hour: key.slice(5) };
-    FUNNEL_STAGES.forEach((stage) => {
-      row[stage] = 0;
-    });
-    return row;
-  });
-
-  const summaryCards: EventTypeCount[] = FUNNEL_STAGES.map((stage) => ({
-    type: stage,
-    label: STAGE_META[stage].label,
-    count: 0,
-    color: STAGE_META[stage].color,
-  }));
-
-  return {
-    funnelEntries,
-    timeSeriesData,
-    summaryCards,
-    eventCountRows: [],
-    endToEndConversion: 0,
-    avgPipelineDuration: null,
-    isLive: false,
-  };
+  return buildAnalyticsResult(mock, false);
 }
 
 export default async function AdminAnalytics({
@@ -370,6 +406,7 @@ export default async function AdminAnalytics({
     endToEndConversion,
     avgPipelineDuration,
     isLive,
+    pipelineMetrics,
   } = await fetchAnalytics(customerId);
 
   return (
@@ -453,6 +490,10 @@ export default async function AdminAnalytics({
               )}
             </p>
           </div>
+        </div>
+
+        <div className="mb-8">
+          <PipelineMetricsCards metrics={pipelineMetrics} />
         </div>
 
         <div className="mb-8">
