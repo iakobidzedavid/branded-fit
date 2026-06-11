@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import FunnelChart, { FunnelEntry } from "@/components/FunnelChart";
-import TimeSeriesChart, {
-  HourlyDataPoint,
-  EventSeries,
-} from "@/components/TimeSeriesChart";
+import TimeSeriesFilterPanel, {
+  RawAnalyticsEvent,
+} from "@/components/TimeSeriesFilterPanel";
+import { EventSeries, HourlyDataPoint } from "@/components/TimeSeriesChart";
 import EventSummaryCards, {
   EventTypeCount,
 } from "@/components/EventSummaryCards";
@@ -48,6 +48,8 @@ const DAILY_SERIES: EventSeries[] = FUNNEL_STAGES.map((stage) => ({
 interface AnalyticsData {
   funnelEntries: FunnelEntry[];
   timeSeriesData: HourlyDataPoint[];
+  rawEvents: RawAnalyticsEvent[];
+  domains: string[];
   summaryCards: EventTypeCount[];
   eventCountRows: EventTypeRow[];
   endToEndConversion: number;
@@ -367,9 +369,19 @@ function buildAnalyticsResult(events: AnalyticsEvent[], isLive: boolean): Analyt
         : null,
   };
 
+  const rawEvents: RawAnalyticsEvent[] = events.map((e) => ({
+    event_name: e.event_name ?? null,
+    domain: e.domain ?? null,
+    created_at: e.created_at ?? null,
+  }));
+
+  const domains = Array.from(uniqueDomains).sort();
+
   return {
     funnelEntries,
     timeSeriesData,
+    rawEvents,
+    domains,
     summaryCards,
     eventCountRows,
     endToEndConversion,
@@ -400,7 +412,8 @@ export default async function AdminAnalytics({
 
   const {
     funnelEntries,
-    timeSeriesData,
+    rawEvents,
+    domains,
     summaryCards,
     eventCountRows,
     endToEndConversion,
@@ -408,6 +421,8 @@ export default async function AdminAnalytics({
     isLive,
     pipelineMetrics,
   } = await fetchAnalytics(customerId);
+
+  const nowISO = new Date().toISOString();
 
   return (
     <div className="min-h-screen bg-bg text-text px-4 py-10">
@@ -508,8 +523,13 @@ export default async function AdminAnalytics({
 
         <div id="timeseries" className="bg-surface border border-border rounded-xl p-6 mb-6">
           <h2 className="text-lg font-bold mb-1">Daily Event Volume</h2>
-          <p className="text-text-muted text-xs mb-6">Last 30 days · event count by type</p>
-          <TimeSeriesChart data={timeSeriesData} series={DAILY_SERIES} />
+          <p className="text-text-muted text-xs mb-4">Event count by type · filter by date range or domain</p>
+          <TimeSeriesFilterPanel
+            events={rawEvents}
+            series={DAILY_SERIES}
+            domains={domains}
+            nowISO={nowISO}
+          />
         </div>
 
         <div id="events" className="bg-surface border border-border rounded-xl p-6">
