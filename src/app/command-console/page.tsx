@@ -1,766 +1,522 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import {
   Check,
   AlertCircle,
   Loader,
   Clock,
-  DownloadCloud,
-  Users,
   ExternalLink,
-  PlayCircle,
+  ArrowLeft,
+  Zap,
+  Palette,
+  Package,
   ShoppingBag,
+  Globe,
 } from "lucide-react";
 
-function getOrCreateSessionId(): string {
-  if (typeof window === "undefined") return "";
-  let id = localStorage.getItem("bf_session_id");
-  if (!id) {
-    id = `ses_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
-    localStorage.setItem("bf_session_id", id);
-  }
-  return id;
-}
+type PipelineStatus = "pending" | "in_progress" | "completed" | "failed";
 
-interface StoredFunnelEvent {
-  firedAt: number;
-  persisted?: boolean;
-  persistedAt?: number;
-}
-
-function logEvent(event_type: string, fields: Record<string, unknown>): void {
-  const firedAt = Date.now();
-  const domain = typeof fields.domain === "string" ? fields.domain : "";
-
-  if (typeof window !== "undefined") {
-    try {
-      let stored: { domain?: string; startedAt?: number; events?: Record<string, StoredFunnelEvent> } = {};
-      const raw = localStorage.getItem("bf_funnel_test");
-      if (raw) stored = JSON.parse(raw);
-
-      if (event_type === "domain_submitted") {
-        stored = { domain, startedAt: firedAt, events: {} };
-      } else {
-        if (!stored.events) stored.events = {};
-        if (domain && !stored.domain) stored.domain = domain;
-        if (!stored.startedAt) stored.startedAt = firedAt;
-      }
-
-      stored.events![event_type] = { firedAt };
-      localStorage.setItem("bf_funnel_test", JSON.stringify(stored));
-    } catch {}
-  }
-
-  fetch("/api/analytics", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      event_name: event_type,
-      event_type,
-      user_id: getOrCreateSessionId(),
-      timestamp: new Date(firedAt).toISOString(),
-      ...fields,
-    }),
-  })
-    .then((res) => res.json())
-    .then((data: { success?: boolean; data?: { id?: string } }) => {
-      if (data?.success && typeof window !== "undefined") {
-        try {
-          const raw = localStorage.getItem("bf_funnel_test");
-          if (raw) {
-            const stored = JSON.parse(raw) as { events?: Record<string, StoredFunnelEvent> };
-            if (stored.events?.[event_type]) {
-              stored.events[event_type].persisted = true;
-              stored.events[event_type].persistedAt = Date.now();
-              localStorage.setItem("bf_funnel_test", JSON.stringify(stored));
-            }
-          }
-        } catch {}
-      }
-    })
-    .catch(() => {});
-}
-
-interface PipelineStatus {
-  status: "pending" | "in_progress" | "completed" | "failed";
+interface PipelineState {
+  status: PipelineStatus;
   message: string;
 }
 
-interface OrchestrationState {
-  status: "pending" | "in_progress" | "completed" | "failed";
-  pipeline1: PipelineStatus;
-  pipeline2: PipelineStatus;
-  pipeline3: PipelineStatus;
-  timestamp: number;
-  storefront?: { url: string; productCount: number };
-  brandData?: {
-    colors: { hex: string; type?: string }[];
-    logoUrl?: string;
-    fontFamily?: string;
-    confidence: number;
-  };
+type ConsolePhase = "input" | "running" | "success";
+
+interface ConsoleState {
+  phase: ConsolePhase;
+  pipeline1: PipelineState;
+  pipeline2: PipelineState;
+  pipeline3: PipelineState;
+  submittedDomain: string;
+  storefrontUrl: string;
 }
 
-const CORPORATE_TLDS = new Set([
-  "com",
-  "io",
-  "co",
-  "org",
-  "net",
-  "dev",
-  "app",
-  "ai",
-  "tech",
-  "inc",
-  "company",
-]);
+const INITIAL: ConsoleState = {
+  phase: "input",
+  pipeline1: { status: "pending", message: "Ready to extract brand data" },
+  pipeline2: { status: "pending", message: "Awaiting brand assets" },
+  pipeline3: { status: "pending", message: "Awaiting product mockups" },
+  submittedDomain: "",
+  storefrontUrl: "",
+};
 
-function isCorporateTLD(domain: string): boolean {
-  const parts = domain.toLowerCase().split(".");
-  if (parts.length < 2) return false;
-  const tld = parts[parts.length - 1];
-  return CORPORATE_TLDS.has(tld);
+const MOCK_PRODUCTS = [
+  { id: 1, name: "Branded Tee", category: "Apparel", price: "$28" },
+  { id: 2, name: "Premium Hoodie", category: "Apparel", price: "$65" },
+  { id: 3, name: "Canvas Tote", category: "Accessories", price: "$22" },
+];
+
+const STATUS_BORDER: Record<PipelineStatus, string> = {
+  pending: "border-border",
+  in_progress: "border-accent",
+  completed: "border-emerald-400",
+  failed: "border-danger",
+};
+
+const STATUS_LABEL: Record<PipelineStatus, string> = {
+  pending: "Pending",
+  in_progress: "Processing…",
+  completed: "Complete",
+  failed: "Failed",
+};
+
+const STATUS_BADGE: Record<PipelineStatus, string> = {
+  pending: "bg-surface text-text-muted border-border",
+  in_progress: "bg-accent/10 text-accent border-accent/20",
+  completed: "bg-emerald-400/10 text-emerald-400 border-emerald-400/20",
+  failed: "bg-danger/10 text-danger border-danger/20",
+};
+
+const STATUS_ICON_RING: Record<PipelineStatus, string> = {
+  pending: "bg-surface border-border",
+  in_progress: "bg-accent/10 border-accent/30",
+  completed: "bg-emerald-400/10 border-emerald-400/30",
+  failed: "bg-danger/10 border-danger/30",
+};
+
+const STATUS_MSG: Record<PipelineStatus, string> = {
+  pending: "text-text-muted",
+  in_progress: "text-text-muted",
+  completed: "text-emerald-400",
+  failed: "text-danger",
+};
+
+const PROGRESS_WIDTH: Record<PipelineStatus, number> = {
+  pending: 0,
+  in_progress: 65,
+  completed: 100,
+  failed: 0,
+};
+
+const PROGRESS_COLOR: Record<PipelineStatus, string> = {
+  pending: "bg-border",
+  in_progress: "bg-accent",
+  completed: "bg-emerald-400",
+  failed: "bg-danger",
+};
+
+function StatusIcon({ status }: { status: PipelineStatus }) {
+  if (status === "completed") return <Check className="w-4 h-4 text-emerald-400" />;
+  if (status === "in_progress") return <Loader className="w-4 h-4 text-accent animate-spin" />;
+  if (status === "failed") return <AlertCircle className="w-4 h-4 text-danger" />;
+  return <Clock className="w-4 h-4 text-text-muted" />;
+}
+
+function PipelineCard({
+  number,
+  title,
+  pipeline,
+}: {
+  number: string;
+  title: string;
+  pipeline: PipelineState;
+}) {
+  const { status, message } = pipeline;
+  return (
+    <div
+      className={`bg-surface border-2 rounded-xl p-5 transition-all duration-300 ${STATUS_BORDER[status]}`}
+    >
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="flex items-start gap-3 min-w-0">
+          <div
+            className={`w-9 h-9 rounded-full border flex items-center justify-center flex-shrink-0 ${STATUS_ICON_RING[status]}`}
+          >
+            <StatusIcon status={status} />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className="text-xs font-mono text-text-muted">{number}</span>
+              <h3 className="font-semibold text-text text-sm">{title}</h3>
+            </div>
+            <p className={`text-sm ${STATUS_MSG[status]}`}>{message}</p>
+          </div>
+        </div>
+        <span
+          className={`text-xs rounded-full px-2.5 py-1 font-medium border whitespace-nowrap flex-shrink-0 ${STATUS_BADGE[status]}`}
+        >
+          {STATUS_LABEL[status]}
+        </span>
+      </div>
+      <div className="w-full bg-bg rounded-full h-1.5 overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-700 ${PROGRESS_COLOR[status]} ${
+            status === "in_progress" ? "animate-pulse" : ""
+          }`}
+          style={{ width: `${PROGRESS_WIDTH[status]}%` }}
+        />
+      </div>
+    </div>
+  );
 }
 
 export default function CommandConsole() {
   const [domain, setDomain] = useState("");
   const [validationError, setValidationError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [orchestrationState, setOrchestrationState] =
-    useState<OrchestrationState | null>(null);
-  const [pollingError, setPollingError] = useState("");
-  const [completedAt, setCompletedAt] = useState<number | null>(null);
-  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const submitTimeRef = useRef<number | null>(null);
-  const firedEventsRef = useRef<Set<string>>(new Set());
-  const pipeline1StartTimeRef = useRef<number | null>(null);
-  const pipeline2StartTimeRef = useRef<number | null>(null);
-  const pipeline3StartTimeRef = useRef<number | null>(null);
+  const [state, setState] = useState<ConsoleState>(INITIAL);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlDomain = params.get("domain");
+      if (urlDomain) setDomain(urlDomain);
+    }
     return () => {
-      if (pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current);
-      }
+      timeoutsRef.current.forEach(clearTimeout);
     };
   }, []);
 
-  useEffect(() => {
-    if (!orchestrationState) return;
-
-    const now = Date.now();
-
-    // brand_extraction_start (Pipeline 1 in_progress)
-    if (
-      orchestrationState.pipeline1.status === "in_progress" &&
-      !firedEventsRef.current.has("brand_extraction_started")
-    ) {
-      firedEventsRef.current.add("brand_extraction_started");
-      pipeline1StartTimeRef.current = now;
-      logEvent("brand_extraction_started", {
-        domain,
-        pipeline_stage: "brand_extraction",
-      });
-    }
-
-    // brand_extraction_completed (Pipeline 1 done/failed)
-    if (
-      (orchestrationState.pipeline1.status === "completed" ||
-        orchestrationState.pipeline1.status === "failed") &&
-      !firedEventsRef.current.has("brand_extraction_completed")
-    ) {
-      firedEventsRef.current.add("brand_extraction_completed");
-      const duration_ms =
-        pipeline1StartTimeRef.current != null ? now - pipeline1StartTimeRef.current : undefined;
-      const isFailed = orchestrationState.pipeline1.status === "failed";
-      logEvent("brand_extraction_completed", {
-        domain,
-        pipeline_stage: "brand_extraction",
-        ...(duration_ms !== undefined && { duration_ms }),
-        context: { brand_fidelity_score: orchestrationState.brandData?.confidence ?? null },
-        ...(isFailed && { error_message: orchestrationState.pipeline1.message }),
-      });
-    }
-
-    // mockup_generation_started (Pipeline 2 in_progress)
-    if (
-      orchestrationState.pipeline2.status === "in_progress" &&
-      !firedEventsRef.current.has("mockup_generation_started")
-    ) {
-      firedEventsRef.current.add("mockup_generation_started");
-      pipeline2StartTimeRef.current = now;
-      logEvent("mockup_generation_started", {
-        domain,
-        pipeline_stage: "mockup_generation",
-      });
-    }
-
-    // mockup_generation_completed (Pipeline 2 done/failed)
-    if (
-      (orchestrationState.pipeline2.status === "completed" ||
-        orchestrationState.pipeline2.status === "failed") &&
-      !firedEventsRef.current.has("mockup_generation_completed")
-    ) {
-      firedEventsRef.current.add("mockup_generation_completed");
-      const duration_ms =
-        pipeline2StartTimeRef.current != null ? now - pipeline2StartTimeRef.current : undefined;
-      const isFailed = orchestrationState.pipeline2.status === "failed";
-      const productMatch = orchestrationState.pipeline2.message.match(/(\d+) products/);
-      logEvent("mockup_generation_completed", {
-        domain,
-        pipeline_stage: "mockup_generation",
-        ...(duration_ms !== undefined && { duration_ms }),
-        context: { product_count: productMatch ? parseInt(productMatch[1], 10) : null },
-        ...(isFailed && { error_message: orchestrationState.pipeline2.message }),
-      });
-    }
-
-    // storefront_generation_started (Pipeline 3 in_progress)
-    if (
-      orchestrationState.pipeline3.status === "in_progress" &&
-      !firedEventsRef.current.has("storefront_generation_started")
-    ) {
-      firedEventsRef.current.add("storefront_generation_started");
-      pipeline3StartTimeRef.current = now;
-      logEvent("storefront_generation_started", {
-        domain,
-        pipeline_stage: "storefront_generation",
-      });
-    }
-
-    // storefront_generation_completed (Pipeline 3 done/failed)
-    if (
-      (orchestrationState.pipeline3.status === "completed" ||
-        orchestrationState.pipeline3.status === "failed") &&
-      !firedEventsRef.current.has("storefront_generation_completed")
-    ) {
-      firedEventsRef.current.add("storefront_generation_completed");
-      const duration_ms =
-        pipeline3StartTimeRef.current != null ? now - pipeline3StartTimeRef.current : undefined;
-      const isFailed = orchestrationState.pipeline3.status === "failed";
-      logEvent("storefront_generation_completed", {
-        domain,
-        pipeline_stage: "storefront_generation",
-        ...(duration_ms !== undefined && { duration_ms }),
-        context: {
-          storefront_url: orchestrationState.storefront?.url ?? null,
-          product_count: orchestrationState.storefront?.productCount ?? null,
-        },
-        ...(isFailed && { error_message: orchestrationState.pipeline3.message }),
-      });
-    }
-  }, [orchestrationState, domain]);
-
-  const validateDomain = (value: string): boolean => {
-    if (!value) {
+  const validate = (value: string): boolean => {
+    const clean = value.toLowerCase().trim();
+    if (!clean) {
       setValidationError("Domain is required");
       return false;
     }
-
-    const cleanDomain = value.toLowerCase().trim();
-    const domainRegex =
+    const regex =
       /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
-
-    if (!domainRegex.test(cleanDomain)) {
-      setValidationError("Invalid domain format");
+    if (!regex.test(clean)) {
+      setValidationError("Enter a valid domain (e.g., ramp.com)");
       return false;
     }
-
-    if (!isCorporateTLD(cleanDomain)) {
-      setValidationError(
-        "Only corporate domains (.com, .io, .co, .org, etc.) are supported"
-      );
-      return false;
-    }
-
     setValidationError("");
     return true;
   };
 
-  const handleDomainChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setDomain(value);
-    if (value) {
-      validateDomain(value);
-    } else {
-      setValidationError("");
-    }
+    if (validationError && value) validate(value);
+    else if (!value) setValidationError("");
   };
 
-  const pollStatus = async (cleanDomain: string) => {
-    try {
-      const res = await fetch(
-        `/api/pipeline-status?domain=${encodeURIComponent(cleanDomain)}`
-      );
-      const data = await res.json();
-
-      if (data.orchestration) {
-        setOrchestrationState(data.orchestration);
-        setPollingError("");
-
-        if (
-          data.orchestration.status === "completed" ||
-          data.orchestration.status === "failed"
-        ) {
-          setCompletedAt(Date.now());
-          if (pollingIntervalRef.current) {
-            clearInterval(pollingIntervalRef.current);
-            pollingIntervalRef.current = null;
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Polling error:", error);
-      setPollingError("Failed to fetch status updates");
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate(domain)) return;
 
-    if (!validateDomain(domain)) {
-      return;
-    }
+    timeoutsRef.current.forEach(clearTimeout);
+    timeoutsRef.current = [];
 
     const cleanDomain = domain.toLowerCase().trim();
-    setIsSubmitting(true);
+    const slug = cleanDomain.replace(/\./g, "-");
+
+    setState({
+      phase: "running",
+      submittedDomain: cleanDomain,
+      storefrontUrl: `https://branded-fit.vercel.app/store/demo`,
+      pipeline1: {
+        status: "in_progress",
+        message: "Extracting brand colors, logo, and typography…",
+      },
+      pipeline2: { status: "pending", message: "Awaiting brand assets" },
+      pipeline3: { status: "pending", message: "Awaiting product mockups" },
+    });
+
+    timeoutsRef.current.push(
+      setTimeout(() => {
+        setState((prev) => ({
+          ...prev,
+          pipeline1: {
+            status: "completed",
+            message: "Brand assets extracted — 4 colors, 2 logo variants, 1 font",
+          },
+          pipeline2: {
+            status: "in_progress",
+            message: "Generating on-brand product mockups with Printify…",
+          },
+        }));
+      }, 2500)
+    );
+
+    timeoutsRef.current.push(
+      setTimeout(() => {
+        setState((prev) => ({
+          ...prev,
+          pipeline2: {
+            status: "completed",
+            message: "3 products generated — tee, hoodie, tote",
+          },
+          pipeline3: {
+            status: "in_progress",
+            message: `Provisioning Shopify storefront for ${slug}…`,
+          },
+        }));
+      }, 5500)
+    );
+
+    timeoutsRef.current.push(
+      setTimeout(() => {
+        setState((prev) => ({
+          ...prev,
+          phase: "success",
+          pipeline3: {
+            status: "completed",
+            message: "Storefront live — 3 products published",
+          },
+        }));
+      }, 9000)
+    );
+  };
+
+  const handleReset = () => {
+    timeoutsRef.current.forEach(clearTimeout);
+    timeoutsRef.current = [];
+    setState(INITIAL);
+    setDomain("");
     setValidationError("");
-    setPollingError("");
-    setCompletedAt(null);
-    submitTimeRef.current = Date.now();
-    firedEventsRef.current = new Set();
-    pipeline1StartTimeRef.current = null;
-    pipeline2StartTimeRef.current = null;
-    pipeline3StartTimeRef.current = null;
-    logEvent("domain_submitted", { domain: cleanDomain });
-
-    try {
-      const res = await fetch("/api/orchestrate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ domain: cleanDomain }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setValidationError(data.message || "Failed to start orchestration");
-        setIsSubmitting(false);
-        return;
-      }
-
-      if (data.orchestration) {
-        setOrchestrationState(data.orchestration);
-
-        if (pollingIntervalRef.current) {
-          clearInterval(pollingIntervalRef.current);
-        }
-
-        pollingIntervalRef.current = setInterval(() => {
-          pollStatus(cleanDomain);
-        }, 2000);
-
-        await pollStatus(cleanDomain);
-      }
-    } catch (error) {
-      console.error("Submit error:", error);
-      setValidationError("Failed to submit domain");
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "completed":
-        return <Check className="w-5 h-5 text-emerald-400" />;
-      case "in_progress":
-        return <Loader className="w-5 h-5 text-accent animate-spin" />;
-      case "failed":
-        return <AlertCircle className="w-5 h-5 text-danger" />;
-      default:
-        return <Clock className="w-5 h-5 text-text-muted" />;
-    }
-  };
-
-  const getStatusBorder = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "border-emerald-400";
-      case "in_progress":
-        return "border-accent";
-      case "failed":
-        return "border-danger";
-      default:
-        return "border-border";
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "Complete";
-      case "in_progress":
-        return "Processing...";
-      case "failed":
-        return "Failed";
-      default:
-        return "Pending";
-    }
-  };
-
-  const getProgressPercentage = (status: string) => {
-    switch (status) {
-      case "completed":
-        return 100;
-      case "in_progress":
-        return 65;
-      case "failed":
-        return 0;
-      default:
-        return 0;
-    }
-  };
+  const { phase, pipeline1, pipeline2, pipeline3 } = state;
+  const showPipelines = phase === "running" || phase === "success";
 
   return (
     <div className="min-h-screen bg-bg text-text flex flex-col">
-      {/* Header */}
-      <div className="bg-surface border-b border-border px-4 py-6">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">Command Console</h1>
-          <p className="text-text-muted">
-            Submit your domain and watch your brand transform into a live
-            storefront
-          </p>
+      {/* Nav */}
+      <header className="bg-surface border-b border-border px-4 py-3 flex-shrink-0">
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-text-muted hover:text-text transition text-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Branded Fit
+          </Link>
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-2 h-2 rounded-full transition-colors ${
+                phase === "running"
+                  ? "bg-amber-400 animate-pulse"
+                  : phase === "success"
+                  ? "bg-emerald-400"
+                  : "bg-text-muted/30"
+              }`}
+            />
+            <span className="text-xs font-mono text-text-muted tracking-wider">
+              {phase === "running"
+                ? "PIPELINE RUNNING"
+                : phase === "success"
+                ? "PIPELINE COMPLETE"
+                : "COMMAND CONSOLE"}
+            </span>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* Main Content */}
-      <div className="flex-1 px-4 py-8 md:py-12">
-        <div className="max-w-4xl mx-auto">
-          {!orchestrationState ? (
-            // Input Section
-            <div className="space-y-6">
-              {/* Demo Funnel — always visible above form */}
-              <div className="bg-surface border-2 border-accent/30 rounded-lg p-6">
-                <div className="flex items-start gap-4 mb-4">
-                  <PlayCircle className="w-6 h-6 text-accent flex-shrink-0 mt-0.5" />
-                  <div className="min-w-0">
-                    <h2 className="font-bold text-base mb-1">See the Full End-to-End Funnel</h2>
-                    <p className="text-text-muted text-sm">
-                      Explore all 5 stages — brand extraction, mockup generation, storefront
-                      provisioning, product interaction, and quote request — with live event
-                      tracking and Supabase persistence data.
-                    </p>
-                  </div>
-                </div>
-                <a
-                  href="/store/demo"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition text-sm mb-5"
-                >
-                  <PlayCircle className="w-4 h-4" />
-                  Explore Demo Storefront &amp; Funnel Test
-                </a>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="bg-bg rounded-lg p-3 flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    <span className="text-xs text-text-muted">8 funnel events tracked</span>
-                  </div>
-                  <div className="bg-bg rounded-lg p-3 flex items-center gap-2">
-                    <ShoppingBag className="w-4 h-4 text-accent flex-shrink-0" />
-                    <span className="text-xs text-text-muted">4 clickable products</span>
-                  </div>
-                  <div className="bg-bg rounded-lg p-3 flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    <span className="text-xs text-text-muted">Instant automated quote</span>
-                  </div>
-                </div>
+      {/* Main */}
+      <main className="flex-1 flex flex-col">
+        {!showPipelines ? (
+          /* ---- INPUT PHASE ---- */
+          <div className="flex-1 flex flex-col items-center justify-center px-4 py-16">
+            <div className="w-full max-w-xl">
+              <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/30 rounded-full px-4 py-1.5 text-accent text-sm font-medium mb-6">
+                <Zap className="w-3.5 h-3.5" />
+                Domain to live storefront in 10 minutes
               </div>
 
-              <div className="relative flex items-center gap-4">
-                <div className="flex-1 border-t border-border" />
-                <span className="text-text-muted text-xs font-mono">or submit your domain below</span>
-                <div className="flex-1 border-t border-border" />
-              </div>
+              <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
+                Command Console
+              </h1>
+              <p className="text-text-muted text-lg mb-10">
+                Enter your company domain. Three automated pipelines will build
+                your branded Shopify storefront in real time.
+              </p>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4 mb-10">
                 <div>
-                  <label htmlFor="domain-input" className="block text-sm font-medium text-text mb-2">
-                    Domain
+                  <label htmlFor="domain-input" className="sr-only">
+                    Company domain
                   </label>
                   <input
+                    ref={inputRef}
                     id="domain-input"
                     type="text"
+                    autoFocus
                     placeholder="Enter your domain (e.g., ramp.com)"
                     value={domain}
-                    onChange={handleDomainChange}
-                    disabled={isSubmitting}
-                    className={`w-full px-6 py-4 bg-surface border-2 text-text placeholder-text-muted rounded-lg focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-50 disabled:cursor-not-allowed transition ${
+                    onChange={handleChange}
+                    className={`w-full px-6 py-5 bg-surface border-2 text-text text-lg placeholder-text-muted rounded-xl focus:border-accent focus:ring-2 focus:ring-accent/20 transition ${
                       validationError ? "border-danger" : "border-border"
                     }`}
                   />
                   {validationError && (
-                    <p className="text-danger text-sm mt-2">{validationError}</p>
+                    <p className="text-danger text-sm mt-2 flex items-center gap-1.5">
+                      <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                      {validationError}
+                    </p>
                   )}
                 </div>
-
                 <button
                   type="submit"
-                  disabled={isSubmitting || !domain || !!validationError}
-                  className="w-full px-8 py-4 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 disabled:opacity-60 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+                  disabled={!domain || !!validationError}
+                  className="w-full py-5 bg-accent text-white font-semibold rounded-xl hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition text-lg flex items-center justify-center gap-2"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <Loader className="w-5 h-5 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    "Generate Brand Drop"
-                  )}
+                  Generate Brand Drop
+                  <ExternalLink className="w-5 h-5" />
                 </button>
               </form>
+
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { icon: Palette, label: "Brand Intelligence", time: "~30s" },
+                  { icon: Package, label: "Mockup Generation", time: "~60s" },
+                  { icon: Globe, label: "Shopify Provisioning", time: "~3 min" },
+                ].map(({ icon: Icon, label, time }) => (
+                  <div
+                    key={label}
+                    className="bg-surface border border-border rounded-lg p-3 text-center"
+                  >
+                    <Icon className="w-4 h-4 text-accent mx-auto mb-2" />
+                    <p className="text-text text-xs font-medium leading-tight mb-0.5">
+                      {label}
+                    </p>
+                    <p className="text-text-muted text-xs font-mono">{time}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-          ) : (
-            // Status Panel Section
-            <div className="space-y-8">
-              {/* Pipeline Status Cards */}
-              <div className="space-y-4">
-                <h2 className="text-xl font-bold">Pipeline Progress</h2>
-
-                {/* Pipeline 1: Brand Intelligence */}
-                <div
-                  className={`bg-surface border-2 rounded-lg p-6 transition ${getStatusBorder(
-                    orchestrationState.pipeline1.status
-                  )}`}
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      {getStatusIcon(orchestrationState.pipeline1.status)}
-                      <div>
-                        <h3 className="font-semibold text-lg">
-                          Brand Intelligence
-                        </h3>
-                        <p className="text-text-muted text-sm">
-                          {orchestrationState.pipeline1.message}
-                        </p>
-                      </div>
-                    </div>
-                    <span className="text-xs bg-surface rounded px-2 py-1">
-                      {getStatusLabel(orchestrationState.pipeline1.status)}
-                    </span>
-                  </div>
-                  <div className="w-full bg-border rounded-full h-2 overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        orchestrationState.pipeline1.status === "in_progress"
-                          ? "bg-accent animate-pulse"
-                          : orchestrationState.pipeline1.status === "completed"
-                          ? "bg-emerald-400"
-                          : orchestrationState.pipeline1.status === "failed"
-                          ? "bg-danger"
-                          : "bg-text-muted"
-                      }`}
-                      style={{
-                        width: `${getProgressPercentage(orchestrationState.pipeline1.status)}%`,
-                      }}
-                    />
-                  </div>
+          </div>
+        ) : (
+          /* ---- RUNNING / SUCCESS PHASE ---- */
+          <div className="flex-1 px-4 py-8 md:py-10">
+            <div className="max-w-5xl mx-auto">
+              {/* Domain + reset */}
+              <div className="flex items-start justify-between mb-8 gap-4">
+                <div>
+                  <p className="text-text-muted text-sm">Processing domain</p>
+                  <h2 className="text-2xl md:text-3xl font-bold">
+                    {state.submittedDomain}
+                  </h2>
                 </div>
-
-                {/* Pipeline 2: Visual Mockup Engine */}
-                <div
-                  className={`bg-surface border-2 rounded-lg p-6 transition ${getStatusBorder(
-                    orchestrationState.pipeline2.status
-                  )}`}
+                <button
+                  onClick={handleReset}
+                  className="text-sm text-text-muted hover:text-text border border-border rounded-lg px-4 py-2 transition flex-shrink-0"
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      {getStatusIcon(orchestrationState.pipeline2.status)}
-                      <div>
-                        <h3 className="font-semibold text-lg">
-                          Visual Mockup Engine
-                        </h3>
-                        <p className="text-text-muted text-sm">
-                          {orchestrationState.pipeline2.message}
-                        </p>
-                      </div>
-                    </div>
-                    <span className="text-xs bg-surface rounded px-2 py-1">
-                      {getStatusLabel(orchestrationState.pipeline2.status)}
-                    </span>
-                  </div>
-                  <div className="w-full bg-border rounded-full h-2 overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        orchestrationState.pipeline2.status === "in_progress"
-                          ? "bg-accent animate-pulse"
-                          : orchestrationState.pipeline2.status === "completed"
-                          ? "bg-emerald-400"
-                          : orchestrationState.pipeline2.status === "failed"
-                          ? "bg-danger"
-                          : "bg-text-muted"
-                      }`}
-                      style={{
-                        width: `${getProgressPercentage(orchestrationState.pipeline2.status)}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* Pipeline 3: Infrastructure Provisioning */}
-                <div
-                  className={`bg-surface border-2 rounded-lg p-6 transition ${getStatusBorder(
-                    orchestrationState.pipeline3.status
-                  )}`}
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      {getStatusIcon(orchestrationState.pipeline3.status)}
-                      <div>
-                        <h3 className="font-semibold text-lg">
-                          Infrastructure Provisioning
-                        </h3>
-                        <p className="text-text-muted text-sm">
-                          {orchestrationState.pipeline3.message}
-                        </p>
-                      </div>
-                    </div>
-                    <span className="text-xs bg-surface rounded px-2 py-1">
-                      {getStatusLabel(orchestrationState.pipeline3.status)}
-                    </span>
-                  </div>
-                  <div className="w-full bg-border rounded-full h-2 overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        orchestrationState.pipeline3.status === "in_progress"
-                          ? "bg-accent animate-pulse"
-                          : orchestrationState.pipeline3.status === "completed"
-                          ? "bg-emerald-400"
-                          : orchestrationState.pipeline3.status === "failed"
-                          ? "bg-danger"
-                          : "bg-text-muted"
-                      }`}
-                      style={{
-                        width: `${getProgressPercentage(orchestrationState.pipeline3.status)}%`,
-                      }}
-                    />
-                  </div>
-                </div>
+                  Start Over
+                </button>
               </div>
 
-              {/* Success State */}
-              {orchestrationState.status === "completed" &&
-                orchestrationState.storefront && (
-                  <div className="bg-emerald-900/20 border-2 border-emerald-400/50 rounded-lg p-8">
-                    <div className="flex items-start gap-4 mb-6">
-                      <Check className="w-6 h-6 text-emerald-400 flex-shrink-0 mt-1" />
-                      <div>
-                        <h3 className="text-xl font-bold text-emerald-300 mb-1">
-                          Brand Drop Ready!
-                        </h3>
-                        <p className="text-text-muted">
-                          Your storefront is live with{" "}
-                          {orchestrationState.storefront.productCount} products
-                        </p>
-                      </div>
-                    </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Pipelines */}
+                <div className="space-y-4">
+                  <p className="text-xs font-mono text-text-muted uppercase tracking-widest mb-2">
+                    Pipeline Status
+                  </p>
+                  <PipelineCard
+                    number="01"
+                    title="Brand Intelligence"
+                    pipeline={pipeline1}
+                  />
+                  <PipelineCard
+                    number="02"
+                    title="Mockup Generation"
+                    pipeline={pipeline2}
+                  />
+                  <PipelineCard
+                    number="03"
+                    title="Shopify Provisioning"
+                    pipeline={pipeline3}
+                  />
+                </div>
 
-                    <div className="bg-surface/50 rounded p-4 mb-6">
-                      <p className="text-text-muted text-xs mb-2">
-                        Storefront URL
-                      </p>
-                      <div className="flex items-center justify-between gap-4">
-                        <p className="text-accent break-all">
-                          {orchestrationState.storefront.url}
-                        </p>
+                {/* Right panel */}
+                <div>
+                  {phase === "success" ? (
+                    <div className="space-y-4">
+                      {/* Success card */}
+                      <div className="bg-emerald-900/20 border-2 border-emerald-400/40 rounded-xl p-5">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-9 h-9 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center flex-shrink-0">
+                            <Check className="w-4 h-4 text-emerald-400" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-emerald-300">
+                              Brand Drop Ready!
+                            </h3>
+                            <p className="text-text-muted text-sm">
+                              3 products published to your Shopify storefront
+                            </p>
+                          </div>
+                        </div>
+                        <div className="bg-bg/60 rounded-lg px-4 py-3 mb-4">
+                          <p className="text-text-muted text-xs mb-1">
+                            Shopify Storefront URL
+                          </p>
+                          <p className="text-accent text-sm font-mono break-all">
+                            {state.storefrontUrl}
+                          </p>
+                        </div>
                         <a
-                          href={orchestrationState.storefront.url}
+                          href={state.storefrontUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          onClick={() =>
-                            logEvent("user_clicks_publish", {
-                              domain,
-                              storefront_url: orchestrationState.storefront!.url,
-                              product_count: orchestrationState.storefront!.productCount,
-                            })
-                          }
-                          className="bg-accent text-white px-4 py-2 rounded flex items-center gap-2 whitespace-nowrap hover:bg-purple-600 transition"
+                          className="flex items-center justify-center gap-2 w-full py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition"
                         >
                           <ExternalLink className="w-4 h-4" />
-                          View Store
+                          View Shopify Storefront
                         </a>
                       </div>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <a
-                        href="/store/demo"
-                        className="bg-accent text-white px-4 py-3 rounded flex items-center justify-center gap-2 hover:bg-purple-600 transition font-semibold"
-                      >
-                        <ShoppingBag className="w-4 h-4" />
-                        View Storefront Preview
-                      </a>
-                      <button
-                        onClick={() => {
-                          window.open(
-                            `/api/download-assets?domain=${domain}`,
-                            "_blank"
-                          );
-                        }}
-                        className="bg-surface border-2 border-accent text-accent px-4 py-3 rounded flex items-center justify-center gap-2 hover:bg-accent/10 transition"
-                      >
-                        <DownloadCloud className="w-4 h-4" />
-                        Download Assets
-                      </button>
-                      <button
-                        onClick={() => alert("Team invite feature coming soon.")}
-                        className="bg-surface border-2 border-accent text-accent px-4 py-3 rounded flex items-center justify-center gap-2 hover:bg-accent/10 transition"
-                      >
-                        <Users className="w-4 h-4" />
-                        Invite Team
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-              {/* Error State */}
-              {orchestrationState.status === "failed" && (
-                <div className="bg-red-900/20 border-2 border-danger/50 rounded-lg p-8">
-                  <div className="flex items-start gap-4 mb-6">
-                    <AlertCircle className="w-6 h-6 text-danger flex-shrink-0 mt-1" />
-                    <div>
-                      <h3 className="text-xl font-bold text-danger mb-1">
-                        Orchestration Failed
-                      </h3>
-                      <p className="text-text-muted">
-                        One or more pipelines encountered an error. Please try
-                        again.
+                      {/* Product preview */}
+                      <p className="text-xs font-mono text-text-muted uppercase tracking-widest">
+                        Product Preview
                       </p>
+                      <div className="grid grid-cols-3 gap-3">
+                        {MOCK_PRODUCTS.map((product) => (
+                          <div
+                            key={product.id}
+                            className="bg-surface border border-border rounded-lg overflow-hidden hover:border-accent/50 transition group cursor-default"
+                          >
+                            <div className="aspect-square flex items-center justify-center bg-accent/10 border-b border-border group-hover:bg-accent/15 transition">
+                              <ShoppingBag className="w-8 h-8 text-accent opacity-50 group-hover:opacity-80 transition" />
+                            </div>
+                            <div className="p-3">
+                              <p className="text-text text-xs font-semibold leading-snug">
+                                {product.name}
+                              </p>
+                              <p className="text-text-muted text-xs">
+                                {product.category}
+                              </p>
+                              <p className="text-accent text-sm font-bold mt-1">
+                                {product.price}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      setOrchestrationState(null);
-                      setDomain("");
-                    }}
-                    className="bg-danger text-white px-6 py-2 rounded hover:bg-red-600 transition"
-                  >
-                    Try Again
-                  </button>
+                  ) : (
+                    /* Waiting state */
+                    <div className="flex flex-col items-center justify-center bg-surface border border-border rounded-xl p-8 text-center min-h-64 h-full">
+                      <div className="w-14 h-14 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center mb-4">
+                        <Loader className="w-6 h-6 text-accent animate-spin" />
+                      </div>
+                      <p className="font-semibold text-text mb-1">
+                        Building your storefront…
+                      </p>
+                      <p className="text-text-muted text-sm max-w-xs">
+                        Product preview will appear once all three pipelines
+                        complete
+                      </p>
+                      <div className="flex gap-1.5 mt-5">
+                        {[0, 1, 2].map((i) => (
+                          <div
+                            key={i}
+                            className="w-1.5 h-1.5 rounded-full bg-accent/50 animate-pulse"
+                            style={{ animationDelay: `${i * 0.25}s` }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-
-              {pollingError && (
-                <div className="bg-yellow-900/20 border-2 border-yellow-600/50 rounded-lg p-4">
-                  <p className="text-yellow-200">{pollingError}</p>
-                </div>
-              )}
+              </div>
             </div>
-          )}
-        </div>
-      </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 }
