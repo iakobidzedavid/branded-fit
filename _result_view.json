@@ -1,32 +1,45 @@
 {
   "view_type": "report",
-  "headline": "MVBP E2E validation on 5 domains (Ramp, Vanta, Linear, Retool, Notion) confirms 10-min SLA + 96% brand fidelity—GO for pilot.",
+  "headline": "Discovery call & outreach templates created: 5-part execution framework with email templates, call script, objection playbook, and tracker.",
   "primary_stat": {
-    "label": "Overall MVBP Readiness",
-    "value": "9/10 ✅ GO"
+    "label": "Production-ready templates",
+    "value": "5 parts (emails, script, playbook, tracker, synthesis guide)"
   },
   "highlights": [
-    "All 5 domains processed successfully: 80% end-to-end conversion (4/5 published, 1 held for manual QA)",
-    "10-minute SLA validated: P50=4.2 min, P90=7.8 min (all ≤10 min target)",
-    "Brand fidelity exceeds 95% target: 96% pass rate (24/25 checks); avg fidelity score 4.4/5.0",
-    "Analytics instrumentation solid: 100% event persistence (50/50 events), 287ms P90 latency, 6/6 event types logged",
-    "Dashboard rendering confirmed: /admin/analytics displays live conversion funnel, time-series chart, event counts with real data",
-    "Product seeding consistent: 16.2 avg products, 32.4 avg SKUs per domain (>target of 12–20 products, 2–3 SKU/product)",
-    "Minor issues resolved: Retool logo pixelation (acceptable), Notion masonry mobile compression (auto-adjusted)",
-    "Step 22 assumptions CONFIRMED with confidence 9/10: 10-min SLA (10/10), 95% fidelity (10/10), analytics reliability (10/10)"
+    "5 email outreach variants (warm-intro, peer referral, cold-to-warm, objection response, multi-stakeholder routing)",
+    "30–40 minute discovery call script with Van Westendorp pricing ladder (4 anchors: $2K, $4.8K, $24K, $36K)",
+    "Comprehensive tracker template (29 fields per prospect: WTP perceptions, objections, pilot intent, verbatim quotes)",
+    "Objection handling playbook for 4 top objections (vendor lock-in, brand fidelity, multi-brand support, procurement)",
+    "Post-call synthesis guide to aggregate WTP distribution and objection themes across 5+ calls",
+    "Pre-call preparation checklist and example completed tracker entry"
   ],
   "next_actions": [
     {
-      "label": "Deploy MVBP to production",
-      "task_template": "Deploy branded-fit.vercel.app to production with SSL/TLS; migrate analytics schema to live Supabase"
+      "label": "Execute discovery calls with 5+ warm-outreach respondents",
+      "task_template": "discovery_call_execution",
+      "args": {
+        "template": "documents/discovery_call_templates_and_outreach.md",
+        "target_calls": 5,
+        "call_duration_min": 25,
+        "call_duration_max": 40
+      }
     },
     {
-      "label": "Execute 2–3 Brand Drop Pilots with high-fit prospects",
-      "task_template": "Sign SOWs with Ramp, Vanta, Linear prospects; deploy live storefronts; collect 30-day NPS surveys"
+      "label": "Log all call data into discovery_calls_tracker using Part B template",
+      "task_template": "data_logging",
+      "args": {
+        "tracker_format": "markdown_table_or_airtable",
+        "fields_required": 29,
+        "sample_entry": "Part E"
+      }
     },
     {
-      "label": "Scale test to 10+ domains",
-      "task_template": "Run validation on 5 additional domains (e.g., Stripe, Figma, Airtable, Gusto, AngelList) to confirm scalability"
+      "label": "Synthesize WTP distribution & objections (Part G) for founder decision memo",
+      "task_template": "data_synthesis",
+      "args": {
+        "min_calls_required": 5,
+        "output": "WTP summary table + objection tally"
+      }
     }
   ]
 }
