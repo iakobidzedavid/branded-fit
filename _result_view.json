@@ -1,64 +1,46 @@
 {
   "view_type": "report",
-  "headline": "Pilot Cohort Discovery Call Strategic Plan: Comprehensive 5-call framework to validate annual contract intent, pricing, and Y2 roadmap priorities",
+  "headline": "Discovery Call Framework & Execution Tracker ready for 5-customer pilot validation (Vanta, Linear, Census, Hex, Mercury)",
   "primary_stat": {
-    "label": "Discovery Calls Planned",
-    "value": "5 customers (Vanta, Linear, Census, Hex, Mercury)"
+    "label": "Customers Ready to Interview",
+    "value": "5 (Vanta, Linear, Census, Hex, Mercury)"
   },
   "highlights": [
-    "Complete discovery call script with 8+ open-ended questions structured around 3 critical assumptions (pricing acceptance, brand fidelity importance, annual conversion intent)",
-    "Van Westendorp pricing ladder methodology to quantify $24K/yr Growth tier acceptance across cohort",
-    "45–60 minute call format with parallel assumption validation framework (CONFIRM/GRAY/REFUTE scoring)",
-    "1-page customer brief template (per-call synthesis within 24 hours including NPS, product requests, objections, risk flags)",
-    "Consolidated Pilot Cohort Discovery Synthesis report structure (3–4 pages final) with assumption scorecard, top 3 product requests ranked by frequency, aggregate NPS, conversion intent distribution, Y2 GTM messaging shifts, and risk mitigation",
-    "6-business-day execution timeline (June 12–19) with clear quality gates and post-call responsibilities",
-    "Risk mitigation playbook addressing call cancellations, low candor, inconclusive intent, and conflicting feedback",
-    "Appendices include Van Westendorp example, expected product request themes, messaging shift recommendations, and post-call email template",
-    "Directly advances Step 21 assumption validation (A6: Y2 NRR/retention), Step 23 proof-of-concept (4/5 annual conversion), and GTM messaging readiness by grounding Y2 positioning in real customer voice"
+    "11-question structured discovery guide (45–60 min per call) with Van Westendorp WTP anchors ($2K–$36K)",
+    "Pre-call checklist, real-time scoring template, and post-call synthesis framework for consistent data capture",
+    "Aggregate metrics dashboard to track NPS, brand-fidelity, pricing acceptance, and conversion intent across cohort",
+    "Top 3 product requests ranking system with frequency counting across all 5 customers",
+    "Risk flag detection (pricing objections, product gaps, team adoption) with severity classification",
+    "Production-ready synthesis report template (≥1200 words) grounded in real customer voice and verbatim quotes",
+    "Individual customer brief template for 1-page intent classification, objections, and conversion path",
+    "Quality gate checklist ensuring all 5 calls documented with recordings, transcripts, and verified contact data"
   ],
   "next_actions": [
     {
-      "label": "Schedule 5 Discovery Calls (Target: 4/5 booked by EOD June 12)",
-      "task_template": "schedule_customer_calls",
+      "label": "Schedule 5 discovery calls",
+      "task_template": "Conduct discovery calls with decision makers at Vanta, Linear, Census, Hex, Mercury using provided guide",
       "args": {
-        "customers": ["Vanta", "Linear", "Census", "Hex", "Mercury"],
-        "duration_minutes": 50,
-        "booking_deadline": "2026-06-12T17:00:00Z"
+        "guide_file": "documents/2026-06-12_pilot_customer_discovery_call_guide.md",
+        "tracker_file": "documents/2026-06-12_pilot_customer_discovery_call_tracker.md",
+        "target_completion": "2026-06-26"
       }
     },
     {
-      "label": "Prepare 5 Pre-Call Research Documents (One per customer with pilot context, pain points, warm-path hooks)",
-      "task_template": "create_precall_research",
+      "label": "Synthesize 5 individual briefs",
+      "task_template": "After each call, complete intake form and write 1-page customer brief with intent classification, objections, product requests",
       "args": {
-        "document_count": 5,
-        "due_date": "2026-06-12T23:59:00Z"
+        "format": "markdown",
+        "file_naming": "documents/2026-06-12_[COMPANY]_discovery_brief.md",
+        "required_fields": ["intent_classification", "nps_score", "top_3_objections", "product_requests", "conversion_timeline"]
       }
     },
     {
-      "label": "Conduct Discovery Calls + Complete Customer Briefs (June 12–19, 1-page brief per call within 4 hours)",
-      "task_template": "execute_discovery_calls",
+      "label": "Aggregate synthesis report",
+      "task_template": "Consolidate all 5 briefs into master synthesis report with metrics dashboard, product request ranking, conversion intent %, pricing analysis, Y2 messaging recommendations",
       "args": {
-        "calls_planned": 5,
-        "brief_template": "documents/2026-06-12_pilot_cohort_discovery_call_strategic_plan.md",
-        "completion_date": "2026-06-19T17:00:00Z"
-      }
-    },
-    {
-      "label": "Synthesize Discovery Findings into Final Report (June 20: Consolidate briefs → assumption scorecard → top 3 requests → messaging shifts → risk flags)",
-      "task_template": "synthesize_discovery_results",
-      "args": {
-        "input_briefs_count": 5,
-        "output_report": "documents/2026-06-20_pilot_cohort_discovery_synthesis.md",
-        "due_date": "2026-06-20T23:59:00Z"
-      }
-    },
-    {
-      "label": "Internal Debrief + Roadmap Prioritization (June 21: Founder + Product team review synthesis, prioritize top 2–3 product requests, align Y2 messaging)",
-      "task_template": "internal_debrief",
-      "args": {
-        "attendees": ["founder", "product_lead", "sales_ops"],
-        "agenda": "Review synthesis report, validate assumptions, prioritize roadmap, confirm messaging shifts",
-        "meeting_date": "2026-06-21T10:00:00Z"
+        "file": "documents/2026-06-12_pilot_cohort_discovery_synthesis_report.md",
+        "minimum_word_count": 1200,
+        "required_sections": ["executive_summary", "metrics_dashboard", "top_3_requests", "conversion_analysis", "pricing_gaps", "risk_flags", "y2_messaging_shifts"]
       }
     }
   ]
