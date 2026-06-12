@@ -77,6 +77,7 @@ branded-fit/
     2026-06-08_analytics_step23_step24_instrumentation.md
     2026-06-08_e2e_funnel_test_report.md
     2026-06-08_entonomy_brand_audit.md
+    2026-06-11_analytics_event_spec.md
     DELIVERABLES_CHECKLIST.md
   public/
     mockups/
@@ -99,7 +100,9 @@ branded-fit/
       EventSummaryCards.tsx
       EventTypeTable.tsx
       FunnelChart.tsx
+      PipelineMetricsCards.tsx
       TimeSeriesChart.tsx
+      TimeSeriesFilterPanel.tsx
     lib/
       analytics.ts
       database.types.ts
@@ -123,9 +126,9 @@ Place new files in the correct directories shown above.
 All research, reports, plans, and documents MUST be saved in the
 `docs/` directory with a date prefix (YYYY-MM-DD) for future reference:
 
-  docs/2026-06-11_market_research.md
-  docs/2026-06-11_technical_feasibility.md
-  docs/2026-06-11_competitor_analysis.md
+  docs/2026-06-12_market_research.md
+  docs/2026-06-12_technical_feasibility.md
+  docs/2026-06-12_competitor_analysis.md
 
 Always include the date prefix so future agents know when the document
 was created.
