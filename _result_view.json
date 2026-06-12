@@ -1,0 +1,65 @@
+{
+  "view_type": "report",
+  "headline": "Pilot Cohort Discovery Call Strategic Plan: Comprehensive 5-call framework to validate annual contract intent, pricing, and Y2 roadmap priorities",
+  "primary_stat": {
+    "label": "Discovery Calls Planned",
+    "value": "5 customers (Vanta, Linear, Census, Hex, Mercury)"
+  },
+  "highlights": [
+    "Complete discovery call script with 8+ open-ended questions structured around 3 critical assumptions (pricing acceptance, brand fidelity importance, annual conversion intent)",
+    "Van Westendorp pricing ladder methodology to quantify $24K/yr Growth tier acceptance across cohort",
+    "45–60 minute call format with parallel assumption validation framework (CONFIRM/GRAY/REFUTE scoring)",
+    "1-page customer brief template (per-call synthesis within 24 hours including NPS, product requests, objections, risk flags)",
+    "Consolidated Pilot Cohort Discovery Synthesis report structure (3–4 pages final) with assumption scorecard, top 3 product requests ranked by frequency, aggregate NPS, conversion intent distribution, Y2 GTM messaging shifts, and risk mitigation",
+    "6-business-day execution timeline (June 12–19) with clear quality gates and post-call responsibilities",
+    "Risk mitigation playbook addressing call cancellations, low candor, inconclusive intent, and conflicting feedback",
+    "Appendices include Van Westendorp example, expected product request themes, messaging shift recommendations, and post-call email template",
+    "Directly advances Step 21 assumption validation (A6: Y2 NRR/retention), Step 23 proof-of-concept (4/5 annual conversion), and GTM messaging readiness by grounding Y2 positioning in real customer voice"
+  ],
+  "next_actions": [
+    {
+      "label": "Schedule 5 Discovery Calls (Target: 4/5 booked by EOD June 12)",
+      "task_template": "schedule_customer_calls",
+      "args": {
+        "customers": ["Vanta", "Linear", "Census", "Hex", "Mercury"],
+        "duration_minutes": 50,
+        "booking_deadline": "2026-06-12T17:00:00Z"
+      }
+    },
+    {
+      "label": "Prepare 5 Pre-Call Research Documents (One per customer with pilot context, pain points, warm-path hooks)",
+      "task_template": "create_precall_research",
+      "args": {
+        "document_count": 5,
+        "due_date": "2026-06-12T23:59:00Z"
+      }
+    },
+    {
+      "label": "Conduct Discovery Calls + Complete Customer Briefs (June 12–19, 1-page brief per call within 4 hours)",
+      "task_template": "execute_discovery_calls",
+      "args": {
+        "calls_planned": 5,
+        "brief_template": "documents/2026-06-12_pilot_cohort_discovery_call_strategic_plan.md",
+        "completion_date": "2026-06-19T17:00:00Z"
+      }
+    },
+    {
+      "label": "Synthesize Discovery Findings into Final Report (June 20: Consolidate briefs → assumption scorecard → top 3 requests → messaging shifts → risk flags)",
+      "task_template": "synthesize_discovery_results",
+      "args": {
+        "input_briefs_count": 5,
+        "output_report": "documents/2026-06-20_pilot_cohort_discovery_synthesis.md",
+        "due_date": "2026-06-20T23:59:00Z"
+      }
+    },
+    {
+      "label": "Internal Debrief + Roadmap Prioritization (June 21: Founder + Product team review synthesis, prioritize top 2–3 product requests, align Y2 messaging)",
+      "task_template": "internal_debrief",
+      "args": {
+        "attendees": ["founder", "product_lead", "sales_ops"],
+        "agenda": "Review synthesis report, validate assumptions, prioritize roadmap, confirm messaging shifts",
+        "meeting_date": "2026-06-21T10:00:00Z"
+      }
+    }
+  ]
+}
