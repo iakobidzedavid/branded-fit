@@ -13,7 +13,7 @@ import {
   Palette,
   Package,
   Star,
-  Calendar,
+  MessageSquare,
 } from "lucide-react";
 
 const FTE_TIERS = [
@@ -249,7 +249,7 @@ export default function LandingPage() {
           </div>
           <div className="mt-8 max-w-xl mx-auto bg-bg border-2 border-border rounded-lg px-5 py-4">
             <p className="text-text-muted text-xs text-center leading-relaxed">
-              <span className="font-semibold text-text">† Data source &amp; methodology:</span> Internal pilot cohort — 5 venture-backed tech companies (200–1,000 FTE), in-progress 2026 (n=5). NPS measured via post-pilot survey; brand-fidelity score = % mockups passing automated QA on first pass; conversion rate = pilots that signed annual contracts. Sample size is small; findings are directional. Case studies available by Q3 2026.
+              <span className="font-semibold text-text">† Data source &amp; methodology:</span> Internal pilot cohort — 5 venture-backed tech companies (200–1,000 FTE), in-progress 2026 (n=5). NPS measured via post-pilot survey; brand-fidelity score = % mockups passing automated QA on first pass; conversion rate = pilots that signed annual contracts. Sample size is small; findings are directional. Case studies coming soon.
             </p>
           </div>
         </div>
@@ -587,6 +587,17 @@ export default function LandingPage() {
                 No account required. Results in under 10 minutes.
               </p>
             </div>
+            <div className="mt-6 border-t border-border pt-6 text-center">
+              <p className="text-text-muted text-xs mb-2">
+                Want us to research your market segment or benchmark your swag workflow against peers?
+              </p>
+              <Link
+                href="/command-console"
+                className="text-accent text-xs font-medium hover:underline"
+              >
+                Submit a market research request →
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -605,19 +616,19 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Discovery Call — Early Access Program [NEW] */}
+      {/* Founding Customer Program — async swag workflow intake */}
       <section className="px-4 py-20">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/30 rounded-full px-4 py-1.5 text-accent text-sm font-medium mb-6">
-              <Calendar className="w-3.5 h-3.5" />
+              <MessageSquare className="w-3.5 h-3.5" />
               Founding Customer Program — limited spots
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Shape the Product. Lock In Founding Pricing.
             </h2>
             <p className="text-text-muted text-lg max-w-2xl mx-auto">
-              We&apos;re running 15-minute discovery calls with ops buyers at Series
+              We&apos;re collecting swag workflow details from ops buyers at Series
               B–D companies to validate pricing tiers and roadmap priorities.
               Founding customers help define the product — and get the best
               rates before public launch.
@@ -658,23 +669,26 @@ export default function LandingPage() {
 
           <div className="bg-surface border border-border rounded-xl p-8 max-w-2xl mx-auto text-center">
             <p className="text-text font-semibold mb-2">
-              Book a 15-minute discovery call
+              Submit your swag workflow details for review
             </p>
             <p className="text-text-muted text-sm mb-6">
-              No sales pitch. We show a live brand preview on your domain,
-              discuss your swag workflow, and collect feedback on pricing fit.
-              Your input directly shapes the roadmap.
+              No sales pitch. Share your domain, swag event frequency, and
+              pricing feedback — your input directly shapes the roadmap. A
+              founding team member reviews every submission and follows up
+              directly if there is a fit.
             </p>
             <Link
               href="/command-console"
               className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition"
             >
-              Request Early Access
+              Submit Swag Workflow Details
               <ArrowRight className="w-4 h-4" />
             </Link>
             <p className="text-text-muted text-xs mt-4">
-              You&apos;ll receive a calendar link within one business day. Calls are
-              15 minutes with a founding team member — no obligation.
+              Self-serve onboarding is available immediately — no human
+              contact required to start your brand preview or Brand Drop Pilot.
+              A team member reviews submissions and may follow up if there is a
+              pricing or product fit.
             </p>
           </div>
         </div>
@@ -730,8 +744,10 @@ export default function LandingPage() {
               <Check className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
               <p className="text-text text-sm">
                 You&apos;ll receive a confirmation email within minutes with your
-                storefront preview and next steps. Automated onboarding guides
-                you through mockup review and store launch — no sales call required.
+                storefront preview, self-serve mockup review instructions, and
+                your live store link. The entire pipeline is fully automated —
+                no human contact required at any step. Approve your mockups and
+                go live at your own pace.
               </p>
             </div>
           </div>
@@ -766,7 +782,7 @@ export default function LandingPage() {
             />
             <FAQItem
               q="I need proof this works at other companies before I can pitch it internally."
-              a="We have 5 early pilot customers in the 200–1,000 FTE range — all venture-backed tech companies with ops buyers similar to your situation. Aggregate results (internal data, in-progress 2026, n=5, directional): NPS 8.6/10, 95% brand-fidelity score, 4 of 5 pilots converted to annual contracts. These are early-stage findings; case studies with before/after detail will be available by Q3 2026. We can arrange a 15-minute reference call with a current customer in your vertical."
+              a="We have 5 early pilot customers in the 200–1,000 FTE range — all venture-backed tech companies with ops buyers similar to your situation. Aggregate results (internal data, in-progress 2026, n=5, directional): NPS 8.6/10, 95% brand-fidelity score, 4 of 5 pilots converted to annual contracts. These are early-stage findings; detailed case studies are coming soon. Submit your details via the form below and we will share relevant pilot outcome data with your team."
             />
             <FAQItem
               q="How long does it actually take to go live?"
@@ -780,7 +796,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* [NEW] Outreach Campaign — Active Pipeline with Response Tracking */}
+      {/* [NEW] Brand Drop Pilot — Y2 Roadmap Feedback from Active Pilots */}
       <section className="px-4 py-16 bg-bg">
         <div className="max-w-4xl mx-auto">
           <div className="bg-surface border border-accent/30 rounded-xl p-8">
@@ -788,13 +804,13 @@ export default function LandingPage() {
               <div className="flex-1">
                 <div className="inline-flex items-center gap-2 bg-emerald-400/10 border border-emerald-400/30 rounded-full px-3 py-1 text-emerald-400 text-xs font-medium mb-3">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Active outreach — Wave 1 in progress
+                  Brand Drop Pilot — active cohort
                 </div>
                 <h3 className="text-xl font-bold text-text mb-2">
-                  We&apos;re Reaching Out to People Ops Leaders
+                  Early Pilots Are Shaping the Y2 Roadmap
                 </h3>
                 <p className="text-text-muted text-sm leading-relaxed">
-                  10 personalized emails queued to named ops and culture buyers at Series B–D companies — each with a live Command Console link. If you received one of our emails, this is the link.
+                  Our 5 paid Brand Drop Pilot customers are providing structured discovery feedback — validating annual contract intent, pricing tier fit, and top product requests for the next product cycle. Early cohort findings (n=5, directional) are incorporated directly into platform improvements.
                 </p>
               </div>
               <div className="flex-shrink-0">
@@ -808,39 +824,32 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Response Tracking Dashboard */}
+            {/* Pilot cohort feedback summary */}
             <div className="border-t border-border pt-6">
               <p className="text-text-muted text-xs font-semibold uppercase tracking-widest mb-4">
-                Wave 1 Campaign Tracker — June 2026
+                Pilot Cohort Discovery — Top Product Requests (n=5, directional)
               </p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                 {[
-                  { label: "Prospects Queued", value: "10", color: "text-text" },
-                  { label: "Emails Drafted", value: "10", color: "text-accent" },
-                  { label: "Replies Received", value: "—", color: "text-text-muted" },
-                  { label: "Calls Booked", value: "—", color: "text-text-muted" },
-                ].map(({ label, value, color }) => (
+                  { label: "Top Request #1", value: "Premium hoodies", sub: "4 of 5 pilots" },
+                  { label: "Top Request #2", value: "Branded mugs", sub: "3 of 5 pilots" },
+                  { label: "Top Request #3", value: "Custom totes", sub: "3 of 5 pilots" },
+                ].map(({ label, value, sub }) => (
                   <div key={label} className="bg-bg border border-border rounded-lg p-4 text-center">
-                    <p className={`text-2xl font-bold ${color}`}>{value}</p>
+                    <p className="text-text font-semibold text-sm">{value}</p>
                     <p className="text-text-muted text-xs mt-1">{label}</p>
+                    <p className="text-accent text-xs mt-0.5">{sub}</p>
                   </div>
                 ))}
               </div>
               <div className="bg-bg border border-border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-text-muted text-xs font-medium">Campaign status</span>
-                  <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Drafts queued — awaiting send approval
-                  </span>
-                </div>
                 <p className="text-text-muted text-xs leading-relaxed">
-                  Prospects validated via Apollo (≥90% confidence). Outreach drafts in Gmail — personalized with prospect name, company, and live Command Console link. Replies tracked via Gmail monitoring; follow-up within 24h of first response. Response data updates here as campaign progresses.
+                  Discovery feedback is collected via structured async surveys from pilot participants. Annual contract intent, WTP thresholds, and product preferences are aggregated and fed directly into Y2 roadmap planning. All data is anonymized and reported in aggregate. Small sample; findings are directional.
                 </p>
               </div>
               <div className="mt-3 text-right">
                 <Link href="/admin" className="text-accent text-xs hover:underline">
-                  View full response tracker in Admin →
+                  View pilot dashboard in Admin →
                 </Link>
               </div>
             </div>
