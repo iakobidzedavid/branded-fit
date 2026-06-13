@@ -235,16 +235,19 @@ export default function LandingPage() {
             <div className="text-center">
               <p className="text-4xl font-bold text-accent">8.6<span className="text-base align-super text-accent/60">†</span></p>
               <p className="text-text-muted text-sm mt-1">Average NPS score</p>
+              <span className="inline-block mt-1.5 text-xs bg-bg border border-border rounded-full px-2.5 py-0.5 text-text-muted font-medium">n=5, directional</span>
             </div>
             <div className="text-center">
               <p className="text-4xl font-bold text-emerald-400">4 / 5<span className="text-base align-super text-emerald-400/60">†</span></p>
               <p className="text-text-muted text-sm mt-1">
                 Pilots → annual contracts
               </p>
+              <span className="inline-block mt-1.5 text-xs bg-bg border border-border rounded-full px-2.5 py-0.5 text-text-muted font-medium">n=5, directional</span>
             </div>
             <div className="text-center">
               <p className="text-4xl font-bold text-text">95%<span className="text-base align-super text-text/40">†</span></p>
               <p className="text-text-muted text-sm mt-1">Brand-fidelity score</p>
+              <span className="inline-block mt-1.5 text-xs bg-bg border border-border rounded-full px-2.5 py-0.5 text-text-muted font-medium">n=5, directional</span>
             </div>
           </div>
           <div className="mt-8 max-w-xl mx-auto bg-bg border-2 border-border rounded-lg px-5 py-4">
@@ -793,6 +796,56 @@ export default function LandingPage() {
               a="The $24K/year Growth tier includes: a fully provisioned Shopify storefront with your branding, access to 12 core product types (tees, hoodies, hats, totes, mugs, and more), on-demand print fulfillment with 14-day median delivery, brand-fidelity QA on every order run, and storefront admin access for your team. There are no per-order platform fees beyond product cost. Enterprise tiers with custom catalogs and dedicated support are available on request."
             />
           </div>
+        </div>
+      </section>
+
+      {/* [NEW] Platform Validation Status */}
+      <section className="px-4 py-16 bg-surface border-y border-border">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 bg-emerald-400/10 border border-emerald-400/30 rounded-full px-3 py-1 text-emerald-400 text-xs font-medium mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              Pipeline validation — live
+            </div>
+            <h2 className="text-2xl font-bold text-text mb-2">
+              What We&apos;ve Validated So Far
+            </h2>
+            <p className="text-text-muted text-sm max-w-xl mx-auto">
+              Every core pipeline component has been tested against real corporate domains. These are live validation results from the pilot cohort — not hypotheticals.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              {
+                label: "Brand Extraction",
+                detail: "Logo, hex colors, and typography extracted on real corporate domains via Brandfetch",
+              },
+              {
+                label: "Mockup Generation",
+                detail: "Photo-quality product mockups generated via Printify pipeline in under 60 seconds",
+              },
+              {
+                label: "Shopify Provisioning",
+                detail: "End-to-end storefront deployment confirmed in under 10 minutes on live accounts",
+              },
+              {
+                label: "Brand Fidelity QA",
+                detail: "95% first-pass QA rate — mockups pass automated brand check without manual revision (n=5)†",
+              },
+            ].map(({ label, detail }) => (
+              <div key={label} className="bg-bg border border-border rounded-xl p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  <span className="text-xs text-emerald-400 font-semibold">Validated</span>
+                </div>
+                <p className="font-semibold text-text text-sm mb-1">{label}</p>
+                <p className="text-text-muted text-xs leading-relaxed">{detail}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-text-muted text-xs text-center mt-6">
+            † Internal validation data from pilot cohort (n=5 companies, in-progress 2026). Small sample; findings directional.
+          </p>
         </div>
       </section>
 
