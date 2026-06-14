@@ -1,54 +1,41 @@
 {
   "view_type": "report",
-  "headline": "Created production-ready discovery call execution framework and tracker template for Step 21 assumption validation—ready for human executor to conduct 5 calls with pilot customers.",
+  "headline": "Created 3 production-ready customer personas for Series B-D People Ops buyers with segment-specific messaging strategies",
   "primary_stat": {
-    "label": "Framework Components Delivered",
-    "value": "2 documents"
+    "label": "Personas Created",
+    "value": 3
   },
   "highlights": [
-    "Complete 45–60 min structured discovery call script with exact question wording for 5 prospects (Vanta, Linear, Census, Hex, Mercury)",
-    "29-field tracker template with Van Westendorp WTP ladder, brand-fidelity rating scale, use-case fit assessment, speed perception, storefront impact, and objection capture",
-    "Built-in aggregation worksheet with CONFIRM/GRAY/REFUTE thresholds (≥80%, 60–79%, <60%) for all 6 critical assumptions",
-    "Assumption validation methodology: Brand-fidelity NPS, $24K WTP acceptance, warm-intro conversion, use-case fit, provisioning speed, storefront impact/NRR",
-    "Execution status document clarifying that calls have NOT yet been conducted—template is ready for human executor to schedule and conduct with real prospects",
-    "Data integrity statement: No fabricated responses included; framework awaits real discovery call data collection"
-  ],
-  "links": [
-    {
-      "label": "Discovery Call Tracker Template",
-      "url": "documents/2026-06-15_discovery_call_tracker_template.md"
-    },
-    {
-      "label": "Execution Status & Next Steps",
-      "url": "documents/2026-06-15_discovery_call_execution_status.md"
-    }
+    "Maya Chen – Risk-averse Director of People Ops; primary concern: brand fidelity (90%); 40-50% conversion potential",
+    "James Rodriguez – Cost-conscious VP People Ops; primary concern: unit economics & time ROI; 30-40% conversion, high LTV",
+    "Sarah Kapoor – Experience-driven Head of Ops; primary concern: culture impact & design partnership; 35-45% conversion, highest LTV",
+    "Comparative analysis: decision drivers, timelines, willingness to pay, objection handling, engagement preferences",
+    "Segment-specific messaging framework: distinct positioning for each persona with proof points and objection counters",
+    "Sample discovery questions mapped to each persona to validate fit during calls",
+    "GTM implementation guide: email subject line customization, demo mechanics by persona, refresh cadence"
   ],
   "next_actions": [
     {
-      "label": "Schedule discovery calls with all 5 pilot customers",
-      "task_template": "Schedule 45–60 min calls with Vanta, Linear, Census, Hex, Mercury contacts; send 3-min brief + brand mockups 24 hours before each call",
+      "label": "Segment prospect list by persona",
+      "task_template": "prospect_segmentation",
       "args": {
-        "customers": ["Vanta", "Linear", "Census", "Hex", "Mercury"],
-        "duration_minutes": 60,
-        "resources": ["Brief document", "Brand mockup PDFs"]
+        "filter_criteria": "LinkedIn headline signals (People Ops vs. ops/CHRO), company stage, reporting line, apparent risk tolerance"
       }
     },
     {
-      "label": "Conduct discovery calls and log responses in tracker",
-      "task_template": "Execute calls using framework questions; capture verbatim quotes, 1–5 rating scales, Van Westendorp WTP anchors, and objections in tracker template",
+      "label": "Create persona-specific email templates",
+      "task_template": "email_template_creation",
       "args": {
-        "total_calls": 5,
-        "data_required": ["Brand-fidelity rating", "WTP ladder responses", "Use-case fit score", "Speed satisfaction", "Storefront impact feedback", "Objection taxonomy"]
+        "template_variants": 3,
+        "focus": "value prop alignment (Maya=fidelity, James=ROI, Sarah=culture)"
       }
     },
     {
-      "label": "Aggregate results and produce assumption scorecard for Step 24",
-      "task_template": "Calculate CONFIRM/GRAY/REFUTE status for all 6 assumptions; synthesize top 3 objections; deliver recommendation (GO/PIVOT/PAUSE) to founder decision memo",
+      "label": "Validate personas in next discovery calls",
+      "task_template": "discovery_call_validation",
       "args": {
-        "threshold_confirm": "≥80%",
-        "threshold_gray": "60–79%",
-        "threshold_refute": "<60%",
-        "output": "Founder decision memo input (Step 24)"
+        "sample_size": 5,
+        "validation_criteria": "persona trait matching, objection patterns, decision driver alignment"
       }
     }
   ]
