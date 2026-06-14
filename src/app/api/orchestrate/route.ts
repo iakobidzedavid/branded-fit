@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { orchestrationStore, OrchestrationState } from "@/lib/orchestration-state";
+import { emitEvent } from "@/lib/analytics";
 
 export const maxDuration = 300;
 import {
@@ -457,6 +458,7 @@ async function runOrchestration(domain: string): Promise<OrchestrationState> {
   orchestrationStore.set(domain, state);
 
   // Pipeline 1 ────────────────────────────────────────────────────────────────
+  void emitEvent("brand_extraction_started", { domain });
   let brandExtraction: BrandExtraction;
   try {
     brandExtraction = await withRetry(() => runPipeline1(domain), MAX_RETRIES, "Pipeline1");
@@ -472,6 +474,16 @@ async function runOrchestration(domain: string): Promise<OrchestrationState> {
     };
     state.pipeline2 = { status: "in_progress", message: "Generating product mockups…" };
     orchestrationStore.set(domain, state);
+    const hasRealLogos = brandExtraction.logos.length > 0 && brandExtraction.logos[0].type !== "generated";
+    const hasRealColors = brandExtraction.colors.some(
+      (c) => c.type !== "primary" && c.type !== "secondary"
+    );
+    void emitEvent("brand_extraction_completed", {
+      domain,
+      logo_accuracy: hasRealLogos ? 100 : 0,
+      color_accuracy: hasRealColors ? 100 : 0,
+      extraction_confidence_pct: brandExtraction.extraction_confidence_pct,
+    });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Brand extraction failed";
     state.status = "failed";
@@ -505,12 +517,15 @@ async function runOrchestration(domain: string): Promise<OrchestrationState> {
   }
 
   // Pipeline 3 ────────────────────────────────────────────────────────────────
+  void emitEvent("storefront_generation_started", { domain });
+  const p3StartTime = Date.now();
   try {
     const storefront = await withRetry(
       () => runPipeline3(domain, products, brandExtraction),
       MAX_RETRIES,
       "Pipeline3"
     );
+    const generationTimeMs = Date.now() - p3StartTime;
     state.pipeline3 = {
       status: "completed",
       message: storefront.isDemo
@@ -520,6 +535,12 @@ async function runOrchestration(domain: string): Promise<OrchestrationState> {
     state.status = "completed";
     state.storefront = { url: storefront.storeUrl, productCount: storefront.productCount };
     orchestrationStore.set(domain, state);
+    void emitEvent("storefront_generation_completed", {
+      domain,
+      storefront_url: storefront.storeUrl,
+      product_count: storefront.productCount,
+      generation_time_ms: generationTimeMs,
+    });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Shopify provisioning failed";
     state.status = "failed";
@@ -576,6 +597,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    void emitEvent("domain_submitted", { domain: cleanDomain });
 
     // Reject concurrent runs for the same domain
     const existingState = orchestrationStore.get(cleanDomain);
