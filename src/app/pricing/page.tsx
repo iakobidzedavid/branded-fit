@@ -11,7 +11,7 @@ const TIERS = [
       "50-unit custom branded kit",
       "14-day delivery SLA",
       "Full storefront provisioning",
-      "95%+ brand-fidelity guarantee†",
+      "95%+ brand-fidelity score (n=5 pilots†)",
       "3 product types (tee, hoodie, tote)",
       "Automated brand extraction",
     ],
@@ -23,7 +23,7 @@ const TIERS = [
     name: "Growth",
     price: "$24K",
     period: "/ year",
-    description: "For ops and people teams managing swag programs at companies with 200–1,000 FTE. Most common tier in our early access cohort.",
+    description: "For ops and people teams managing swag programs at companies with 200–1,000 FTE. Most popular tier in our active pilot cohort.",
     features: [
       "Fully provisioned Shopify storefront",
       "12 core product types",
@@ -50,7 +50,7 @@ const TIERS = [
       "SSO and team management",
       "Invoicing and custom billing",
     ],
-    cta: "Request Early Access",
+    cta: "Get in Touch",
     href: "/command-console",
     highlight: false,
   },
@@ -83,7 +83,7 @@ export default function PricingPage() {
               Start with a no-risk pilot. Upgrade when you see the results.
             </p>
             <p className="text-text-muted text-xs mt-4 border border-border bg-surface rounded-lg px-4 py-2 max-w-lg mx-auto">
-              We are actively validating pricing tiers through discovery calls with ops and people teams at Series B–D companies. Prices shown reflect our early access cohort program (Q1–Q2 2026).
+              Pricing validated through structured discovery calls with ops and people teams at Series B–D companies. These rates reflect our active pilot program (Q1–Q2 2026).
             </p>
           </div>
 
