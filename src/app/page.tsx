@@ -252,7 +252,7 @@ export default function LandingPage() {
           </div>
           <div className="mt-8 max-w-xl mx-auto bg-bg border-2 border-border rounded-lg px-5 py-4">
             <p className="text-text-muted text-xs text-center leading-relaxed">
-              <span className="font-semibold text-text">† Data source &amp; methodology:</span> Internal pilot cohort — 5 venture-backed tech companies (200–1,000 FTE), in-progress 2026 (n=5). NPS measured via post-pilot survey; brand-fidelity score = % mockups passing automated QA on first pass; conversion rate = pilots that signed annual contracts. Sample size is small; findings are directional. Case studies coming soon.
+              <span className="font-semibold text-text">† Data source &amp; methodology:</span> Internal pilot cohort — 5 venture-backed tech companies (200–1,000 FTE), in-progress 2026 (n=5). NPS measured via post-pilot survey; brand-fidelity score = % mockups passing automated QA on first pass; conversion rate = pilots that signed annual contracts. Sample size is small; findings are directional. Outcomes data available on request.
             </p>
           </div>
         </div>
@@ -676,9 +676,9 @@ export default function LandingPage() {
             </p>
             <p className="text-text-muted text-sm mb-6">
               No sales pitch. Share your domain, swag event frequency, and
-              pricing feedback — your input directly shapes the roadmap. A
-              founding team member reviews every submission and follows up
-              directly if there is a fit.
+              pricing feedback — your input directly shapes the roadmap.
+              Qualifying companies are selected for the founding cohort based on
+              fit — self-serve onboarding starts immediately.
             </p>
             <Link
               href="/command-console"
@@ -690,8 +690,6 @@ export default function LandingPage() {
             <p className="text-text-muted text-xs mt-4">
               Self-serve onboarding is available immediately — no human
               contact required to start your brand preview or Brand Drop Pilot.
-              A team member reviews submissions and may follow up if there is a
-              pricing or product fit.
             </p>
           </div>
         </div>
@@ -785,7 +783,7 @@ export default function LandingPage() {
             />
             <FAQItem
               q="I need proof this works at other companies before I can pitch it internally."
-              a="We have 5 early pilot customers in the 200–1,000 FTE range — all venture-backed tech companies with ops buyers similar to your situation. Aggregate results (internal data, in-progress 2026, n=5, directional): NPS 8.6/10, 95% brand-fidelity score, 4 of 5 pilots converted to annual contracts. These are early-stage findings; detailed case studies are coming soon. Submit your details via the form below and we will share relevant pilot outcome data with your team."
+              a="We have 5 early pilot customers in the 200–1,000 FTE range — all venture-backed tech companies with ops buyers similar to your situation. Aggregate results (internal data, in-progress 2026, n=5, directional): NPS 8.6/10, 95% brand-fidelity score, 4 of 5 pilots converted to annual contracts. These are early-stage findings. Submit your details via the form below and we will share relevant pilot outcome data with your team."
             />
             <FAQItem
               q="How long does it actually take to go live?"
