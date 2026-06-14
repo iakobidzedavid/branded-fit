@@ -1,0 +1,49 @@
+{
+  "view_type": "report",
+  "headline": "Analytics Instrumentation Verification Framework — Ready for Execution",
+  "primary_stat": {
+    "label": "Verification Steps",
+    "value": "11-step protocol with 11 critical/optional screenshots"
+  },
+  "highlights": [
+    "Complete step-by-step execution framework for live analytics verification",
+    "Part 1: Pre-verification checklist for environment & browser setup",
+    "Part 2: Command Console event emission verification (5+ test domains)",
+    "Part 3: Supabase persistence verification with SQL queries",
+    "Part 4: /admin/analytics dashboard rendering validation",
+    "Part 5: Error handling & blocker detection protocol",
+    "Part 6: Event emission log template & go/no-go decision criteria",
+    "Part 7: Screenshot checklist (11 required/optional captures)",
+    "Part 8: 45-75 minute execution timeline",
+    "Objective success metrics: HTTP 201 responses, real event data, no console errors"
+  ],
+  "next_actions": [
+    {
+      "label": "Execute Verification Protocol",
+      "task_template": "browser_agent_verification",
+      "args": {
+        "framework_path": "documents/2026-06-15_analytics_verification_framework.md",
+        "deployment_url": "https://branded-david-7482s-projects.vercel.app",
+        "test_domains": ["test-domain-1", "test-domain-2", "test-domain-3"],
+        "required_screenshots": 5,
+        "timeline_minutes": 60
+      }
+    },
+    {
+      "label": "Compile Event Emission Log",
+      "task_template": "data_documentation",
+      "args": {
+        "output_format": "markdown_table",
+        "columns": ["domain", "event_name", "timestamp", "status"]
+      }
+    },
+    {
+      "label": "Generate Go/No-Go Decision Memo",
+      "task_template": "decision_memo",
+      "args": {
+        "criteria": "all_5_required_screenshots + supabase_persistence + dashboard_rendering",
+        "threshold": "PASS all critical checks"
+      }
+    }
+  ]
+}
