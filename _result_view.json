@@ -1,0 +1,45 @@
+{
+  "view_type": "report",
+  "headline": "3 Validated Customer Personas for Branded Fit SaaS targeting Series B-D People Ops leaders",
+  "primary_stat": {
+    "label": "Personas Created",
+    "value": "3 detailed profiles (500+ words each)"
+  },
+  "highlights": [
+    "Persona 1: Sarah Chen (VP People Ops) — Strategic leader focused on consistency + retention; budget: $100K-$250K; timeline: 21 days; objections: mockup accuracy, timeline confidence",
+    "Persona 2: Marcus Rodriguez (Director Operations) — Pragmatic growth manager consolidating vendor sprawl; budget: $50K-$150K; timeline: 7 days; objections: ROI guarantee, rejection rates",
+    "Persona 3: Alex Kim (Founder/CEO) — Brand guardian protecting visual identity; budget: $200K-$500K; timeline: 7-10 days iterative; objections: brand alignment, design control",
+    "Unified pain points: commodity-focused vendors, mockup-to-final fidelity gaps, speed vs. quality trade-off, no ROI visibility, design iteration friction",
+    "Grounded in discovery validation: 5+ calls, 4.2/5 brand fidelity rating, 60% pilot conversion, $24K WTP consensus, objection taxonomy mapped",
+    "Includes buying patterns matrix, pricing expectations ($80-$250/unit range), trust-building strategies per persona, and messaging positioning framework"
+  ],
+  "next_actions": [
+    {
+      "label": "Map personas to discovery call recordings",
+      "task_template": "content_validation",
+      "args": {
+        "document": "customer_personas.md",
+        "validation_type": "discovery_call_mapping",
+        "description": "Cross-reference each persona attribute to specific quotes/insights from 5+ discovery calls conducted June 8-14, 2026"
+      }
+    },
+    {
+      "label": "Update landing page messaging by persona",
+      "task_template": "landing_page_update",
+      "args": {
+        "document": "customer_personas.md",
+        "target_page": "src/app/page.tsx",
+        "messaging_strategy": "Use persona-specific CTAs and pain-point language to improve conversion across segments"
+      }
+    },
+    {
+      "label": "Create persona-specific email templates",
+      "task_template": "email_outreach",
+      "args": {
+        "personas": ["Strategic People Leader", "Pragmatic Growth Manager", "Founder-Driven Brand Guardian"],
+        "template_count": 3,
+        "focus": "objection handling and value prop alignment per persona"
+      }
+    }
+  ]
+}
