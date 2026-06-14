@@ -317,11 +317,35 @@ export default function CommandConsole() {
       applyOrchState(data.orchestration);
 
       if (data.orchestration.status === "completed") {
+        const bd = data.orchestration.brandData;
+        if (bd) {
+          trackEvent({
+            event_name: "brand_extraction_completed",
+            domain: cleanDomain,
+            user_id: sessionId,
+            pipeline_stage: "brand_intelligence",
+            context: {
+              fidelity_score: bd.confidence,
+              colors_extracted: bd.colors.length,
+              logo_url: bd.logoUrl ?? null,
+            },
+          });
+        }
+        trackEvent({
+          event_name: "storefront_generation_started",
+          domain: cleanDomain,
+          user_id: sessionId,
+          pipeline_stage: "shopify_provisioning",
+        });
         trackEvent({
           event_name: "storefront_generation_completed",
           domain: cleanDomain,
           user_id: sessionId,
           pipeline_stage: "shopify_provisioning",
+          context: {
+            product_count: data.orchestration.storefront?.productCount ?? 0,
+            store_url: data.orchestration.storefront?.url ?? null,
+          },
         });
       }
     } catch (err) {

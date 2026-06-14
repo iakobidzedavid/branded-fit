@@ -23,19 +23,27 @@ export async function POST(request: NextRequest) {
 
   const {
     user_id,
+    session_id, // alias for user_id
     domain,
     pipeline_stage,
     duration_ms,
     error_message,
     timestamp,
     context,
+    payload, // alias for context
     // Legacy fields kept for backward compat
     customer_id,
     properties,
     metadata,
   } = body;
 
-  if (user_id != null && typeof user_id !== "string") {
+  const resolved_user_id =
+    (user_id as string | undefined) ?? (session_id as string | undefined);
+  const resolved_context =
+    (context as Record<string, unknown> | undefined) ??
+    (payload as Record<string, unknown> | undefined);
+
+  if (resolved_user_id != null && typeof resolved_user_id !== "string") {
     return NextResponse.json(
       { error: "user_id must be a string" },
       { status: 400 }
@@ -80,13 +88,20 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (payload != null && (typeof payload !== "object" || Array.isArray(payload))) {
+    return NextResponse.json(
+      { error: "payload must be a JSON object" },
+      { status: 400 }
+    );
+  }
+
   const record: Record<string, unknown> = {
     event_name,
     // Mirror into event_type for legacy consumers that query that column.
     event_type: event_name,
   };
 
-  if (user_id != null) record.user_id = String(user_id);
+  if (resolved_user_id != null) record.user_id = String(resolved_user_id);
   if (domain != null) record.domain = String(domain);
   if (pipeline_stage != null) record.pipeline_stage = String(pipeline_stage);
   if (duration_ms != null) record.duration_ms = Math.round(duration_ms as number);
@@ -97,8 +112,8 @@ export async function POST(request: NextRequest) {
   if (metadata != null && typeof metadata === "object" && !Array.isArray(metadata)) {
     record.metadata = metadata;
   }
-  if (context != null && typeof context === "object" && !Array.isArray(context)) {
-    record.context = context;
+  if (resolved_context != null) {
+    record.context = resolved_context;
   }
 
   // Analytics persistence is best-effort — DB errors must not surface as 500s.

@@ -61,12 +61,14 @@ export function getOrCreateSessionId(): string {
 
 export interface TrackEventParams {
   event_name: string;
+  session_id?: string;
   domain?: string;
   pipeline_stage?: string;
   duration_ms?: number;
   error_message?: string;
   user_id?: string;
   context?: Record<string, unknown>;
+  payload?: Record<string, unknown>;
 }
 
 export const trackEvent = async (params: TrackEventParams): Promise<void> => {

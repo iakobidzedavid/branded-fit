@@ -432,7 +432,21 @@ export default function StorefrontPreview() {
   useEffect(() => {
     if (!store || viewFired.current) return;
     viewFired.current = true;
+    const storeUrl = store.shopifyUrl ?? null;
+    const productCount = DEMO_PRODUCTS.length;
     logEvent("storefront_view", store.domain, { store_id: store.id, status: store.status });
+    logEvent(
+      "storefront_generation_started",
+      store.domain,
+      { store_url: storeUrl, product_count: productCount },
+      "Stage 4 · Infrastructure",
+    );
+    logEvent(
+      "storefront_generation_completed",
+      store.domain,
+      { store_url: storeUrl, product_count: productCount },
+      "Stage 4 · Infrastructure",
+    );
   }, [store]);
 
   const handleProductView = (product: Product) => {
