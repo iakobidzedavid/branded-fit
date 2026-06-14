@@ -224,6 +224,18 @@ INSERT INTO analytics_events (event_name, event_type, domain, session_id, pipeli
   ('brand_extraction_started', 'brand_extraction_started', 'salesforce.com', 'sess-20', 'brand_extraction', NULL,                              NOW() - INTERVAL '3 hours' + INTERVAL '16 seconds', '{}'),
   ('brand_extraction_failed',  'brand_extraction_failed',  'salesforce.com', 'sess-20', 'brand_extraction', 'SSL certificate validation failed', NOW() - INTERVAL '3 hours' + INTERVAL '46 seconds', '{"error_code":"SSL_ERROR","duration_ms":30000}');
 
+-- ── event_data COLUMN TEST INSERTS ──────────────────────────────────────────
+-- These 5 rows exercise the event_data JSONB column added in migration 013.
+-- They cover the 5 core pipeline event names and verify the column accepts
+-- structured payloads written by the emitEvent() TypeScript helper.
+
+INSERT INTO analytics_events (event_name, event_data, domain, session_id) VALUES
+  ('domain_submitted',               '{"source":"landing_page","ip_country":"US"}',                                          'test-emit.com', 'sess-emit-01'),
+  ('brand_extraction_started',       '{"provider":"brandfetch","requested_at":"2026-06-14T00:00:00Z"}',                      'test-emit.com', 'sess-emit-01'),
+  ('brand_extraction_completed',     '{"fidelity_score":96.5,"colors_found":4,"logo_found":true,"duration_ms":52000}',       'test-emit.com', 'sess-emit-01'),
+  ('storefront_generation_started',  '{"product_count":6,"template":"default"}',                                             'test-emit.com', 'sess-emit-01'),
+  ('storefront_generation_completed','{"storefront_url":"https://test-emit-merch.myshopify.com","product_count":6,"duration_ms":48000}', 'test-emit.com', 'sess-emit-01');
+
 -- Verification query (run after seed to confirm counts):
 -- SELECT event_name, COUNT(*) FROM analytics_events GROUP BY event_name ORDER BY event_name;
 -- Expected:

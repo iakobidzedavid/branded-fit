@@ -1,3 +1,32 @@
+import { getSupabase } from "@/lib/supabase";
+
+export async function emitEvent(
+  eventName: string,
+  eventData: Record<string, unknown>,
+  customerId?: string
+): Promise<boolean> {
+  try {
+    const client = getSupabase();
+    const record: Record<string, unknown> = {
+      event_name: eventName,
+      event_data: eventData,
+    };
+    if (customerId != null) record.customer_id = customerId;
+    const { error } = await client.from("analytics_events").insert([record]);
+    if (error) {
+      console.warn("emitEvent insert failed:", error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.warn(
+      "emitEvent error:",
+      err instanceof Error ? err.message : String(err)
+    );
+    return false;
+  }
+}
+
 export type FunnelEventType =
   | "domain_submitted"
   | "brand_extraction_started"

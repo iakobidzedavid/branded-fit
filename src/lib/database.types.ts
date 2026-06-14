@@ -115,6 +115,59 @@ export type Database = {
           updated_at?: string;
         };
       };
+      analytics_events: {
+        Row: {
+          id: string;
+          customer_id: string | null;
+          event_name: string;
+          event_data: Record<string, unknown> | null;
+          created_at: string;
+          domain: string | null;
+          session_id: string | null;
+          user_id: string | null;
+          pipeline_stage: string | null;
+          duration_ms: number | null;
+          error_message: string | null;
+          context: Record<string, unknown> | null;
+          properties: Record<string, unknown> | null;
+          metadata: Record<string, unknown> | null;
+          event_type: string | null;
+        };
+        Insert: {
+          id?: string;
+          customer_id?: string | null;
+          event_name: string;
+          event_data?: Record<string, unknown> | null;
+          created_at?: string;
+          domain?: string | null;
+          session_id?: string | null;
+          user_id?: string | null;
+          pipeline_stage?: string | null;
+          duration_ms?: number | null;
+          error_message?: string | null;
+          context?: Record<string, unknown> | null;
+          properties?: Record<string, unknown> | null;
+          metadata?: Record<string, unknown> | null;
+          event_type?: string | null;
+        };
+        Update: {
+          id?: string;
+          customer_id?: string | null;
+          event_name?: string;
+          event_data?: Record<string, unknown> | null;
+          created_at?: string;
+          domain?: string | null;
+          session_id?: string | null;
+          user_id?: string | null;
+          pipeline_stage?: string | null;
+          duration_ms?: number | null;
+          error_message?: string | null;
+          context?: Record<string, unknown> | null;
+          properties?: Record<string, unknown> | null;
+          metadata?: Record<string, unknown> | null;
+          event_type?: string | null;
+        };
+      };
       storefronts: {
         Row: {
           id: string;
