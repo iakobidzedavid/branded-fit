@@ -79,10 +79,12 @@ branded-fit/
     2026-06-08_e2e_funnel_test_report.md
     2026-06-08_entonomy_brand_audit.md
     2026-06-11_analytics_event_spec.md
+    2026-06-14_auth_gate_seed_verification.md
     2026-06-14_deployment_verification.md
     2026-06-14_drift_resolution_verification_report.md
     2026-06-14_e2e_orchestration_test_report.md
     2026-06-14_smoke_test_production_command_console.md
+    2026-06-14_vercel_env_vars_audit.md
     DELIVERABLES_CHECKLIST.md
   public/
     mockups/
