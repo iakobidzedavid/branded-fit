@@ -1,99 +1,42 @@
 {
   "view_type": "report",
-  "headline": "Pilot Conversion Probability Scorecard: 3.8/5.0 avg probability; base case projects $114–118K Year 2 ARR (23% uplift)",
+  "headline": "Pilot Conversion Probability Scorecard Complete — 3.8/5.0 avg probability, 3–4 conversions expected by EOY",
   "primary_stat": {
     "label": "Aggregate Conversion Probability",
     "value": "3.8 / 5.0"
   },
-  "rows": [
-    {
-      "pilot": "Vanta",
-      "probability": "5/5",
-      "status": "🟢 GO",
-      "timeline": "Q2 2026",
-      "base_arr": "$24K",
-      "expansion_potential": "$36–42K Scale tier + reorders",
-      "churn_risk": "None"
-    },
-    {
-      "pilot": "Linear",
-      "probability": "4/5",
-      "status": "🟡 GO (caution)",
-      "timeline": "Q2 2026",
-      "base_arr": "$24K",
-      "expansion_potential": "$8–10K milestone reorders + internship",
-      "churn_risk": "Medium (SwagUp evaluation)"
-    },
-    {
-      "pilot": "Hex",
-      "probability": "4/5",
-      "status": "🟢 GO",
-      "timeline": "Q3 2026",
-      "base_arr": "$24K",
-      "expansion_potential": "$60K Scale tier + $13–18K adjacent use cases",
-      "churn_risk": "None"
-    },
-    {
-      "pilot": "Census",
-      "probability": "3/5",
-      "status": "⚠️ WAIT",
-      "timeline": "Q4 2026",
-      "base_arr": "$24K (if approved)",
-      "expansion_potential": "$8–12K campus recruiting",
-      "churn_risk": "Medium (budget approval pending)"
-    },
-    {
-      "pilot": "Mercury",
-      "probability": "3/5",
-      "status": "⚠️ WAIT",
-      "timeline": "Q4 2026",
-      "base_arr": "$24K (if approved)",
-      "expansion_potential": "None (one-time)",
-      "churn_risk": "High (brand misalignment, competitive pressure)"
-    }
-  ],
   "highlights": [
-    "Vanta flagship close: 5/5 probability, Q2 timeline, no churn risk, $36–42K expansion upside",
-    "Linear strong product-fit (5/5) but SwagUp competitive evaluation active—counter-offer required by Week 4",
-    "Hex expansion wild card: Scale tier interest could yield 3x upside ($73–78K total Year 2 potential)",
-    "Base case (4/5 converts + expansion): $114–118K Year 2 ARR (23% uplift vs. $96K pilot baseline)",
-    "Best case (5/5 converts + selective expansion): $143–174K addressable market opportunity",
-    "Budget authority confirmed for Vanta, Linear, Hex (3/5). Census & Mercury pending Q3 budget cycle.",
-    "Immediate focus: Vanta Week 1 (close), Linear Week 2 (counter SwagUp), Hex Week 3 (Scale tier deep-dive)",
-    "Near-term: Census seed-planting for Q3 budget, Mercury brand repositioning or deprioritization",
-    "Churn risk concentrated in Linear (SwagUp), Census (budget approval), Mercury (brand + competitive)",
-    "Average brand fidelity NPS: 8.4/10 (strong satisfaction); product-fit confidence avg 4.2/5"
+    "Vanta: 5/5 (HIGHEST) — Budget confirmed, Q2 2026 timeline, $24K+$8K expansion potential",
+    "Linear: 4/5 (HIGH, monitor) — Budget confirmed, Q2 2026 timeline, SwagUp competitive risk flagged",
+    "Hex: 4/5 (HIGH) — Budget confirmed, Q3 2026 timeline, $24K+$10K expansion potential",
+    "Census: 3/5 (MODERATE) — Budget PENDING CFO approval, Q4 2026 timeline, campus recruiting use case",
+    "Mercury: 3/5 (MODERATE) — Budget PENDING, Q4 2026 timeline, product-fit unclear (3/5)",
+    "Expected Year 2 ARR scenarios: Best case $120K (5/5), Base case $72K (3/5), Conservative $48K (2/5)",
+    "4/5 pilots have confirmed budget authority; 4/5 stated timeline within 6 months",
+    "Brand fidelity avg NPS: 8.4/10 (exceeds 7.5 target); product-fit avg 4.2/5 (strong)",
+    "Top focus: Prioritize Vanta for Q2 close; manage Linear competitive risk; nurture Census/Mercury for Q4"
+  ],
+  "links": [
+    {
+      "label": "View Full Scorecard",
+      "url": "documents/2026-06-14_pilot_conversion_probability_scorecard.md"
+    }
   ],
   "next_actions": [
     {
-      "label": "Schedule Vanta SOW signature + founder kickoff",
-      "task_template": "sales_task",
-      "args": {
-        "pilot": "Vanta",
-        "action": "SOW signature & kickoff call",
-        "timeline": "Week 1",
-        "owner": "Sales lead"
-      }
+      "label": "Schedule Vanta SOW signature + kickoff",
+      "task_template": "pilot_operations",
+      "args": {"pilot": "Vanta", "action": "close", "priority": "high"}
     },
     {
-      "label": "Counter Linear SwagUp offer + share product roadmap",
-      "task_template": "sales_task",
-      "args": {
-        "pilot": "Linear",
-        "action": "Competitive positioning + milestone reorder roadmap",
-        "timeline": "Week 2 (before Week 4 SwagUp trial conclusion)",
-        "owner": "Account manager"
-      }
+      "label": "Conduct competitive positioning call with Linear",
+      "task_template": "sales_call",
+      "args": {"pilot": "Linear", "focus": "SwagUp counter-positioning", "timeline": "this week"}
     },
     {
-      "label": "Hex Scale tier deep-dive + custom SKU roadmap",
-      "task_template": "sales_task",
-      "args": {
-        "pilot": "Hex",
-        "action": "Scale tier discovery + product design engagement",
-        "timeline": "Week 3",
-        "owner": "Account manager + product lead"
-      }
+      "label": "Secure Census CFO intro for budget pre-approval",
+      "task_template": "stakeholder_engagement",
+      "args": {"pilot": "Census", "action": "cfο_meeting", "target": "Q3"}
     }
   ]
 }
