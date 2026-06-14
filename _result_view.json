@@ -1,0 +1,51 @@
+{
+  "view_type": "report",
+  "headline": "Discovery Call Execution Plan created for 5-customer validation cohort (Vanta, Linear, Census, Hex, Mercury)",
+  "primary_stat": {
+    "label": "Pages of detailed execution framework",
+    "value": "22.8 KB strategic plan document"
+  },
+  "highlights": [
+    "6 gray assumptions mapped to specific scripted questions with acceptance thresholds",
+    "45-minute call structure with 70/30 listen-to-talk ratio and follow-up probes",
+    "Pre-call execution checklist covering prospect validation, recording setup, and tracking",
+    "Real-time Google Sheet tracker with 18-column schema for response logging",
+    "Post-call synthesis process with 1-page customer summary + master tally sheet",
+    "Blocker mitigation table with contingency plans for no-shows and recording failures",
+    "Data integrity guardrails: no fabricated responses, verbatim quotes, consent tracking",
+    "Confidence scoring framework (HIGH/MEDIUM/LOW) for assumption validation",
+    "Handoff specification to founder decision memo (Step 23) with explicit next steps"
+  ],
+  "next_actions": [
+    {
+      "label": "Step 1: Contact Validation",
+      "task_template": "prospect_list_validator",
+      "args": {
+        "companies": ["Vanta", "Linear", "Census", "Hex", "Mercury"],
+        "confidence_threshold": 90,
+        "role_filter": "People Ops,HR,Talent,Brand"
+      }
+    },
+    {
+      "label": "Step 2: Schedule Calls",
+      "task_template": "discovery_call_scheduler",
+      "args": {
+        "customer_count": 5,
+        "duration_minutes": 45,
+        "timezone": "EST",
+        "recording_tool": "Zoom",
+        "booking_window": "2026-06-17 to 2026-06-26"
+      }
+    },
+    {
+      "label": "Step 3: Conduct Calls & Log Responses",
+      "task_template": "discovery_call_executor",
+      "args": {
+        "script_source": "documents/discovery_call_execution_plan_step21.md",
+        "tracker_type": "Google Sheet (18-column)",
+        "recording_consent_required": true,
+        "transcript_turnaround": "2 hours post-call"
+      }
+    }
+  ]
+}
