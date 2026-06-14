@@ -1,41 +1,61 @@
 {
   "view_type": "report",
-  "headline": "Created 3 production-ready customer personas for Series B-D People Ops buyers with segment-specific messaging strategies",
+  "headline": "Delivered production-ready Step 21 discovery call validation framework: 7-segment agenda, 29-field tracker, assumption scoring methodology, and execution checklist for 5 pilot customer calls.",
   "primary_stat": {
-    "label": "Personas Created",
-    "value": 3
+    "label": "Framework Components",
+    "value": "7 sections + 5 templates"
   },
   "highlights": [
-    "Maya Chen – Risk-averse Director of People Ops; primary concern: brand fidelity (90%); 40-50% conversion potential",
-    "James Rodriguez – Cost-conscious VP People Ops; primary concern: unit economics & time ROI; 30-40% conversion, high LTV",
-    "Sarah Kapoor – Experience-driven Head of Ops; primary concern: culture impact & design partnership; 35-45% conversion, highest LTV",
-    "Comparative analysis: decision drivers, timelines, willingness to pay, objection handling, engagement preferences",
-    "Segment-specific messaging framework: distinct positioning for each persona with proof points and objection counters",
-    "Sample discovery questions mapped to each persona to validate fit during calls",
-    "GTM implementation guide: email subject line customization, demo mechanics by persona, refresh cadence"
+    "Fixed 45-60 minute call agenda with 7 segments covering all 6 gray assumptions",
+    "29-field data collection tracker for standardized real-time logging across 5 customers",
+    "Van Westendorp pricing ladder ($2K/$4.8K/$24K/$36K) for WTP validation",
+    "CONFIRM/GRAY/REFUTE scoring methodology with ≥80% threshold for each assumption",
+    "Aggregation report template for synthesis into founder decision memo (Step 24)",
+    "Pre-execution, during-call, and post-call checklists with success criteria",
+    "Example transcript snippet showing field mapping and real data capture",
+    "Objection handling framework (3 categories × counter prompts) for deal blockers",
+    "Brand-fidelity visual comparison protocol (mockup ↔ guidelines side-by-side)",
+    "Reorder intent & employee impact measurement (1-10 scales + NPS)"
+  ],
+  "links": [
+    {
+      "label": "View Discovery Call Framework",
+      "url": "file:///documents/step21_discovery_call_validation_framework.md"
+    }
   ],
   "next_actions": [
     {
-      "label": "Segment prospect list by persona",
-      "task_template": "prospect_segmentation",
+      "label": "Schedule 5 discovery calls (1 per pilot: Vanta, Linear, Census, Hex, Mercury)",
+      "task_template": "Schedule discovery calls with responding Brand Drop Pilot customers",
       "args": {
-        "filter_criteria": "LinkedIn headline signals (People Ops vs. ops/CHRO), company stage, reporting line, apparent risk tolerance"
+        "duration_minutes": 50,
+        "target_customers": ["Vanta", "Linear", "Census", "Hex", "Mercury"],
+        "framework_document": "step21_discovery_call_validation_framework.md"
       }
     },
     {
-      "label": "Create persona-specific email templates",
-      "task_template": "email_template_creation",
+      "label": "Prepare side-by-side brand comparison files (generated mockup + guidelines) for each customer",
+      "task_template": "Prepare discovery call assets",
       "args": {
-        "template_variants": 3,
-        "focus": "value prop alignment (Maya=fidelity, James=ROI, Sarah=culture)"
+        "asset_type": "brand_comparison",
+        "per_customer": true
       }
     },
     {
-      "label": "Validate personas in next discovery calls",
-      "task_template": "discovery_call_validation",
+      "label": "Conduct 5 calls and log data in 29-field tracker (2-week window)",
+      "task_template": "Execute discovery calls with structured call script and real-time tracker logging",
       "args": {
-        "sample_size": 5,
-        "validation_criteria": "persona trait matching, objection patterns, decision driver alignment"
+        "total_calls": 5,
+        "tracking_fields": 29,
+        "window_days": 14
+      }
+    },
+    {
+      "label": "Aggregate results into assumption scorecard and synthesize into Step 24 founder decision memo",
+      "task_template": "Synthesize discovery call data into 6-assumption scorecard with CONFIRM/GRAY/REFUTE status",
+      "args": {
+        "target_memo": "Step 24 - Founder Decision Memo",
+        "thresholds": "≥80% for CONFIRM"
       }
     }
   ]
