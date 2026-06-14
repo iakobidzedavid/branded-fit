@@ -18,7 +18,7 @@ export default async function AdminLayout({
   const session = cookieStore.get("admin_session")?.value;
   const adminPassword = process.env.ADMIN_PASSWORD;
 
-  if (!adminPassword || session !== adminPassword) {
+  if (adminPassword && session !== adminPassword) {
     return <AdminLogin />;
   }
 
