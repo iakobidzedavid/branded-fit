@@ -364,7 +364,7 @@ async function runPipeline3(
   brandExtraction: BrandExtraction
 ): Promise<{ storeUrl: string; productCount: number; isDemo?: boolean }> {
   const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
-  const shopName = process.env.SHOPIFY_SHOP_NAME;
+  const shopName = process.env.SHOPIFY_STORE_NAME || process.env.SHOPIFY_SHOP_NAME;
 
   const brandName = domain.split(".")[0];
   const subdomain = generateUniqueSubdomain(brandName);

@@ -7,7 +7,7 @@ export async function GET() {
     BRANDFETCH_API_KEY: !!process.env.BRANDFETCH_API_KEY,
     PRINTIFY_API_KEY: !!process.env.PRINTIFY_API_KEY,
     SHOPIFY_ACCESS_TOKEN: !!process.env.SHOPIFY_ACCESS_TOKEN,
-    SHOPIFY_SHOP_NAME: !!process.env.SHOPIFY_SHOP_NAME,
+    SHOPIFY_STORE_NAME: !!(process.env.SHOPIFY_STORE_NAME || process.env.SHOPIFY_SHOP_NAME),
   };
 
   const missingRequired = Object.entries(vars)

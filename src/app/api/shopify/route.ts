@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
 
     // Check Shopify configuration
     const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
-    const shopName = process.env.SHOPIFY_SHOP_NAME;
+    const shopName = process.env.SHOPIFY_STORE_NAME || process.env.SHOPIFY_SHOP_NAME;
 
     if (!accessToken || !shopName) {
       state.status = "failed";
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           message:
-            "Shopify integration not configured. Set SHOPIFY_ACCESS_TOKEN and SHOPIFY_SHOP_NAME environment variables.",
+            "Shopify integration not configured. Set SHOPIFY_ACCESS_TOKEN and SHOPIFY_STORE_NAME environment variables.",
           orchestration: state,
         },
         { status: 503 }
