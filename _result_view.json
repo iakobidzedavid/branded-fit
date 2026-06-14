@@ -1,50 +1,65 @@
 {
   "view_type": "report",
-  "headline": "Discovery Call Execution Plan created for 5-customer validation cohort (Vanta, Linear, Census, Hex, Mercury)",
+  "headline": "Brand Drop Pilot Discovery Call Validation Framework (Step 21) — Production-Ready Execution Plan",
   "primary_stat": {
-    "label": "Pages of detailed execution framework",
-    "value": "22.8 KB strategic plan document"
+    "label": "Assumptions to Validate",
+    "value": "6 Critical Gray Assumptions"
   },
   "highlights": [
-    "6 gray assumptions mapped to specific scripted questions with acceptance thresholds",
-    "45-minute call structure with 70/30 listen-to-talk ratio and follow-up probes",
-    "Pre-call execution checklist covering prospect validation, recording setup, and tracking",
-    "Real-time Google Sheet tracker with 18-column schema for response logging",
-    "Post-call synthesis process with 1-page customer summary + master tally sheet",
-    "Blocker mitigation table with contingency plans for no-shows and recording failures",
-    "Data integrity guardrails: no fabricated responses, verbatim quotes, consent tracking",
-    "Confidence scoring framework (HIGH/MEDIUM/LOW) for assumption validation",
-    "Handoff specification to founder decision memo (Step 23) with explicit next steps"
+    "45-minute structured call script with fixed question framework for 5 target customers (Vanta, Linear, Census, Hex, Mercury)",
+    "6 assumption validation thresholds with clear CONFIRM/GRAY/REFUTE decision rules",
+    "Real-time scorecard template for immediate post-call data capture and synthesis",
+    "Master tracker schema for aggregating results across all 5 calls (6 assumptions × 5 customers)",
+    "Van Westendorp WTP methodology embedded in Question 3 for precise pricing validation",
+    "Objection handling counters and remediation paths for each assumption",
+    "3-week execution timeline: Scheduling (June 15) → Calls (June 19–23) → Synthesis (June 24–26)",
+    "Go/No-Go decision framework for Step 23 founder decision memo (HIGH: ≥4/6 CONFIRMED; MEDIUM: 3/6; LOW: ≤2/6)",
+    "Reference customer readiness assessment + expansion use-case prioritization for Y1 roadmap",
+    "Post-call email templates and synthesis checklist for rapid knowledge transfer"
+  ],
+  "links": [
+    {
+      "label": "View Full Discovery Call Validation Plan",
+      "url": "documents/2026-06-14_discovery_call_validation_plan_step21.md"
+    },
+    {
+      "label": "View Tracker Schema (JSON)",
+      "url": "documents/discovery_call_tracker_schema.json"
+    }
   ],
   "next_actions": [
     {
-      "label": "Step 1: Contact Validation",
-      "task_template": "prospect_list_validator",
+      "label": "Send Calendar Invites to 5 Target Customers",
+      "task_template": "Schedule 45-minute discovery calls (June 19–23 target)",
       "args": {
-        "companies": ["Vanta", "Linear", "Census", "Hex", "Mercury"],
-        "confidence_threshold": 90,
-        "role_filter": "People Ops,HR,Talent,Brand"
-      }
-    },
-    {
-      "label": "Step 2: Schedule Calls",
-      "task_template": "discovery_call_scheduler",
-      "args": {
-        "customer_count": 5,
+        "customers": ["Vanta", "Linear", "Census", "Hex", "Mercury"],
         "duration_minutes": 45,
-        "timezone": "EST",
-        "recording_tool": "Zoom",
-        "booking_window": "2026-06-17 to 2026-06-26"
+        "lead_time_hours": 72
       }
     },
     {
-      "label": "Step 3: Conduct Calls & Log Responses",
-      "task_template": "discovery_call_executor",
+      "label": "Conduct 5 Discovery Calls Using Fixed Script",
+      "task_template": "Execute calls following 45-minute structure (opening → discovery → validation → close)",
       "args": {
-        "script_source": "documents/discovery_call_execution_plan_step21.md",
-        "tracker_type": "Google Sheet (18-column)",
-        "recording_consent_required": true,
-        "transcript_turnaround": "2 hours post-call"
+        "framework": "Brand-fidelity NPS (Q1) → Provisioning speed (Q2) → WTP $24K (Q3) → Warm-intro (Q4) → Expansion use-cases (Q5) → Storefront impact (Q6)",
+        "recording_required": true,
+        "scorecard_template": "Complete immediately post-call"
+      }
+    },
+    {
+      "label": "Synthesize Results & Populate Master Tracker",
+      "task_template": "Aggregate 5 call scorecards into 6-assumption tally sheet by June 26",
+      "args": {
+        "deliverables": ["Master tracker (CONFIRM/GRAY/REFUTE status per assumption)", "Verbatim quote extraction (2–3 per assumption)", "Objection synthesis (top 3 with counters)", "Reference customer readiness assessment", "Expansion use-case prioritization"],
+        "deadline": "June 26, 2026"
+      }
+    },
+    {
+      "label": "Deliver Synthesis Report to Founder for Step 23 Memo",
+      "task_template": "Provide raw data + summary for founder decision memo (GO/CONTINGENT/PIVOT recommendation)",
+      "args": {
+        "success_criteria": "≥4/6 assumptions CONFIRMED = HIGH confidence GO; 3/6 = MEDIUM CONTINGENT; ≤2/6 = LOW PIVOT",
+        "confidence_determination": "Based on assumption tally + objection frequency + reference readiness"
       }
     }
   ]
