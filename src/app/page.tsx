@@ -952,9 +952,6 @@ export default function LandingPage() {
             © 2026 Branded Fit, Inc. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-text-muted">
-            <Link href="/command-console" className="hover:text-text transition">
-              Command Console
-            </Link>
             <Link href="/pricing" className="hover:text-text transition">
               Pricing
             </Link>
