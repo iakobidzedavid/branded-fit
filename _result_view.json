@@ -1,48 +1,47 @@
 {
   "view_type": "report",
-  "headline": "Analytics Instrumentation Verification Framework — Ready for Execution",
+  "headline": "Analytics instrumentation verification framework created; manual browser testing required",
   "primary_stat": {
-    "label": "Verification Steps",
-    "value": "11-step protocol with 11 critical/optional screenshots"
+    "label": "Verification Steps Documented",
+    "value": "9 components with detailed checklists"
   },
   "highlights": [
-    "Complete step-by-step execution framework for live analytics verification",
-    "Part 1: Pre-verification checklist for environment & browser setup",
-    "Part 2: Command Console event emission verification (5+ test domains)",
-    "Part 3: Supabase persistence verification with SQL queries",
-    "Part 4: /admin/analytics dashboard rendering validation",
-    "Part 5: Error handling & blocker detection protocol",
-    "Part 6: Event emission log template & go/no-go decision criteria",
-    "Part 7: Screenshot checklist (11 required/optional captures)",
-    "Part 8: 45-75 minute execution timeline",
-    "Objective success metrics: HTTP 201 responses, real event data, no console errors"
+    "Comprehensive verification framework with 5 parts: Command Console event emission, Supabase persistence, admin dashboard rendering, API endpoint testing, and data integrity",
+    "5 test domains defined with event emission sequence timeline (domain_submitted → brand_extraction → storefront_generation)",
+    "Specific success criteria for each component: HTTP 200/201 responses, event counts ≥5, chart rendering, error-free console",
+    "Supabase SQL queries included for event validation and data integrity checks",
+    "Issues & blockers section with recommended fixes template for any failures",
+    "Framework is production-ready and can be immediately executed by browser access user"
   ],
   "next_actions": [
     {
-      "label": "Execute Verification Protocol",
-      "task_template": "browser_agent_verification",
+      "label": "Execute Browser Verification",
+      "task_template": "manual_browser_test",
       "args": {
-        "framework_path": "documents/2026-06-15_analytics_verification_framework.md",
-        "deployment_url": "https://branded-david-7482s-projects.vercel.app",
-        "test_domains": ["test-domain-1", "test-domain-2", "test-domain-3"],
-        "required_screenshots": 5,
-        "timeline_minutes": 60
+        "framework": "documents/2026-06-15_analytics_instrumentation_verification_report.md",
+        "environment": "https://branded-david-7482s-projects.vercel.app",
+        "test_domains": ["test-domain-001.com", "test-domain-002.com", "test-domain-003.com", "test-domain-004.com", "test-domain-005.com"],
+        "dashboard_url": "https://branded-david-7482s-projects.vercel.app/admin/analytics",
+        "expected_outcome": "Production-ready analytics instrumentation with ≥5 real events"
       }
     },
     {
-      "label": "Compile Event Emission Log",
-      "task_template": "data_documentation",
+      "label": "Supabase Query Execution",
+      "task_template": "supabase_validation",
       "args": {
-        "output_format": "markdown_table",
-        "columns": ["domain", "event_name", "timestamp", "status"]
+        "queries": [
+          "SELECT COUNT(*) FROM analytics_events WHERE created_at > NOW() - INTERVAL '2 hours'",
+          "SELECT event_name, COUNT(*) FROM analytics_events GROUP BY event_name"
+        ],
+        "expected_minimum_events": 5
       }
     },
     {
-      "label": "Generate Go/No-Go Decision Memo",
-      "task_template": "decision_memo",
+      "label": "Document Findings & Sign-Off",
+      "task_template": "complete_verification_report",
       "args": {
-        "criteria": "all_5_required_screenshots + supabase_persistence + dashboard_rendering",
-        "threshold": "PASS all critical checks"
+        "report_path": "documents/2026-06-15_analytics_instrumentation_verification_report.md",
+        "approval_required": true
       }
     }
   ]
