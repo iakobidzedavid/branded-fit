@@ -1,42 +1,54 @@
 {
   "view_type": "report",
-  "headline": "Pilot Conversion Probability Scorecard Complete — 3.8/5.0 avg probability, 3–4 conversions expected by EOY",
+  "headline": "Year 2 GTM Messaging Framework synthesized from 5-pilot discovery cohort—14-day timeline and 95% QA accuracy as primary value drivers",
   "primary_stat": {
-    "label": "Aggregate Conversion Probability",
-    "value": "3.8 / 5.0"
+    "label": "Production-ready copy sections",
+    "value": "10 (positioning + headlines + value props + pricing + FAQs + objection handlers)"
   },
   "highlights": [
-    "Vanta: 5/5 (HIGHEST) — Budget confirmed, Q2 2026 timeline, $24K+$8K expansion potential",
-    "Linear: 4/5 (HIGH, monitor) — Budget confirmed, Q2 2026 timeline, SwagUp competitive risk flagged",
-    "Hex: 4/5 (HIGH) — Budget confirmed, Q3 2026 timeline, $24K+$10K expansion potential",
-    "Census: 3/5 (MODERATE) — Budget PENDING CFO approval, Q4 2026 timeline, campus recruiting use case",
-    "Mercury: 3/5 (MODERATE) — Budget PENDING, Q4 2026 timeline, product-fit unclear (3/5)",
-    "Expected Year 2 ARR scenarios: Best case $120K (5/5), Base case $72K (3/5), Conservative $48K (2/5)",
-    "4/5 pilots have confirmed budget authority; 4/5 stated timeline within 6 months",
-    "Brand fidelity avg NPS: 8.4/10 (exceeds 7.5 target); product-fit avg 4.2/5 (strong)",
-    "Top focus: Prioritize Vanta for Q2 close; manage Linear competitive risk; nurture Census/Mercury for Q4"
-  ],
-  "links": [
-    {
-      "label": "View Full Scorecard",
-      "url": "documents/2026-06-14_pilot_conversion_probability_scorecard.md"
-    }
+    "Messaging shift: '10 minutes to storefront' → '14 days end-to-end' (addresses #1 buyer concern: timeline)",
+    "Added explicit HRIS integration FAQ (blocks Hex/Mercury—now unblocked)",
+    "Quantified ROI per persona: CFO ($47K annual value), HR (culture impact), CMO (brand accuracy), Ops (30–120 hours saved)",
+    "5 discovery-backed FAQs address pilot objections: timeline, brand accuracy, HRIS sync, revision cycles, brand governance",
+    "7 identified messaging gaps with implementation priority roadmap (HRIS: highest; Printify quality: lowest)",
+    "Grounded in verified pilot voice: Vanta CFO, Linear CMO, Hex Ops, Census, Mercury insights",
+    "Appendix includes attributed quotes and Year 1→Year 2 progression matrix for alignment"
   ],
   "next_actions": [
     {
-      "label": "Schedule Vanta SOW signature + kickoff",
-      "task_template": "pilot_operations",
-      "args": {"pilot": "Vanta", "action": "close", "priority": "high"}
+      "label": "Update landing page hero section",
+      "task_template": "Update copy with '14 days end-to-end' headline, add HRIS FAQ, integrate revised value props by persona",
+      "args": {
+        "sections": ["hero", "faq", "3-pillar value props"],
+        "priority": "high",
+        "timeline": "June 2026"
+      }
     },
     {
-      "label": "Conduct competitive positioning call with Linear",
-      "task_template": "sales_call",
-      "args": {"pilot": "Linear", "focus": "SwagUp counter-positioning", "timeline": "this week"}
+      "label": "Create Vanta + Linear case studies",
+      "task_template": "Document 14-day launch timeline, brand accuracy wins, ROI (Vanta: $20+ hours, Linear: milestone reorders), HRIS integration roadmap alignment",
+      "args": {
+        "customers": ["Vanta", "Linear"],
+        "sections": ["timeline proof", "QA accuracy proof", "ROI measurement"],
+        "priority": "high",
+        "timeline": "July 2026"
+      }
     },
     {
-      "label": "Secure Census CFO intro for budget pre-approval",
-      "task_template": "stakeholder_engagement",
-      "args": {"pilot": "Census", "action": "cfο_meeting", "target": "Q3"}
+      "label": "Sales deck update",
+      "task_template": "Replace 'Fast, On-Brand' positioning with '14 days, approved by you, shipped by us'; add discovery call talking points section; include Vanta/Linear metrics",
+      "args": {
+        "sections": ["title slide", "value prop slides", "objection handling"],
+        "priority": "high"
+      }
+    },
+    {
+      "label": "Set up Year 2 GTM metrics tracking",
+      "task_template": "Baseline Command Console conversion rate, heat map landing page clicks on '14 days'/'95% QA'/HRIS FAQ, track sales cycle length, deal size, objection overcome rate",
+      "args": {
+        "metrics": ["conversion_rate", "sales_cycle_days", "avg_deal_size", "objection_resolution_rate"],
+        "priority": "medium"
+      }
     }
   ]
 }
