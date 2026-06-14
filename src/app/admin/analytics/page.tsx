@@ -39,11 +39,24 @@ const STAGE_META: Record<FunnelStageName, { label: string; color: string }> = {
   product_view: { label: "Product Viewed", color: "#f59e0b" },
 };
 
-const DAILY_SERIES: EventSeries[] = FUNNEL_STAGES.map((stage) => ({
-  key: stage,
-  label: STAGE_META[stage].label,
-  color: STAGE_META[stage].color,
-}));
+const CORE_FUNNEL_STAGES: FunnelStageName[] = [
+  "domain_submitted",
+  "brand_extraction_completed",
+  "storefront_generation_completed",
+];
+
+const DAILY_SERIES: EventSeries[] = [
+  {
+    key: "domain_submitted",
+    label: STAGE_META.domain_submitted.label,
+    color: STAGE_META.domain_submitted.color,
+  },
+  {
+    key: "storefront_generation_completed",
+    label: STAGE_META.storefront_generation_completed.label,
+    color: STAGE_META.storefront_generation_completed.color,
+  },
+];
 
 interface AnalyticsData {
   funnelEntries: FunnelEntry[];
@@ -239,17 +252,37 @@ function buildAnalyticsResult(events: AnalyticsEvent[], isLive: boolean): Analyt
 
   const topCount = stageCounts.domain_submitted;
 
-  const funnelEntries: FunnelEntry[] = FUNNEL_STAGES.map((stage, i) => {
-    const prevStage = i > 0 ? FUNNEL_STAGES[i - 1] : null;
-    const prevCount = prevStage ? stageCounts[prevStage] : stageCounts[stage];
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setUTCDate(sevenDaysAgo.getUTCDate() - 7);
+  sevenDaysAgo.setUTCHours(0, 0, 0, 0);
+  const sevenDaysISO = sevenDaysAgo.toISOString();
+  const recentEvents = events.filter(
+    (e) => e.created_at != null && e.created_at >= sevenDaysISO
+  );
+  const recentCounts: Record<string, number> = {};
+  CORE_FUNNEL_STAGES.forEach((s) => {
+    recentCounts[s] = 0;
+  });
+  recentEvents.forEach((e) => {
+    if (e.event_name && e.event_name in recentCounts) {
+      recentCounts[e.event_name] += 1;
+    }
+  });
+
+  const funnelEntries: FunnelEntry[] = CORE_FUNNEL_STAGES.map((stage, i) => {
+    const prevStage = i > 0 ? CORE_FUNNEL_STAGES[i - 1] : null;
+    const prevCount = prevStage
+      ? (recentCounts[prevStage] ?? 0)
+      : (recentCounts[stage] ?? 0);
+    const count = recentCounts[stage] ?? 0;
     return {
       stage,
       label: STAGE_META[stage].label,
       color: STAGE_META[stage].color,
-      count: stageCounts[stage],
+      count,
       conversionRate:
         prevCount > 0
-          ? Math.round((stageCounts[stage] / prevCount) * 100)
+          ? Math.round((count / prevCount) * 100)
           : i === 0
           ? 100
           : 0,
@@ -517,13 +550,13 @@ export default async function AdminAnalytics({
 
         <div id="funnel" className="bg-surface border border-border rounded-xl p-6 mb-6">
           <h2 className="text-lg font-bold mb-1">Conversion Funnel</h2>
-          <p className="text-text-muted text-xs mb-6">7 stages with drop-off counts</p>
+          <p className="text-text-muted text-xs mb-6">domain submitted → brand extracted → storefront generated · past 7 days</p>
           <FunnelChart data={funnelEntries} />
         </div>
 
         <div id="timeseries" className="bg-surface border border-border rounded-xl p-6 mb-6">
           <h2 className="text-lg font-bold mb-1">Daily Event Volume</h2>
-          <p className="text-text-muted text-xs mb-4">Event count by type · filter by date range or domain</p>
+          <p className="text-text-muted text-xs mb-4">Daily domain submissions and storefront generations · filter by date range or domain</p>
           <TimeSeriesFilterPanel
             events={rawEvents}
             series={DAILY_SERIES}
