@@ -17,6 +17,8 @@ const SEED_SESSION_IDS = [
   "sess-v2-05",
 ];
 
+const MINIMAL_SESSION_ID = "sess-minimal-01";
+
 type SeedEvent = {
   event_name: string;
   event_type: string;
@@ -80,6 +82,18 @@ function buildSeedEvents(now: Date): SeedEvent[] {
   ];
 }
 
+function buildMinimalSeedEvents(now: Date): SeedEvent[] {
+  const base = now.toISOString();
+  return [
+    { event_name: "domain_submitted",               event_type: "domain_submitted",               domain: "test.example.com", session_id: MINIMAL_SESSION_ID, pipeline_stage: "intake",                created_at: new Date(now.getTime() - 300_000).toISOString(), metadata: { source: "minimal_seed" } },
+    { event_name: "brand_extraction_started",       event_type: "brand_extraction_started",       domain: "test.example.com", session_id: MINIMAL_SESSION_ID, pipeline_stage: "brand_extraction",      created_at: new Date(now.getTime() - 240_000).toISOString(), metadata: { trigger: "auto" } },
+    { event_name: "brand_extraction_completed",     event_type: "brand_extraction_completed",     domain: "test.example.com", session_id: MINIMAL_SESSION_ID, pipeline_stage: "brand_extraction",      created_at: new Date(now.getTime() - 180_000).toISOString(), metadata: { fidelity_score: 90.0, colors_found: 3, logo_found: true, duration_ms: 60000 } },
+    { event_name: "storefront_generation_started",  event_type: "storefront_generation_started",  domain: "test.example.com", session_id: MINIMAL_SESSION_ID, pipeline_stage: "storefront_generation", created_at: new Date(now.getTime() - 120_000).toISOString(), metadata: { trigger: "auto" } },
+    { event_name: "storefront_generation_completed", event_type: "storefront_generation_completed", domain: "test.example.com", session_id: MINIMAL_SESSION_ID, pipeline_stage: "storefront_generation", created_at: new Date(now.getTime() - 60_000).toISOString(),  metadata: { storefront_url: "https://test-merch.myshopify.com", product_count: 3, duration_ms: 60000 } },
+  ];
+  void base;
+}
+
 export async function POST(request: NextRequest) {
   const auth = request.headers.get("authorization");
   const token = auth?.startsWith("Bearer ") ? auth.slice(7) : null;
@@ -89,7 +103,66 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  let body: { mode?: string } = {};
+  try {
+    body = await request.json();
+  } catch {
+    // no body is fine
+  }
+
   const client = getSupabase();
+  const now = new Date();
+
+  if (body.mode === "minimal") {
+    const { error: deleteError } = await client
+      .from("analytics_events")
+      .delete()
+      .eq("session_id", MINIMAL_SESSION_ID);
+
+    if (deleteError) {
+      return NextResponse.json(
+        { error: "Failed to clear minimal seed data", detail: deleteError.message },
+        { status: 500 }
+      );
+    }
+
+    const events = buildMinimalSeedEvents(now);
+    const { data, error: insertError } = await client
+      .from("analytics_events")
+      .insert(events)
+      .select("id, event_name, domain, session_id, created_at");
+
+    if (insertError) {
+      return NextResponse.json(
+        { error: "Failed to insert minimal seed events", detail: insertError.message },
+        { status: 500 }
+      );
+    }
+
+    const counts: Record<string, number> = {};
+    (data ?? []).forEach((row) => {
+      counts[row.event_name] = (counts[row.event_name] ?? 0) + 1;
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        mode: "minimal",
+        total: data?.length ?? 0,
+        counts,
+        domain: "test.example.com",
+        expectedEventTypes: [
+          "domain_submitted",
+          "brand_extraction_started",
+          "brand_extraction_completed",
+          "storefront_generation_started",
+          "storefront_generation_completed",
+        ],
+        seededAt: now.toISOString(),
+      },
+      { status: 201 }
+    );
+  }
 
   // Remove any prior seed rows so the endpoint is idempotent.
   const { error: deleteError } = await client
@@ -104,7 +177,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const now = new Date();
   const events = buildSeedEvents(now);
 
   const { data, error: insertError } = await client
@@ -139,8 +211,40 @@ export async function POST(request: NextRequest) {
   );
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const client = getSupabase();
+  const { searchParams } = new URL(request.url);
+
+  if (searchParams.get("mode") === "minimal") {
+    const { data, error } = await client
+      .from("analytics_events")
+      .select("event_name, domain, session_id, created_at")
+      .eq("session_id", MINIMAL_SESSION_ID)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    const counts: Record<string, number> = {};
+    (data ?? []).forEach((row) => {
+      counts[row.event_name] = (counts[row.event_name] ?? 0) + 1;
+    });
+
+    return NextResponse.json({
+      mode: "minimal",
+      total: data?.length ?? 0,
+      counts,
+      expected: {
+        domain_submitted: 1,
+        brand_extraction_started: 1,
+        brand_extraction_completed: 1,
+        storefront_generation_started: 1,
+        storefront_generation_completed: 1,
+      },
+      events: data,
+    });
+  }
 
   const { data, error } = await client
     .from("analytics_events")
