@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { trackEvent, getOrCreateSessionId } from "@/lib/analytics";
+import type { OrchestrationState } from "@/lib/orchestration-state";
 import {
   Check,
   AlertCircle,
@@ -15,6 +16,7 @@ import {
   Package,
   ShoppingBag,
   Globe,
+  RefreshCw,
 } from "lucide-react";
 
 type PipelineStatus = "pending" | "in_progress" | "completed" | "failed";
@@ -24,7 +26,14 @@ interface PipelineState {
   message: string;
 }
 
-type ConsolePhase = "input" | "running" | "success";
+type ConsolePhase = "input" | "running" | "success" | "failed";
+
+interface BrandData {
+  colors: { hex: string; type?: string }[];
+  logoUrl?: string;
+  fontFamily?: string;
+  confidence: number;
+}
 
 interface ConsoleState {
   phase: ConsolePhase;
@@ -33,6 +42,8 @@ interface ConsoleState {
   pipeline3: PipelineState;
   submittedDomain: string;
   storefrontUrl: string;
+  brandData: BrandData | null;
+  productCount: number;
 }
 
 const INITIAL: ConsoleState = {
@@ -42,12 +53,14 @@ const INITIAL: ConsoleState = {
   pipeline3: { status: "pending", message: "Awaiting product mockups" },
   submittedDomain: "",
   storefrontUrl: "",
+  brandData: null,
+  productCount: 0,
 };
 
-const MOCK_PRODUCTS = [
-  { id: 1, name: "Branded Tee", category: "Apparel", price: "$28" },
-  { id: 2, name: "Premium Hoodie", category: "Apparel", price: "$65" },
-  { id: 3, name: "Canvas Tote", category: "Accessories", price: "$22" },
+const PREVIEW_PRODUCTS = [
+  { id: 1, name: "Heavyweight T-Shirt", category: "Apparel", price: "$17" },
+  { id: 2, name: "Premium Hoodie", category: "Apparel", price: "$26" },
+  { id: 3, name: "Dad Cap", category: "Accessories", price: "$9" },
 ];
 
 const STATUS_BORDER: Record<PipelineStatus, string> = {
@@ -157,8 +170,15 @@ export default function CommandConsole() {
   const [domain, setDomain] = useState("");
   const [validationError, setValidationError] = useState("");
   const [state, setState] = useState<ConsoleState>(INITIAL);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+
+  const stopPolling = useCallback(() => {
+    if (pollingRef.current !== null) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -167,9 +187,10 @@ export default function CommandConsole() {
       if (urlDomain) setDomain(urlDomain);
     }
     return () => {
-      timeoutsRef.current.forEach(clearTimeout);
+      stopPolling();
+      abortRef.current?.abort();
     };
-  }, []);
+  }, [stopPolling]);
 
   const validate = (value: string): boolean => {
     const clean = value.toLowerCase().trim();
@@ -194,97 +215,140 @@ export default function CommandConsole() {
     else if (!value) setValidationError("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const applyOrchState = useCallback(
+    (orch: OrchestrationState, onlyWhenRunning = false) => {
+      setState((prev) => {
+        if (onlyWhenRunning && prev.phase !== "running") return prev;
+        return {
+          ...prev,
+          phase:
+            orch.status === "completed"
+              ? "success"
+              : orch.status === "failed"
+              ? "failed"
+              : "running",
+          pipeline1: orch.pipeline1,
+          pipeline2: orch.pipeline2,
+          pipeline3: orch.pipeline3,
+          storefrontUrl: orch.storefront?.url ?? prev.storefrontUrl,
+          brandData: orch.brandData ?? prev.brandData,
+          productCount: orch.storefront?.productCount ?? prev.productCount,
+        };
+      });
+    },
+    []
+  );
+
+  const startPolling = useCallback(
+    (cleanDomain: string) => {
+      pollingRef.current = setInterval(async () => {
+        try {
+          const res = await fetch(
+            `/api/orchestrate?domain=${encodeURIComponent(cleanDomain)}`
+          );
+          if (!res.ok) return;
+          const data: { status: string; orchestration: OrchestrationState } =
+            await res.json();
+          if (!data.orchestration) return;
+          applyOrchState(data.orchestration, true);
+          if (
+            data.orchestration.status === "completed" ||
+            data.orchestration.status === "failed"
+          ) {
+            stopPolling();
+          }
+        } catch {
+          // transient poll error — next tick will retry
+        }
+      }, 2000);
+    },
+    [applyOrchState, stopPolling]
+  );
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate(domain)) return;
 
-    timeoutsRef.current.forEach(clearTimeout);
-    timeoutsRef.current = [];
+    stopPolling();
+    abortRef.current?.abort();
 
     const cleanDomain = domain.toLowerCase().trim();
-    const slug = cleanDomain.replace(/\./g, "-");
     const sessionId = getOrCreateSessionId();
-    const pipelineStart = Date.now();
 
     trackEvent({ event_name: "domain_submitted", domain: cleanDomain, user_id: sessionId });
-    trackEvent({ event_name: "brand_extraction_started", domain: cleanDomain, user_id: sessionId, pipeline_stage: "brand_intelligence" });
-
-    setState({
-      phase: "running",
-      submittedDomain: cleanDomain,
-      storefrontUrl: `https://branded-fit.vercel.app/store/demo`,
-      pipeline1: {
-        status: "in_progress",
-        message: "Extracting brand colors, logo, and typography…",
-      },
-      pipeline2: { status: "pending", message: "Awaiting brand assets" },
-      pipeline3: { status: "pending", message: "Awaiting product mockups" },
+    trackEvent({
+      event_name: "brand_extraction_started",
+      domain: cleanDomain,
+      user_id: sessionId,
+      pipeline_stage: "brand_intelligence",
     });
 
-    timeoutsRef.current.push(
-      setTimeout(() => {
-        const duration = Date.now() - pipelineStart;
-        trackEvent({ event_name: "brand_extraction_completed", domain: cleanDomain, user_id: sessionId, pipeline_stage: "brand_intelligence", duration_ms: duration });
-        trackEvent({ event_name: "mockup_generation_started", domain: cleanDomain, user_id: sessionId, pipeline_stage: "mockup_generation" });
-        setState((prev) => ({
-          ...prev,
-          pipeline1: {
-            status: "completed",
-            message: "Brand assets extracted — 4 colors, 2 logo variants, 1 font",
-          },
-          pipeline2: {
-            status: "in_progress",
-            message: "Generating on-brand product mockups with Printify…",
-          },
-        }));
-      }, 2500)
-    );
+    setState({
+      ...INITIAL,
+      phase: "running",
+      submittedDomain: cleanDomain,
+      pipeline1: { status: "in_progress", message: "Extracting brand assets from Brandfetch…" },
+    });
 
-    timeoutsRef.current.push(
-      setTimeout(() => {
-        const duration = Date.now() - pipelineStart;
-        trackEvent({ event_name: "mockup_generation_completed", domain: cleanDomain, user_id: sessionId, pipeline_stage: "mockup_generation", duration_ms: duration });
-        trackEvent({ event_name: "storefront_generation_started", domain: cleanDomain, user_id: sessionId, pipeline_stage: "shopify_provisioning" });
-        setState((prev) => ({
-          ...prev,
-          pipeline2: {
-            status: "completed",
-            message: "3 products generated — tee, hoodie, tote",
-          },
-          pipeline3: {
-            status: "in_progress",
-            message: `Provisioning Shopify storefront for ${slug}…`,
-          },
-        }));
-      }, 5500)
-    );
+    startPolling(cleanDomain);
 
-    timeoutsRef.current.push(
-      setTimeout(() => {
-        const duration = Date.now() - pipelineStart;
-        trackEvent({ event_name: "storefront_generation_completed", domain: cleanDomain, user_id: sessionId, pipeline_stage: "shopify_provisioning", duration_ms: duration });
-        setState((prev) => ({
-          ...prev,
-          phase: "success",
-          pipeline3: {
-            status: "completed",
-            message: "Storefront live — 3 products published",
-          },
-        }));
-      }, 9000)
-    );
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+
+    try {
+      const res = await fetch("/api/orchestrate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: cleanDomain }),
+        signal: ctrl.signal,
+      });
+
+      stopPolling();
+
+      if (res.status === 400) {
+        const err: { message?: string } = await res.json().catch(() => ({}));
+        setState(INITIAL);
+        setValidationError(err.message ?? "Invalid domain");
+        return;
+      }
+
+      const data: { success: boolean; orchestration: OrchestrationState } =
+        await res.json();
+      applyOrchState(data.orchestration);
+
+      if (data.orchestration.status === "completed") {
+        trackEvent({
+          event_name: "storefront_generation_completed",
+          domain: cleanDomain,
+          user_id: sessionId,
+          pipeline_stage: "shopify_provisioning",
+        });
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return;
+      stopPolling();
+      setState((prev) => ({
+        ...prev,
+        phase: "failed",
+        pipeline1:
+          prev.pipeline1.status === "in_progress"
+            ? { status: "failed", message: "Connection failed — please try again" }
+            : prev.pipeline1,
+      }));
+    }
   };
 
   const handleReset = () => {
-    timeoutsRef.current.forEach(clearTimeout);
-    timeoutsRef.current = [];
+    stopPolling();
+    abortRef.current?.abort();
+    abortRef.current = null;
     setState(INITIAL);
     setDomain("");
     setValidationError("");
   };
 
   const { phase, pipeline1, pipeline2, pipeline3 } = state;
-  const showPipelines = phase === "running" || phase === "success";
+  const showPipelines = phase === "running" || phase === "success" || phase === "failed";
 
   return (
     <div className="min-h-screen bg-bg text-text flex flex-col">
@@ -305,6 +369,8 @@ export default function CommandConsole() {
                   ? "bg-amber-400 animate-pulse"
                   : phase === "success"
                   ? "bg-emerald-400"
+                  : phase === "failed"
+                  ? "bg-red-400"
                   : "bg-text-muted/30"
               }`}
             />
@@ -313,6 +379,8 @@ export default function CommandConsole() {
                 ? "PIPELINE RUNNING"
                 : phase === "success"
                 ? "PIPELINE COMPLETE"
+                : phase === "failed"
+                ? "PIPELINE FAILED"
                 : "COMMAND CONSOLE"}
             </span>
           </div>
@@ -344,7 +412,6 @@ export default function CommandConsole() {
                     Company domain
                   </label>
                   <input
-                    ref={inputRef}
                     id="domain-input"
                     type="text"
                     autoFocus
@@ -393,7 +460,7 @@ export default function CommandConsole() {
             </div>
           </div>
         ) : (
-          /* ---- RUNNING / SUCCESS PHASE ---- */
+          /* ---- RUNNING / SUCCESS / FAILED PHASE ---- */
           <div className="flex-1 px-4 py-8 md:py-10">
             <div className="max-w-5xl mx-auto">
               {/* Domain + reset */}
@@ -450,10 +517,36 @@ export default function CommandConsole() {
                               Brand Drop Ready!
                             </h3>
                             <p className="text-text-muted text-sm">
-                              3 products published to your Shopify storefront
+                              {state.productCount > 0 ? state.productCount : 3} products published to your Shopify storefront
                             </p>
                           </div>
                         </div>
+
+                        {state.brandData && (
+                          <div className="flex items-center gap-3 bg-bg/40 rounded-lg px-3 py-2 mb-3">
+                            {state.brandData.logoUrl && (
+                              <img
+                                src={state.brandData.logoUrl}
+                                alt={`${state.submittedDomain} logo`}
+                                className="w-8 h-8 object-contain rounded flex-shrink-0"
+                              />
+                            )}
+                            <div className="flex gap-1.5 flex-wrap">
+                              {state.brandData.colors.slice(0, 5).map((c, i) => (
+                                <div
+                                  key={i}
+                                  className="w-5 h-5 rounded-full border border-white/10 flex-shrink-0"
+                                  style={{ backgroundColor: c.hex }}
+                                  title={c.hex}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-xs text-text-muted ml-auto flex-shrink-0">
+                              {state.brandData.confidence}% fidelity
+                            </span>
+                          </div>
+                        )}
+
                         <div className="bg-bg/60 rounded-lg px-4 py-3 mb-4">
                           <p className="text-text-muted text-xs mb-1">
                             Shopify Storefront URL
@@ -478,7 +571,7 @@ export default function CommandConsole() {
                         Product Preview
                       </p>
                       <div className="grid grid-cols-3 gap-3">
-                        {MOCK_PRODUCTS.map((product) => (
+                        {PREVIEW_PRODUCTS.map((product) => (
                           <div
                             key={product.id}
                             className="bg-surface border border-border rounded-lg overflow-hidden hover:border-accent/50 transition group cursor-default"
@@ -501,8 +594,32 @@ export default function CommandConsole() {
                         ))}
                       </div>
                     </div>
+                  ) : phase === "failed" ? (
+                    /* Failed state */
+                    <div className="flex flex-col items-center justify-center bg-red-900/10 border-2 border-red-400/30 rounded-xl p-8 text-center min-h-64 h-full">
+                      <div className="w-14 h-14 rounded-full bg-red-400/10 border border-red-400/30 flex items-center justify-center mb-4">
+                        <AlertCircle className="w-6 h-6 text-red-400" />
+                      </div>
+                      <p className="font-semibold text-text mb-1">Pipeline Failed</p>
+                      <p className="text-text-muted text-sm max-w-xs mb-6">
+                        {pipeline1.status === "failed"
+                          ? pipeline1.message
+                          : pipeline2.status === "failed"
+                          ? pipeline2.message
+                          : pipeline3.status === "failed"
+                          ? pipeline3.message
+                          : "An error occurred during orchestration"}
+                      </p>
+                      <button
+                        onClick={handleReset}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-surface border border-border rounded-lg text-sm text-text hover:border-accent/50 transition"
+                      >
+                        <RefreshCw className="w-4 h-4" />
+                        Try Again
+                      </button>
+                    </div>
                   ) : (
-                    /* Waiting state */
+                    /* Waiting / running state */
                     <div className="flex flex-col items-center justify-center bg-surface border border-border rounded-xl p-8 text-center min-h-64 h-full">
                       <div className="w-14 h-14 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center mb-4">
                         <Loader className="w-6 h-6 text-accent animate-spin" />
