@@ -1,47 +1,38 @@
 {
   "view_type": "report",
-  "headline": "Analytics instrumentation verification framework created; manual browser testing required",
-  "primary_stat": {
-    "label": "Verification Steps Documented",
-    "value": "9 components with detailed checklists"
-  },
+  "headline": "Analytics Verification: Blocker Report - Live Browser Access Required",
   "highlights": [
-    "Comprehensive verification framework with 5 parts: Command Console event emission, Supabase persistence, admin dashboard rendering, API endpoint testing, and data integrity",
-    "5 test domains defined with event emission sequence timeline (domain_submitted → brand_extraction → storefront_generation)",
-    "Specific success criteria for each component: HTTP 200/201 responses, event counts ≥5, chart rendering, error-free console",
-    "Supabase SQL queries included for event validation and data integrity checks",
-    "Issues & blockers section with recommended fixes template for any failures",
-    "Framework is production-ready and can be immediately executed by browser access user"
+    "Cannot complete task: No browser automation capabilities available",
+    "Created comprehensive 10-point verification checklist for manual execution",
+    "Framework covers all 5 event types, Supabase queries, dashboard validation, screenshots",
+    "Task requires live Vercel/Supabase/NextAuth access which agent cannot provide",
+    "Framework ready for Browser Agent or manual team execution (30 min estimated)"
   ],
   "next_actions": [
     {
-      "label": "Execute Browser Verification",
-      "task_template": "manual_browser_test",
+      "label": "Deploy with Browser Agent",
+      "task_template": "analytics_verification_with_browser",
       "args": {
-        "framework": "documents/2026-06-15_analytics_instrumentation_verification_report.md",
-        "environment": "https://branded-david-7482s-projects.vercel.app",
-        "test_domains": ["test-domain-001.com", "test-domain-002.com", "test-domain-003.com", "test-domain-004.com", "test-domain-005.com"],
-        "dashboard_url": "https://branded-david-7482s-projects.vercel.app/admin/analytics",
-        "expected_outcome": "Production-ready analytics instrumentation with ≥5 real events"
+        "verification_framework": "documents/2026-06-15_analytics_verification_blocker_report.md",
+        "target_url": "https://branded-david-7482s-projects.vercel.app/command-console",
+        "test_domains": ["test-domain-1.com", "test-domain-2.com", "test-domain-3.com"]
       }
     },
     {
-      "label": "Supabase Query Execution",
-      "task_template": "supabase_validation",
+      "label": "Manual Team Verification",
+      "task_template": "manual_analytics_verification",
       "args": {
-        "queries": [
-          "SELECT COUNT(*) FROM analytics_events WHERE created_at > NOW() - INTERVAL '2 hours'",
-          "SELECT event_name, COUNT(*) FROM analytics_events GROUP BY event_name"
-        ],
-        "expected_minimum_events": 5
+        "checklist": "documents/2026-06-15_analytics_verification_blocker_report.md",
+        "assignee": "engineering_team",
+        "estimated_duration_minutes": 30
       }
     },
     {
-      "label": "Document Findings & Sign-Off",
-      "task_template": "complete_verification_report",
+      "label": "Review Previous Task Results",
+      "task_template": "review_previous_analytics_work",
       "args": {
-        "report_path": "documents/2026-06-15_analytics_instrumentation_verification_report.md",
-        "approval_required": true
+        "previous_task_id": "9c8b9ced",
+        "note": "Prior task delivered personas instead of event verification - this framework prevents that issue"
       }
     }
   ]
