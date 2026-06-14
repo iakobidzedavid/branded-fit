@@ -577,6 +577,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Reject concurrent runs for the same domain
+    const existingState = orchestrationStore.get(cleanDomain);
+    if (existingState && existingState.status === "in_progress") {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Orchestration already in progress for this domain",
+          orchestration: existingState,
+        },
+        { status: 409 }
+      );
+    }
+
     // Run all three pipelines with a 5-minute hard timeout
     const timeoutPromise = new Promise<never>((_, reject) =>
       setTimeout(
