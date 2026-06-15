@@ -63,7 +63,9 @@ export interface TrackEventParams {
   event_name: string;
   session_id?: string;
   domain?: string;
+  domain_submitted?: string;
   pipeline_stage?: string;
+  status?: string;
   duration_ms?: number;
   error_message?: string;
   user_id?: string;

@@ -25,7 +25,9 @@ export async function POST(request: NextRequest) {
     user_id,
     session_id, // alias for user_id
     domain,
+    domain_submitted,
     pipeline_stage,
+    status,
     duration_ms,
     error_message,
     timestamp,
@@ -50,9 +52,23 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (domain_submitted != null && typeof domain_submitted !== "string") {
+    return NextResponse.json(
+      { error: "domain_submitted must be a string" },
+      { status: 400 }
+    );
+  }
+
   if (pipeline_stage != null && typeof pipeline_stage !== "string") {
     return NextResponse.json(
       { error: "pipeline_stage must be a string" },
+      { status: 400 }
+    );
+  }
+
+  if (status != null && typeof status !== "string") {
+    return NextResponse.json(
+      { error: "status must be a string" },
       { status: 400 }
     );
   }
@@ -103,7 +119,13 @@ export async function POST(request: NextRequest) {
 
   if (resolved_user_id != null) record.user_id = String(resolved_user_id);
   if (domain != null) record.domain = String(domain);
+  if (domain_submitted != null) {
+    record.domain_submitted = String(domain_submitted);
+    // Keep domain in sync when only domain_submitted is provided.
+    if (domain == null) record.domain = String(domain_submitted);
+  }
   if (pipeline_stage != null) record.pipeline_stage = String(pipeline_stage);
+  if (status != null) record.status = String(status);
   if (duration_ms != null) record.duration_ms = Math.round(duration_ms as number);
   if (error_message != null) record.error_message = String(error_message);
   if (timestamp != null) record.timestamp = timestamp;
