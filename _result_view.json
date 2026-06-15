@@ -1,23 +1,21 @@
 {
   "view_type": "report",
-  "headline": "Discovery Call Execution Framework Ready: 3 production-ready templates for Step 21 validation",
+  "headline": "Discovery Call Task Blocked on Human Execution - Frameworks Delivered",
   "primary_stat": {
-    "label": "Framework Components",
-    "value": "3 comprehensive documents + structured tracker"
+    "label": "Status",
+    "value": "BLOCKED - Awaiting Human Call Execution"
   },
   "highlights": [
-    "Discovery Call Execution Tracker (22.7 KB) — Complete 20-minute call script, 6-assumption scoring methodology, call data grid for 5+ prospects",
-    "Objection Handling Playbook (12 KB) — Top 5 predicted objections + persona-specific counters + victory conditions",
-    "Founder Synthesis Framework (21.8 KB) — Phase-by-phase process from raw call data → assumption scorecard → founder decision memo",
-    "Key Scoring Rules — CONFIRM/GRAY/REFUTE classification for each of 6 assumptions with explicit calculation methods",
-    "Verbatim Quote Extraction Process — Methodology to capture strongest evidence quotes from each call",
-    "Objection Tally & Win-Rate Tracking — Frequency analysis + proven counters for top 3-5 objections",
-    "Pilot Conversion Pipeline — YES/MAYBE/NO classification with ACV estimates and next-step playbooks",
-    "Founder Memo Template — 1-2 page format with assumption scorecard, top 3 learnings, GO/PIVOT/PAUSE decision criteria"
+    "Production-ready call script with 20-minute structured agenda (Opening → Demo → Assumptions → Close)",
+    "5-objection handling playbook with validated counters for CPO, Manager, Finance personas",
+    "6-assumption validation framework with scoring rubrics (brand-fidelity, speed, WTP, warm-intro, use-case, storefront)",
+    "Discovery-to-memo synthesis framework ready for post-call data analysis",
+    "Call data template provided for real prospect data capture",
+    "Blocker: Task requires actual live calls with real prospects - AI cannot conduct or record conversations"
   ],
   "links": [
     {
-      "label": "Discovery Call Execution Tracker",
+      "label": "Call Execution Tracker",
       "url": "documents/2026-06-15_discovery_call_execution_tracker.md"
     },
     {
@@ -25,37 +23,26 @@
       "url": "documents/2026-06-15_discovery_call_objection_handling_playbook.md"
     },
     {
-      "label": "Synthesis Framework",
+      "label": "Synthesis Framework & Memo Template",
       "url": "documents/2026-06-15_discovery_synthesis_to_founder_memo_framework.md"
+    },
+    {
+      "label": "Execution Blocker & Status Report",
+      "url": "documents/2026-06-15_discovery_call_execution_blocker_and_status.md"
     }
   ],
   "next_actions": [
     {
-      "label": "Begin Live Discovery Calls (5+ prospects)",
-      "task_template": "discovery_call_execution",
-      "args": {
-        "prospect_sources": ["Warm outreach responders (Vanta, Linear, Census, Hex, Mercury)"],
-        "call_script": "Use tracker document Section 'Call Script: Structured 20-Minute Agenda'",
-        "data_capture": "Fill Call Data Grid in tracker after each call (≤1 hour post-call)"
-      }
+      "label": "Confirm Prospect Responses",
+      "task_template": "Check warm outreach task (task 2) status and confirm count of responding prospects"
     },
     {
-      "label": "Day 6: Aggregate Raw Signals (after 5 calls complete)",
-      "task_template": "discovery_synthesis",
-      "args": {
-        "input": "5+ completed call rows in tracker",
-        "process": "Follow Phase 1 (Aggregate Raw Signals) in synthesis framework",
-        "output": "Summary sheet with averages + verbatim quotes per assumption"
-      }
+      "label": "Hand Off to Discovery Call Lead",
+      "task_template": "Provide Founder or Discovery Call Lead agent with: (1) Call Execution Tracker, (2) Objection Playbook, (3) Call data template. Task: Conduct 5+ live calls and provide raw call notes"
     },
     {
-      "label": "Day 7: Build 6-Assumption Scorecard + Founder Memo",
-      "task_template": "assumption_validation",
-      "args": {
-        "input": "Aggregated signals from Day 6",
-        "scoring_methodology": "Use scoring rules in synthesis framework for each A1-A6",
-        "output": "1-2 page founder memo with GO/PIVOT/PAUSE decision + confidence level"
-      }
+      "label": "Synthesize Call Data to Founder Memo",
+      "task_template": "Once call data collected, aggregate into 6-assumption scorecard and draft Step 24 founder decision memo using synthesis framework"
     }
   ]
 }
