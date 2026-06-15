@@ -20,6 +20,8 @@ branded-fit/
   TEST_GUIDE.md
   brandfetch-integration-test.ts
   brandfetch-validation-test.ts
+  e2e-ui-test.js
+  e2e-ui-test.ts
   next-env.d.ts
   next.config.ts
   package-lock.json
@@ -85,8 +87,18 @@ branded-fit/
     2026-06-14_e2e_orchestration_test_report.md
     2026-06-14_smoke_test_production_command_console.md
     2026-06-14_vercel_env_vars_audit.md
+    2026-06-15T07-35-47.184Z_01-initial-form.png
+    2026-06-15T07-35-48.293Z_02-after-submission.png
+    2026-06-15T07-35-49.378Z_03-final-state.png
+    2026-06-15_command_console_e2e_test_index.md
+    2026-06-15_command_console_e2e_test_report.md
+    2026-06-15_deployment_failure_root_cause_analysis.md
+    2026-06-15_deployment_root_cause_analysis.md
     2026-06-15_drift_remediation_verification_report.md
+    2026-06-15_e2e_live_orchestration_test_report.md
     2026-06-15_mvbp_deployment_e2e_report.md
+    2026-06-15_pipeline_fix_verification_report.md
+    2026-06-15_vercel_deployment_verification.md
     DELIVERABLES_CHECKLIST.md
   public/
     mockups/
@@ -100,6 +112,7 @@ branded-fit/
       analytics-setup/
       api/
       command-console/
+      diagnostics/
       pilot-checkout/
       pricing/
       store/
