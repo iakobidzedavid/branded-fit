@@ -1,0 +1,412 @@
+{
+  "framework_name": "Step 21 Discovery Call Validation Framework",
+  "created_date": "2026-06-15",
+  "status": "PRODUCTION READY",
+  "execution_window": "2026-06-16 to 2026-06-22",
+  "objective": "Validate 3 critical gray assumptions for $24K Growth tier pricing & procurement cycle",
+  
+  "documents": [
+    {
+      "filename": "2026-06-15_step21_discovery_call_execution_plan.md",
+      "size_kb": 25,
+      "word_count": 8000,
+      "type": "master_guide",
+      "sections": [
+        "Executive Summary",
+        "Critical Assumptions Being Tested (A/B/C)",
+        "Discovery Call Structure (45-60 min, 6 phases)",
+        "Discovery Call Data Tracker",
+        "Assumption Validation Scorecard (for each assumption)",
+        "1-Page Founder Decision Memo Template",
+        "Execution Checklist",
+        "Contact Strategy & Warm Path Leverage",
+        "Van Westendorp WTP Pricing Ladder (optional)"
+      ],
+      "use_for": "Primary reference; read before first call, reference during prep & execution"
+    },
+    {
+      "filename": "2026-06-22_step21_discovery_results_template.md",
+      "size_kb": 23,
+      "word_count": 7000,
+      "type": "results_aggregation",
+      "sections": [
+        "Call Summary Table (5 rows)",
+        "Assumption A: $24K WTP Validation (with aggregation)",
+        "Assumption B: $25K Authority Validation (with aggregation)",
+        "Assumption C: 14-17 Day Cycle Validation (with aggregation)",
+        "Product Demo & Market Insights",
+        "Purchasing Criteria Ranking Analysis",
+        "Pilot Conversion Analysis",
+        "Final Synthesis & GO/PIVOT/PAUSE Decision (3 options)",
+        "Confidence Assessment & Risk Factors",
+        "Actions & Timeline",
+        "Call Notes Appendix (per-call template)"
+      ],
+      "use_for": "Data entry during/after calls; synthesis after all 5 calls complete"
+    },
+    {
+      "filename": "2026-06-15_step21_discovery_call_cheatsheet.md",
+      "size_kb": 10,
+      "word_count": 3000,
+      "type": "quick_reference",
+      "sections": [
+        "The 3 Assumptions (quick table)",
+        "45-Minute Call Structure (simplified)",
+        "Critical Things to Capture (checklist)",
+        "Demo Script (memorized)",
+        "Scoring Guide (CONFIRM/GRAY/REFUTE)",
+        "Assumption Tally (final scoring tracker)",
+        "Handling Objections (4 scenarios + playbook)",
+        "Post-Call Checklist",
+        "Messaging Angles (by assumption)",
+        "What Success Looks Like",
+        "Contact Info (Step 9 targets)"
+      ],
+      "use_for": "PRINT THIS. Bring to every call; on-call reference"
+    },
+    {
+      "filename": "2026-06-15_step21_discovery_framework_summary.md",
+      "size_kb": 16,
+      "word_count": 5000,
+      "type": "overview_guide",
+      "sections": [
+        "What This Framework Solves",
+        "The Three Documents (how to use each)",
+        "Execution Timeline (June 16-22)",
+        "How to Run One Call (simplified)",
+        "What You'll Know by June 22",
+        "Key Metrics to Track",
+        "Critical Success Factors",
+        "What to Do If...",
+        "Sample Founder Memo",
+        "FAQ",
+        "Document Package Contents",
+        "Next Steps After Framework"
+      ],
+      "use_for": "Overview; guidance on using entire package"
+    }
+  ],
+  
+  "critical_assumptions": [
+    {
+      "id": "A",
+      "name": "$24K Annual WTP for Growth Tier",
+      "hypothesis": "People Ops managers at Series B-D companies are willing to pay $24K/year for the Growth tier",
+      "validation_question": "Is $24K/yr acceptable?",
+      "success_threshold": "≥4/5 CONFIRM",
+      "what_to_listen_for": [
+        "That's reasonable",
+        "In the ballpark",
+        "We spend more on X already",
+        "Asks about payment terms (not cost justification)"
+      ],
+      "refute_signals": [
+        "That's too expensive",
+        "We'd need to go much lower",
+        "Budget-wise we're capped at $10K",
+        "Silence or hesitation on pricing"
+      ]
+    },
+    {
+      "id": "B",
+      "name": "$25K Signing Authority",
+      "hypothesis": "VP People has unilateral signing authority for $25K spend without CFO escalation",
+      "validation_question": "Do you have authority for $24K, or CFO sign-off needed?",
+      "success_threshold": "≥3/5 CONFIRM",
+      "what_to_listen_for": [
+        "I can approve up to $50K on my own",
+        "I'm the P&L owner for People operations",
+        "My VP sign-off is all we need",
+        "Prospect is clearly confident in their authority"
+      ],
+      "gray_signals": [
+        "My CFO usually reviews 20K+, but we can probably get approved",
+        "It depends on contract terms",
+        "I'd loop in finance, but I drive the decision"
+      ],
+      "refute_signals": [
+        "Everything over $5K needs CFO approval",
+        "I'm not a budget decision-maker",
+        "This would need to go through procurement"
+      ]
+    },
+    {
+      "id": "C",
+      "name": "14-17 Day Procurement Cycle",
+      "hypothesis": "Series B-D companies can move from agreement to contract in 14-17 days",
+      "validation_question": "What's your typical vendor procurement cycle?",
+      "success_threshold": "≥3/5 within 14-20 days",
+      "what_to_listen_for": [
+        "We can move fast—probably 1-2 weeks",
+        "If it's SaaS, usually 10-14 days",
+        "Finance turnaround is 5 days max",
+        "We use a standard MSA, so signature is quick"
+      ],
+      "gray_signals": [
+        "Normally 3-4 weeks, but could be faster if prioritized",
+        "Depends on legal review, could be 2-3 weeks",
+        "We try to keep it under 20 days"
+      ],
+      "refute_signals": [
+        "Our standard procurement is 6+ weeks",
+        "Legal review alone takes a month",
+        "We move slowly on new vendors"
+      ]
+    }
+  ],
+  
+  "call_structure": {
+    "total_duration_minutes": 45,
+    "phases": [
+      {
+        "phase": 1,
+        "name": "Opening & Rapport",
+        "duration_minutes": 5,
+        "objective": "Build trust, confirm parameters",
+        "key_actions": [
+          "Establish credibility",
+          "Mention warm intro source",
+          "Confirm 45-min availability",
+          "Ask permission to record (optional)"
+        ]
+      },
+      {
+        "phase": 2,
+        "name": "Discovery & Pain Mapping",
+        "duration_minutes": 15,
+        "objective": "Understand process, map pain to 3 pillars",
+        "key_questions": [
+          "Walk me through your current swag/merch process",
+          "What's the biggest headache in that process?",
+          "How important is brand alignment? Do you have brand guidelines?",
+          "What's your typical order size? MOQs an issue?",
+          "If you could improve one thing, what would it be?"
+        ],
+        "listen_for_ratio": "70% listen, 30% talk"
+      },
+      {
+        "phase": 3,
+        "name": "Product Demo & Reaction Measurement",
+        "duration_minutes": 15,
+        "objective": "Show Command Console live, measure wow-factor & brand fidelity",
+        "steps": [
+          "Input prospect's domain",
+          "Show brand extraction (colors, logos)",
+          "Show mockups with brand applied",
+          "Show live storefront",
+          "Answer questions on brand accuracy"
+        ],
+        "metrics_to_capture": [
+          "Brand extraction accuracy (1-5)",
+          "Mockup quality (1-5)",
+          "Overall wow factor (1-5)",
+          "Speed perception (1-5)",
+          "Wow-factor category (WOW/IMPRESSED/NEUTRAL/SKEPTICAL/DISMISSIVE)"
+        ]
+      },
+      {
+        "phase": 4,
+        "name": "Purchasing Criteria Ranking",
+        "duration_minutes": 7,
+        "objective": "Force-rank 3 criteria: Speed, Brand Fidelity, No MOQs",
+        "instruction": "I'm giving you 3 factors. Rank 1-3 (1=most important). What's your ranking?",
+        "criteria": [
+          "Speed — Minutes/hours to live, not weeks",
+          "Brand Fidelity — Mockups truly reflect your brand",
+          "On-Demand Fulfillment with No MOQs — Order what you need when"
+        ],
+        "follow_up": "Why did you rank [#1] as most important?"
+      },
+      {
+        "phase": 5,
+        "name": "Pricing Validation & Authority Probe",
+        "duration_minutes": 13,
+        "objective": "Present $24K Growth tier, validate WTP, authority, cycle",
+        "intro": "We offer 3 tiers: Standard (free), Growth ($24K/yr), Enterprise (custom)",
+        "questions": [
+          "Is $24K/yr in a range you'd seriously consider?",
+          "Do you have authority for $24K or does CFO need sign-off?",
+          "From agreement to signature, how many days does your cycle take?"
+        ],
+        "data_to_capture": [
+          "WTP response (verbatim)",
+          "Price objection? Yes/No",
+          "Budget constraint? Yes/No",
+          "Authority level: Full/Partial/Limited",
+          "CFO involvement: Yes/No/Maybe",
+          "Procurement cycle: ___ days",
+          "Primary bottleneck: ___"
+        ]
+      },
+      {
+        "phase": 6,
+        "name": "Pilot Offer & Close",
+        "duration_minutes": 5,
+        "objective": "Offer $4,800 Brand Drop Pilot, qualify conversion intent",
+        "pitch": "Rather than commit to $24K now, run a $4,800 Brand Drop Pilot—Week 1 mockups, Week 2 approval, Week 3 ship, Week 4 NPS survey",
+        "close_question": "Would you want to run a pilot?",
+        "capture_intent": ["YES", "MAYBE", "NO"],
+        "final_question": "What would it take for you to say yes?",
+        "next_steps": "If YES/MAYBE: Send SOW + briefing email within 2 hours"
+      }
+    ]
+  },
+  
+  "data_to_capture_per_call": {
+    "icebreaker": [
+      "Prospect full name",
+      "Company name",
+      "Job title",
+      "Email address",
+      "Call date & time"
+    ],
+    "icp_validation": [
+      "Title matches People Ops Manager/Head of People?",
+      "Company stage = Series B/C/D?",
+      "Company FTE = 200-1500?",
+      "Active merch/swag program? Yes/No"
+    ],
+    "demo_metrics": [
+      "Brand extraction accuracy (1-5)",
+      "Mockup quality (1-5)",
+      "Overall wow factor (1-5)",
+      "Speed perception (1-5)",
+      "Wow-factor category (WOW/IMPRESSED/NEUTRAL/SKEPTICAL/DISMISSIVE)",
+      "Brand fidelity rating (prospect's own rating, 1-5)"
+    ],
+    "purchasing_ranking": [
+      "Rank #1 (most important)",
+      "Rank #2",
+      "Rank #3 (least important)",
+      "Why ranked #1 as most important? (verbatim)"
+    ],
+    "pricing_authority_cycle": [
+      "WTP response to $24K (verbatim quote)",
+      "Price objection? Yes/No",
+      "Budget constraint mentioned? Yes/No",
+      "Authority level: Full/Partial/Limited",
+      "CFO involvement: Yes/No/Maybe",
+      "Stated procurement cycle (days)",
+      "Actual procurement cycle (days)",
+      "Primary bottleneck in cycle"
+    ],
+    "pilot_conversion": [
+      "Pilot interest: YES/MAYBE/NO",
+      "Champion name (if YES/MAYBE)",
+      "Champion email",
+      "Key objection (if NO)",
+      "Next steps & timeline"
+    ]
+  },
+  
+  "scoring_rules": {
+    "confirm": {
+      "definition": "Prospect said yes, in range, or no objection; natural fit; unrealistic timeline/authority",
+      "characteristics": [
+        "Prospect says yes / in range / no objection",
+        "Natural fit with current process",
+        "Timeline/authority realistic",
+        "Enthusiasm present"
+      ]
+    },
+    "gray": {
+      "definition": "Prospect hedges, asks about terms, conditional yes; some concern but not deal-killer",
+      "characteristics": [
+        "Prospect hedges / asks about terms / conditional yes",
+        "Some concern but not a deal-killer",
+        "Needs clarification or iteration",
+        "Medium confidence"
+      ]
+    },
+    "refute": {
+      "definition": "Prospect says no, too expensive, out of budget; fundamental mismatch",
+      "characteristics": [
+        "Prospect says no / too expensive / out of budget",
+        "Fundamental mismatch with need/timeline",
+        "Would require significant repositioning",
+        "Clear objection, not just hesitation"
+      ]
+    }
+  },
+  
+  "success_criteria": {
+    "assumption_a_wtp": {
+      "success": "≥4/5 CONFIRM",
+      "validation_interval": "HIGH confidence in $24K pricing",
+      "medium_confidence": "2-3 CONFIRM + 1-3 GRAY",
+      "low_confidence": "≥2 REFUTE"
+    },
+    "assumption_b_authority": {
+      "success": "≥3/5 CONFIRM",
+      "validation_interval": "HIGH confidence in VP-level direct sales",
+      "medium_confidence": "2 CONFIRM + 2-3 GRAY",
+      "low_confidence": "≥2 REFUTE"
+    },
+    "assumption_c_cycle": {
+      "success": "≥3/5 ≤20 days",
+      "validation_interval": "HIGH confidence in 14-17 day model",
+      "medium_confidence": "2-3 ≤20 days + 1-3 at 18-25 days",
+      "low_confidence": "≥2 >25 days"
+    }
+  },
+  
+  "final_recommendation_options": [
+    {
+      "option": "GO",
+      "criteria": "All 3 assumptions VALIDATED; ≥4/5 pilot interest",
+      "action": "Launch Growth tier immediately; execute pilot SOWs",
+      "confidence": "HIGH (80%+)"
+    },
+    {
+      "option": "PIVOT",
+      "criteria": "2/3 assumptions VALIDATED; 1/3 GRAY or REFUTED; specific adjustments needed",
+      "action": "Lower pricing (e.g., $18K), add CFO engagement, extend cycle—then launch",
+      "confidence": "MEDIUM (50-80%)"
+    },
+    {
+      "option": "PAUSE",
+      "criteria": "≤1/3 assumptions VALIDATED; major repositioning required",
+      "action": "Conduct additional research, refine product/positioning, retest assumptions",
+      "confidence": "LOW (<50%)"
+    }
+  ],
+  
+  "deliverables_by_june_22": {
+    "call_data": "5+ completed discovery calls with full data tracker entries",
+    "assumption_scores": "CONFIRM/GRAY/REFUTE scoring for each of 3 assumptions",
+    "evidence_base": "Verbatim quotes from each assumption validation",
+    "synthesis_memo": "1-page founder decision memo with GO/PIVOT/PAUSE recommendation",
+    "confidence_level": "HIGH/MEDIUM/LOW with supporting analysis",
+    "next_steps": "3-5 concrete actions for founder approval"
+  },
+  
+  "critical_success_factors": [
+    "Capture verbatim quotes (don't paraphrase)",
+    "Score conservatively (when uncertain, mark GRAY)",
+    "Ask follow-up clarifications (push for clarity on hedged answers)",
+    "Measure demo reaction in real-time (not after call)",
+    "Get contact info + next steps before hanging up",
+    "Complete post-call checklist within 2 hours",
+    "Aggregate early (after call 3, check if pattern emerging)"
+  ],
+  
+  "common_pitfalls_to_avoid": [
+    "Selling instead of discovering (70% listen, 30% talk)",
+    "Skipping demo (live show is critical for wow-factor measurement)",
+    "Not capturing verbatim quotes (synthesis memo needs evidence, not summaries)",
+    "Being too generous with scoring (CONFIRM only if truly unambiguous)",
+    "Not following up within 2 hours (details get fuzzy)",
+    "Sharing results before all 5 calls (pattern can shift with later calls)",
+    "Waiting until June 22 to aggregate (tally as you go; spot early trends)"
+  ],
+  
+  "metadata": {
+    "total_size_kb": 74,
+    "total_words": 23000,
+    "production_readiness": "100%",
+    "requires_customization": false,
+    "estimated_execution_hours": 15,
+    "estimated_synthesis_hours": 4,
+    "founder_decision_by": "2026-06-23"
+  }
+}

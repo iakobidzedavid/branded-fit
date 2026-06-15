@@ -1,0 +1,69 @@
+{
+  "view_type": "report",
+  "headline": "Step 21 Discovery Call Validation Framework Complete — Ready for 5+ Prospect Execution",
+  "primary_stat": {
+    "label": "Framework Documents Created",
+    "value": 3
+  },
+  "rows": null,
+  "links": [
+    {
+      "label": "Execution Plan (45-60 min structure, scripts, data tracker)",
+      "url": "file:///documents/2026-06-15_step21_discovery_call_execution_plan.md"
+    },
+    {
+      "label": "Results Template (6-assumption scorecard, aggregation, memo)",
+      "url": "file:///documents/2026-06-22_step21_discovery_results_template.md"
+    },
+    {
+      "label": "Quick Reference Cheatsheet (1-page, print & bring)",
+      "url": "file:///documents/2026-06-15_step21_discovery_call_cheatsheet.md"
+    }
+  ],
+  "highlights": [
+    "✅ Complete 45-60 min discovery call script with 6 phases (opening, discovery, demo, ranking, pricing, close)",
+    "✅ Real-time data tracker for capturing 15+ data points per call (ICP, WOW factor, pricing reaction, authority, cycle)",
+    "✅ 6-assumption validation scorecard with CONFIRM/GRAY/REFUTE scoring + verbatim quote capture",
+    "✅ Van Westendorp WTP pricing ladder methodology for sophisticated pricing validation",
+    "✅ 3 critical assumptions being tested: (A) $24K WTP, (B) $25K authority, (C) 14-17 day cycle",
+    "✅ Command Console demo framework with specific talking points + wow-factor measurement",
+    "✅ Forced-rank purchasing criteria analysis (Speed vs. Brand Fidelity vs. No MOQs)",
+    "✅ Pilot conversion funnel: from discovery call → Brand Drop Pilot SOW → annual contract",
+    "✅ Post-call synthesis template for 1-page founder decision memo with GO/PIVOT/PAUSE recommendation",
+    "✅ Objection handling playbook (pricing, differentiation, authority, brand handling)",
+    "✅ Step-by-step execution checklist (pre-call, during, post-call, synthesis)",
+    "✅ Sample warm-intro outreach email + contact strategy for Step 9 targets",
+    "✅ All templates filled with real frameworks; ready to print and execute immediately"
+  ],
+  "next_actions": [
+    {
+      "label": "Execute Discovery Calls",
+      "task_template": "test_discovery_call",
+      "args": {
+        "prospect_company": "Ramp|Vanta|Linear|Retool|Notion",
+        "call_date": "2026-06-16 to 2026-06-20",
+        "duration_minutes": 45,
+        "data_tracker_file": "documents/2026-06-22_step21_discovery_results_template.md"
+      }
+    },
+    {
+      "label": "Aggregate & Score Assumptions",
+      "task_template": "assumption_validation",
+      "args": {
+        "assumption_a_wtp": "$24K annual pricing acceptance",
+        "assumption_b_authority": "$25K signing authority",
+        "assumption_c_cycle": "14-17 day procurement cycle",
+        "success_threshold": "3/3 validated for GO decision"
+      }
+    },
+    {
+      "label": "Synthesize Founder Decision Memo",
+      "task_template": "founder_memo",
+      "args": {
+        "go_pivot_pause": "TBD after calls",
+        "confidence_level": "HIGH/MEDIUM/LOW",
+        "pilot_conversion_rate": "Expected 40-80% of prospects"
+      }
+    }
+  ]
+}
