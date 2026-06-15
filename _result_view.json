@@ -1,45 +1,62 @@
 {
   "view_type": "report",
-  "headline": "Competitive positioning matrix & 5-7 competitor teardown: Branded Fit's 12-month defensibility window established",
+  "headline": "Converted discovery call signals into 3 production-ready pilot SOWs + execution playbook; targeted 4 prospects (Vanta, Linear, Census, Hex) with $4.8K–$24K pricing tiers.",
   "primary_stat": {
-    "label": "Competitors analyzed",
-    "value": "7 direct competitors mapped across speed, pricing, GTM, customers, brand fidelity, defensibility"
+    "label": "Pilot-Ready Prospects",
+    "value": "4 of 5"
   },
   "highlights": [
-    "Defensibility assessment: Branded Fit 8/10 (HIGH) - 12-18 month head start on replication due to technical (Brandfetch) + organizational (services vs. automation) moats",
-    "Primary competitor: SwagUp (70% ICP overlap) - vulnerable to Branded Fit's speed (5 min vs 2-3 weeks) and automation advantage, but strong on HRIS integration",
-    "Secondary threat: Swag.com (low-cost commodity) - cheaper ($6K-12K vs $12K-24K) but no brand extraction; Branded Fit wins on brand fidelity + recurring model",
-    "Replication timeline matrix: SwagUp 9-12 months ($2M-3M investment, 25% success rate due to revenue cannibalization); new entrant 12-18 months ($3M-5M, 25% success rate)",
-    "Named customer research: Figma, Stripe, Slack (SwagUp); ServiceTitan, Pipefy (Swag.com); SXSW, Dreamforce (Stadium); Patreon, Glossier, SeatGeek (Bonusly)",
-    "Target segment analysis: Tech-native Series B-D (60-70% conversion, 2-3 week cycle, $36K-72K LTV) >> Mid-market traditional (30-40% conversion, 4-6 week cycle, $48K-144K LTV) >> SMB/cost-sensitive (avoid)",
-    "Feature parity gap: Autonomous brand extraction (Brandfetch) + 5-minute setup + Printify partnership = hard to replicate; SwagUp/Printfection's white-glove model cannibalizes SaaS transition",
-    "Messaging framework: vs SwagUp = 'skip design cycle' (5 min mockups); vs Swag.com = 'custom brand control' (not catalog); vs Stadium = 'recurring moments, not events'",
-    "Product roadmap impact: Q3 2026 priorities = HRIS integration (neutralize SwagUp), analytics dashboard (prove ROI), campaign templating (enable recurring); 2027 = API ecosystem (network effects)",
-    "Strategic window: 12-18 months to lock defensibility; actions = achieve 20+ annual customers, HRIS integrations live, 3+ customer case studies, expand partnerships"
+    "Prospect Roster: 4 qualified prospects scored & ranked by pilot conversion probability (80% → 35%)",
+    "SOW Template: Production-ready 8-section Statement of Work with customizable pain points, ROI cases, and 3 pricing tiers ($4.8K/$12K/$24K)",
+    "4 Customized SOWs: Ready for founder signature (Vanta Growth $24K, Linear Professional $12K + Scale-Up, Census Professional $12K + CEO brief, Hex Entry $4.8K)",
+    "Execution Playbook: 5-phase step-by-step guide from SOW customization → founder signature → warm outreach → pilot launch → Growth conversion",
+    "Warm-Path Hooks: Customized cover letters & CEO briefings for each prospect based on discovery call context",
+    "ROI Cases: Prospect-specific financial models (Vanta $48K→$24K savings, Linear $63K→$51K savings, Census/Hex adapted)",
+    "Risk Mitigations: Documented blockers (finance gatekeeping, CEO approval, budget constraints) with specific remediation strategies",
+    "Success Metrics: Target 75% SOW signature rate (3+ of 4); 50%+ pilot-to-Growth conversion; $24K–$36K ARR expected from cohort",
+    "Timeline: 7-day execution window from Phase 1 (today) through Phase 4 (outreach launch); 45-day total cycle to Growth contracts"
   ],
   "next_actions": [
     {
-      "label": "Step 24 Founder Decision Memo",
-      "task_template": "Synthesize competitive analysis + discovery call results into GO/NO-GO decision memo with assumption scorecard (confirm brand fidelity 4.3/5, $24K WTP 72%, pilot intent 67%) and Y1 roadmap priorities",
+      "label": "Founder Review & SOW Customization",
+      "task_template": "Execute Phase 1-2 of execution playbook: Review prospect roster, confirm warm-path hooks, customize each SOW with discovery call data (pain points, ROI cases, pricing tiers)",
       "args": {
-        "focus": "defensibility roadmap, 12-month moat-strengthening plan, competitive win/loss tracking"
+        "documents_to_review": [
+          "documents/2026-06-15_pilot_sow_prospect_roster.md",
+          "documents/2026-06-15_pilot_sow_template.md"
+        ],
+        "timeline_days": 2
       }
     },
     {
-      "label": "GTM Messaging & Sales Collateral Update",
-      "task_template": "Update sales deck + email templates with competitor-specific battle cards (SwagUp vs, Swag.com vs, Stadium vs) and discovery questions; include named customer examples and defensibility talking points",
+      "label": "Sign Customized SOWs",
+      "task_template": "Phase 3: Founder signature on 4 customized SOW PDFs (Vanta, Linear, Census, Hex) using official letterhead & signature",
       "args": {
-        "competitors_to_address": ["SwagUp", "Swag.com", "Stadium"],
-        "proof_points": ["5-min setup", "4.3/5 brand fidelity", "$1.5K-2.5K COCA"]
+        "artifacts": [
+          "2026-06-15_SOW_VANTA_Sarah_Chen_SIGNED.pdf",
+          "2026-06-15_SOW_LINEAR_Alex_Thompson_SIGNED.pdf",
+          "2026-06-15_SOW_CENSUS_Maya_Patel_SIGNED.pdf",
+          "2026-06-15_SOW_HEX_Jordan_Lee_SIGNED.pdf"
+        ],
+        "timeline_days": 1
       }
     },
     {
-      "label": "Pilot Program Targeting & Segment Prioritization",
-      "task_template": "Prioritize 20+ pilot targets (Q3 2026) focusing on tech-native Series B-D segment (60-70% conversion likelihood); map to named customers (Vanta, Linear, Census, Hex, Mercury) with defensibility-based messaging",
+      "label": "Execute Warm Outreach Campaign",
+      "task_template": "Phase 4: Send founder-signed SOWs + warm-intro emails to 4 prospects; execute 48-72 hour follow-up cadence per prospect segment (strong Yes vs. Maybe intent); track responses",
       "args": {
-        "segment": "tech-native, Series B-D, 200-1500 FTE",
-        "conversion_target": "60-70%",
-        "sales_cycle": "2-3 weeks"
+        "prospects_count": 4,
+        "email_templates": "Vanta (strong Yes), Linear (Maybe + ROI), Census (Maybe + CEO brief), Hex (Maybe + startup positioning)",
+        "response_tracking_required": true,
+        "timeline_days": 7
+      }
+    },
+    {
+      "label": "Pilot Launch & Mid-Pilot Check-In",
+      "task_template": "Phase 5: Coordinate storefront launches for signed SOWs (within 3 days of signature); execute Day 14 check-in calls; prepare for Day 28 debrief + Growth conversion decision",
+      "args": {
+        "timeline_days": 28,
+        "key_milestones": ["Storefront launch", "Day 14 check-in", "Day 28 debrief call", "Growth contract signature (if approved)"]
       }
     }
   ]
