@@ -1,0 +1,61 @@
+{
+  "view_type": "report",
+  "headline": "Discovery Call Execution Framework Ready: 3 production-ready templates for Step 21 validation",
+  "primary_stat": {
+    "label": "Framework Components",
+    "value": "3 comprehensive documents + structured tracker"
+  },
+  "highlights": [
+    "Discovery Call Execution Tracker (22.7 KB) — Complete 20-minute call script, 6-assumption scoring methodology, call data grid for 5+ prospects",
+    "Objection Handling Playbook (12 KB) — Top 5 predicted objections + persona-specific counters + victory conditions",
+    "Founder Synthesis Framework (21.8 KB) — Phase-by-phase process from raw call data → assumption scorecard → founder decision memo",
+    "Key Scoring Rules — CONFIRM/GRAY/REFUTE classification for each of 6 assumptions with explicit calculation methods",
+    "Verbatim Quote Extraction Process — Methodology to capture strongest evidence quotes from each call",
+    "Objection Tally & Win-Rate Tracking — Frequency analysis + proven counters for top 3-5 objections",
+    "Pilot Conversion Pipeline — YES/MAYBE/NO classification with ACV estimates and next-step playbooks",
+    "Founder Memo Template — 1-2 page format with assumption scorecard, top 3 learnings, GO/PIVOT/PAUSE decision criteria"
+  ],
+  "links": [
+    {
+      "label": "Discovery Call Execution Tracker",
+      "url": "documents/2026-06-15_discovery_call_execution_tracker.md"
+    },
+    {
+      "label": "Objection Handling Playbook",
+      "url": "documents/2026-06-15_discovery_call_objection_handling_playbook.md"
+    },
+    {
+      "label": "Synthesis Framework",
+      "url": "documents/2026-06-15_discovery_synthesis_to_founder_memo_framework.md"
+    }
+  ],
+  "next_actions": [
+    {
+      "label": "Begin Live Discovery Calls (5+ prospects)",
+      "task_template": "discovery_call_execution",
+      "args": {
+        "prospect_sources": ["Warm outreach responders (Vanta, Linear, Census, Hex, Mercury)"],
+        "call_script": "Use tracker document Section 'Call Script: Structured 20-Minute Agenda'",
+        "data_capture": "Fill Call Data Grid in tracker after each call (≤1 hour post-call)"
+      }
+    },
+    {
+      "label": "Day 6: Aggregate Raw Signals (after 5 calls complete)",
+      "task_template": "discovery_synthesis",
+      "args": {
+        "input": "5+ completed call rows in tracker",
+        "process": "Follow Phase 1 (Aggregate Raw Signals) in synthesis framework",
+        "output": "Summary sheet with averages + verbatim quotes per assumption"
+      }
+    },
+    {
+      "label": "Day 7: Build 6-Assumption Scorecard + Founder Memo",
+      "task_template": "assumption_validation",
+      "args": {
+        "input": "Aggregated signals from Day 6",
+        "scoring_methodology": "Use scoring rules in synthesis framework for each A1-A6",
+        "output": "1-2 page founder memo with GO/PIVOT/PAUSE decision + confidence level"
+      }
+    }
+  ]
+}
