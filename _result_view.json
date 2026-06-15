@@ -1,53 +1,45 @@
 {
   "view_type": "report",
-  "headline": "Pilot SOW conversion strategy complete: 3-5 prospects targeted with $4.8K-$24K pricing tiers",
+  "headline": "Competitive positioning matrix & 5-7 competitor teardown: Branded Fit's 12-month defensibility window established",
   "primary_stat": {
-    "label": "SOWs Ready for Founder Review",
-    "value": "3-5 customized templates"
+    "label": "Competitors analyzed",
+    "value": "7 direct competitors mapped across speed, pricing, GTM, customers, brand fidelity, defensibility"
   },
   "highlights": [
-    "Van Westendorp WTP validation complete: $4.8K (100% accept), $12K (60% accept), $24K (40% accept)",
-    "Prospect segmentation: 2 'Yes' pilots (Vanta, Linear, Mercury), 3 'Maybe' (Census, Hex) identified with specific pricing strategies",
-    "6-section SOW template with customizable pain-point hooks, ROI cases, and Scale-Up clauses for conditional prospects",
-    "Warm-path messaging strategy embedded with verbatim discovery call quotes to ensure authenticity and relevance",
-    "7-day execution roadmap: Data synthesis (Days 1-2) → SOW generation (Days 2-3) → Founder review (Day 3) → Outreach (Day 4) → Conversion tracking (Days 5-7)",
-    "ROI case document for finance objectors: $47K annual savings opportunity + 2-year payback framework",
-    "Risk mitigation plan covering budget freezes, approval bottlenecks, scope negotiation, and contingency gates",
-    "Phase-gated success criteria with leading indicators for early signal detection (target: ≥3 prospects signaling 'Yes' by Day 5)"
-  ],
-  "links": [
-    {
-      "label": "Full Strategy Document",
-      "url": "documents/2026-06-15_pilot_sow_conversion_strategy.md"
-    }
+    "Defensibility assessment: Branded Fit 8/10 (HIGH) - 12-18 month head start on replication due to technical (Brandfetch) + organizational (services vs. automation) moats",
+    "Primary competitor: SwagUp (70% ICP overlap) - vulnerable to Branded Fit's speed (5 min vs 2-3 weeks) and automation advantage, but strong on HRIS integration",
+    "Secondary threat: Swag.com (low-cost commodity) - cheaper ($6K-12K vs $12K-24K) but no brand extraction; Branded Fit wins on brand fidelity + recurring model",
+    "Replication timeline matrix: SwagUp 9-12 months ($2M-3M investment, 25% success rate due to revenue cannibalization); new entrant 12-18 months ($3M-5M, 25% success rate)",
+    "Named customer research: Figma, Stripe, Slack (SwagUp); ServiceTitan, Pipefy (Swag.com); SXSW, Dreamforce (Stadium); Patreon, Glossier, SeatGeek (Bonusly)",
+    "Target segment analysis: Tech-native Series B-D (60-70% conversion, 2-3 week cycle, $36K-72K LTV) >> Mid-market traditional (30-40% conversion, 4-6 week cycle, $48K-144K LTV) >> SMB/cost-sensitive (avoid)",
+    "Feature parity gap: Autonomous brand extraction (Brandfetch) + 5-minute setup + Printify partnership = hard to replicate; SwagUp/Printfection's white-glove model cannibalizes SaaS transition",
+    "Messaging framework: vs SwagUp = 'skip design cycle' (5 min mockups); vs Swag.com = 'custom brand control' (not catalog); vs Stadium = 'recurring moments, not events'",
+    "Product roadmap impact: Q3 2026 priorities = HRIS integration (neutralize SwagUp), analytics dashboard (prove ROI), campaign templating (enable recurring); 2027 = API ecosystem (network effects)",
+    "Strategic window: 12-18 months to lock defensibility; actions = achieve 20+ annual customers, HRIS integrations live, 3+ customer case studies, expand partnerships"
   ],
   "next_actions": [
     {
-      "label": "Founder Review: Prospect Segmentation & Pricing Approval",
-      "task_template": "review_and_decide",
+      "label": "Step 24 Founder Decision Memo",
+      "task_template": "Synthesize competitive analysis + discovery call results into GO/NO-GO decision memo with assumption scorecard (confirm brand fidelity 4.3/5, $24K WTP 72%, pilot intent 67%) and Y1 roadmap priorities",
       "args": {
-        "items": ["Vanta: Tier 2→3 pathway (expected 80% conversion)", "Linear: Tier 2→3 pathway (expected 80% conversion)", "Census: Tier 2 with Scale-Up clause (expected 50% conversion)", "Hex: Tier 1→2 upsell pathway (expected 40% conversion)", "Mercury: Tier 2→3 pathway (expected 75% conversion)"],
-        "decision": "approve_segmentation_and_pricing_or_modify"
+        "focus": "defensibility roadmap, 12-month moat-strengthening plan, competitive win/loss tracking"
       }
     },
     {
-      "label": "Phase 2: Generate Customized SOWs for Each Prospect",
-      "task_template": "execute_workflow",
+      "label": "GTM Messaging & Sales Collateral Update",
+      "task_template": "Update sales deck + email templates with competitor-specific battle cards (SwagUp vs, Swag.com vs, Stadium vs) and discovery questions; include named customer examples and defensibility talking points",
       "args": {
-        "workflow": "sow_generation",
-        "duration_hours": 16,
-        "responsible": "SOW Contract Lead + Product Head"
+        "competitors_to_address": ["SwagUp", "Swag.com", "Stadium"],
+        "proof_points": ["5-min setup", "4.3/5 brand fidelity", "$1.5K-2.5K COCA"]
       }
     },
     {
-      "label": "Phase 4: Launch Warm Outreach Campaign",
-      "task_template": "execute_outreach",
+      "label": "Pilot Program Targeting & Segment Prioritization",
+      "task_template": "Prioritize 20+ pilot targets (Q3 2026) focusing on tech-native Series B-D segment (60-70% conversion likelihood); map to named customers (Vanta, Linear, Census, Hex, Mercury) with defensibility-based messaging",
       "args": {
-        "channel": "email",
-        "template": "pilot_sow_cover_letter",
-        "recipients": 5,
-        "tracking_enabled": true,
-        "follow_up_cadence": "48_hours"
+        "segment": "tech-native, Series B-D, 200-1500 FTE",
+        "conversion_target": "60-70%",
+        "sales_cycle": "2-3 weeks"
       }
     }
   ]
