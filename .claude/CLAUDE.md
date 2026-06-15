@@ -97,6 +97,7 @@ branded-fit/
     2026-06-15_drift_remediation_verification_report.md
     2026-06-15_e2e_live_orchestration_test_report.md
     2026-06-15_mvbp_deployment_e2e_report.md
+    2026-06-15_mvbp_orchestration_test_report.md
     2026-06-15_pipeline_fix_verification_report.md
     2026-06-15_vercel_deployment_verification.md
     DELIVERABLES_CHECKLIST.md
