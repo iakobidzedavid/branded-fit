@@ -139,11 +139,20 @@ export async function POST(request: NextRequest) {
     const apiKey = process.env.BRANDFETCH_API_KEY;
 
     if (!apiKey) {
-      console.error("BRANDFETCH_API_KEY not configured");
-      return NextResponse.json(
-        { error: "Brand extraction service unavailable" },
-        { status: 500 }
+      console.warn("BRANDFETCH_API_KEY not configured — returning default brand assets");
+      const { colors, logos, typography, confidence } = extractBrandAssets(
+        {},
+        normalizedDomain,
+        false
       );
+      const extraction: BrandExtraction = {
+        domain: normalizedDomain,
+        colors,
+        logos,
+        typography,
+        extraction_confidence_pct: confidence,
+      };
+      return NextResponse.json(extraction, { status: 200 });
     }
 
     // Fetch from Brandfetch API

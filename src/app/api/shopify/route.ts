@@ -262,7 +262,7 @@ async function orchestrateStoreCreation(
       domain,
       shopify_store_id: provisioningResult.storeId,
       shopify_store_url: provisioningResult.storeUrl,
-      shopify_api_token: provisioningResult.accessToken,
+      shopify_api_token: "", // Never persist live Shopify token to DB
       status: "created",
     });
 
