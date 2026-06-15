@@ -17,6 +17,7 @@ import {
   ShoppingBag,
   Globe,
   RefreshCw,
+  MessageSquare,
 } from "lucide-react";
 
 type PipelineStatus = "pending" | "in_progress" | "completed" | "failed";
@@ -170,6 +171,7 @@ export default function CommandConsole() {
   const [domain, setDomain] = useState("");
   const [validationError, setValidationError] = useState("");
   const [state, setState] = useState<ConsoleState>(INITIAL);
+  const [supportStatus, setSupportStatus] = useState<"idle" | "sending" | "sent" | "failed">("idle");
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const sessionIdRef = useRef<string>("");
@@ -398,6 +400,30 @@ export default function CommandConsole() {
     setState(INITIAL);
     setDomain("");
     setValidationError("");
+    setSupportStatus("idle");
+  };
+
+  const handleEscalateSupport = async () => {
+    if (supportStatus !== "idle") return;
+    setSupportStatus("sending");
+    const failedMessage =
+      state.pipeline1.status === "failed"
+        ? state.pipeline1.message
+        : state.pipeline2.status === "failed"
+        ? state.pipeline2.message
+        : state.pipeline3.status === "failed"
+        ? state.pipeline3.message
+        : "Orchestration failed";
+    try {
+      const res = await fetch("/api/support-escalation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: state.submittedDomain, error: failedMessage }),
+      });
+      setSupportStatus(res.ok ? "sent" : "failed");
+    } catch {
+      setSupportStatus("failed");
+    }
   };
 
   const { phase, pipeline1, pipeline2, pipeline3 } = state;
@@ -663,13 +689,33 @@ export default function CommandConsole() {
                           ? pipeline3.message
                           : "An error occurred during orchestration"}
                       </p>
-                      <button
-                        onClick={handleReset}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-surface border border-border rounded-lg text-sm text-text hover:border-accent/50 transition"
-                      >
-                        <RefreshCw className="w-4 h-4" />
-                        Try Again
-                      </button>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <button
+                          onClick={handleReset}
+                          className="flex items-center gap-2 px-5 py-2.5 bg-surface border border-border rounded-lg text-sm text-text hover:border-accent/50 transition"
+                        >
+                          <RefreshCw className="w-4 h-4" />
+                          Try Again
+                        </button>
+                        <button
+                          onClick={handleEscalateSupport}
+                          disabled={supportStatus === "sending" || supportStatus === "sent"}
+                          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm transition disabled:cursor-not-allowed ${
+                            supportStatus === "sent"
+                              ? "bg-emerald-400/10 border border-emerald-400/30 text-emerald-400"
+                              : "bg-surface border border-border text-text-muted hover:border-danger/50 hover:text-text"
+                          }`}
+                        >
+                          {supportStatus === "sending" ? (
+                            <Loader className="w-4 h-4 animate-spin" />
+                          ) : supportStatus === "sent" ? (
+                            <Check className="w-4 h-4" />
+                          ) : (
+                            <MessageSquare className="w-4 h-4" />
+                          )}
+                          {supportStatus === "sent" ? "Support Notified" : "Contact Support"}
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     /* Waiting / running state */
