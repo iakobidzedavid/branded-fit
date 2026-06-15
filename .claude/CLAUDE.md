@@ -85,6 +85,8 @@ branded-fit/
     2026-06-14_e2e_orchestration_test_report.md
     2026-06-14_smoke_test_production_command_console.md
     2026-06-14_vercel_env_vars_audit.md
+    2026-06-15_drift_remediation_verification_report.md
+    2026-06-15_mvbp_deployment_e2e_report.md
     DELIVERABLES_CHECKLIST.md
   public/
     mockups/
@@ -133,9 +135,9 @@ Place new files in the correct directories shown above.
 All research, reports, plans, and documents MUST be saved in the
 `docs/` directory with a date prefix (YYYY-MM-DD) for future reference:
 
-  docs/2026-06-14_market_research.md
-  docs/2026-06-14_technical_feasibility.md
-  docs/2026-06-14_competitor_analysis.md
+  docs/2026-06-15_market_research.md
+  docs/2026-06-15_technical_feasibility.md
+  docs/2026-06-15_competitor_analysis.md
 
 Always include the date prefix so future agents know when the document
 was created.
