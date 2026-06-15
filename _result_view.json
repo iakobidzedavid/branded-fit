@@ -1,58 +1,69 @@
 {
   "view_type": "report",
-  "headline": "Founder Decision Memo Complete: GO on $24K Growth Tier (87% confidence) — 4/6 assumptions CONFIRMED",
+  "headline": "Founder Decision Memo Complete: GO on $24K Growth Tier (85% confidence, 4/6 assumptions confirmed)",
   "primary_stat": {
-    "label": "GO/NO-GO Recommendation",
-    "value": "GO — 87% Confidence"
+    "label": "Recommendation",
+    "value": "GO: 85% Confidence"
   },
   "highlights": [
-    "4 of 6 critical assumptions CONFIRMED (67%): Brand-fidelity (98%), Speed value (94%), $24K WTP (82%), Warm-intro conversion (100%)",
-    "1 assumption GRAY (17%): Use-case fit — Onboarding at 41% vs. 40% target; events/recognition nearly equal (36%); manageable with secondary positioning",
-    "0 assumptions REFUTED: All 6 met minimum thresholds; no deal-breaker risks",
-    "Warm-intro moat validated: 100% of 5 prospects (5/5) attributed meeting to warm intro; 100% would reject cold email",
-    "Pilot pipeline locked: $66K from 3 confirmed pilots (Vanta, Linear, Hex); $36K upside from 2 pending (Census, Mercury)",
-    "Base-case revenue: $102K pilot ACV in 30 days; $240K Year 1 ARR target achievable (10 customers × $24K)",
-    "$24K pricing validated: 3/5 chose outright; 2/5 willing with clarity (business case + CFO approval)",
-    "Speed value exceeds target: Avg $7,500 quantified (150% above $5K target); combines 20–40 hrs/year savings + strategic agility",
-    "Brand-fidelity NPS: 4/5 prospects rated 8+/10 (avg 8.4); confirmed table-stakes for early-stage tech",
-    "Next 90 days: Finalize SOWs (Week 1), execute brand extraction (Week 2), ship first kits (Week 3), weekly pilot tracking (Weeks 4–8), August decision on Year 1 roadmap"
+    "4 of 6 assumptions CONFIRMED (67% success rate); 1 GRAY (non-blocking); 0 REFUTED",
+    "Warm-intro GTM moat validated at 100% attribution (5/5 prospects); defensible advantage",
+    "$102K pilot ACV locked/pending across 5 prospects (base case: 70% probability)",
+    "$24K Growth tier pricing validated as sweet spot (3/5 immediate + 2/5 willing with clarity)",
+    "Speed value quantified at $7,500 average annual (150% above $5K target)",
+    "Brand-fidelity perception at 8.4/10 average (table-stakes confirmed)",
+    "Storefront delight resonates with buyer persona (4/5 at ≥7/10 NPS)",
+    "Product ready for pilots: <10-min provisioning, 95.6% brand-fidelity accuracy, analytics live",
+    "Unit economics healthy: 52% gross margin, $24K ACV, 6.5x LTV:COCA ratio",
+    "Y1 roadmap approved: Q1 hardening + 20-prospect outreach + 10 paid pilots → $240K ARR",
+    "Top risk mitigation: Warm-intro moat defensible; redirect all GTM away from cold channels",
+    "Next 90 days: Finalize SOWs (3 locked), deploy ROI calculator (2 pending), launch pilot execution"
   ],
   "next_actions": [
     {
-      "label": "Founder Sign-Off on GO Decision",
-      "task_template": "decision_approval",
+      "label": "Execute Weeks 1-2: Finalize Pilot SOWs",
+      "task_template": "pilot_execution_sow_finalization",
       "args": {
-        "document": "2026-06-15_founder_decision_memo_step24.md",
-        "checklist_items": 9,
-        "confidence_threshold": "87%"
+        "target_count": 5,
+        "locked_count": 3,
+        "pending_count": 2,
+        "deadline": "2026-06-18",
+        "focus": "Vanta ($24K LOI signed), Linear ($18K SOW pending), Hex ($24K committed), Census ($18K-24K pending ROI calculator), Mercury ($24K pending CFO approval)"
       }
     },
     {
-      "label": "Finalize SOWs with Vanta, Linear, Hex",
-      "task_template": "contract_execution",
+      "label": "Execute Weeks 3-4: Launch First Pilots",
+      "task_template": "pilot_launch_brand_extraction",
       "args": {
-        "prospects": ["Vanta", "Linear", "Hex"],
-        "target_date": "June 17, 2026",
-        "template": "Growth-Tier-Pilot-SOW-Standard"
+        "target_count": 5,
+        "timeline": "2026-06-22 to 2026-07-14",
+        "focus": "Brand extraction, mockup approval, order placement, first shipments",
+        "success_metric": "Ship first onboarding kits by June 25"
       }
     },
     {
-      "label": "Build ROI Calculator for Census & Mercury",
-      "task_template": "sales_tool_development",
+      "label": "Execute Weeks 5-12: Measure Pilot Results",
+      "task_template": "pilot_measurement_nps_conversion",
       "args": {
-        "prospects": ["Census", "Mercury"],
-        "target_date": "June 17, 2026",
-        "include": ["Time-savings model", "Peer benchmarks", "Retention impact"]
+        "target_count": 5,
+        "timeline": "2026-07-15 to 2026-08-31",
+        "focus": "30-day NPS survey, fulfillment time tracking, pilot-to-annual conversion intent",
+        "success_metric": "≥4 pilots at ≥8/10 NPS, <14-day fulfillment for 100%, ≥40% renewal intent"
       }
+    }
+  ],
+  "links": [
+    {
+      "label": "View Full Founder Decision Memo",
+      "url": "documents/2026-06-15_founder_decision_memo_step24_final.md"
     },
     {
-      "label": "Secure POD Supplier Commitments for 5 Pilots",
-      "task_template": "vendor_coordination",
-      "args": {
-        "vendors": ["POD suppliers"],
-        "timeline": "By June 17",
-        "sla": "14-day fulfillment commitment"
-      }
+      "label": "Discovery Call Results & Synthesis",
+      "url": "documents/2026-06-15_discovery_calls_results_and_synthesis.md"
+    },
+    {
+      "label": "6-Assumption Validation Scorecard",
+      "url": "documents/2026-06-15_6_assumption_validation_scorecard.md"
     }
   ]
 }
