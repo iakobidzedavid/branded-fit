@@ -331,6 +331,7 @@ function logEvent(
   domain: string,
   metadata?: Record<string, unknown>,
   pipeline_stage?: string,
+  status?: string,
 ): void {
   const firedAt = Date.now();
   const user_id = getOrCreateCustomerId();
@@ -360,7 +361,9 @@ function logEvent(
       user_id,
       customer_id: user_id,
       domain,
+      domain_submitted: domain,
       pipeline_stage: pipeline_stage ?? undefined,
+      status: status ?? undefined,
       timestamp: new Date(firedAt).toISOString(),
       ...(metadata ? { metadata } : {}),
     }),
@@ -414,6 +417,10 @@ export default function StorefrontPreview() {
   const viewFired = useRef(false);
 
   useEffect(() => {
+    getOrCreateCustomerId();
+  }, []);
+
+  useEffect(() => {
     if (!storeId || isDemo) return;
 
     fetch(`/api/store/${encodeURIComponent(storeId)}`)
@@ -455,7 +462,7 @@ export default function StorefrontPreview() {
       sku: product.sku,
       product_name: product.name,
       price: product.price,
-    }, "Stage 5 · Engagement");
+    }, "Stage 5 · Engagement", "viewed");
   };
 
   const handleAddToCart = (product: Product) => {
@@ -490,7 +497,7 @@ export default function StorefrontPreview() {
     if (!store) return;
     logEvent("user_clicks_publish", store.domain, {
       shopify_url: store.shopifyUrl ?? null,
-    });
+    }, undefined, "publishing");
     setPublishStatus("publishing");
     try {
       const res = await fetch("/api/publish-store", {
@@ -505,6 +512,7 @@ export default function StorefrontPreview() {
           store.domain,
           { store_id: store.id, shopify_url: store.shopifyUrl ?? null },
           "Stage 5 · Publish",
+          "published",
         );
       } else {
         setPublishStatus("failed");

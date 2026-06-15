@@ -68,6 +68,7 @@ export interface TrackEventParams {
   status?: string;
   duration_ms?: number;
   error_message?: string;
+  timestamp?: string;
   user_id?: string;
   context?: Record<string, unknown>;
   payload?: Record<string, unknown>;

@@ -172,6 +172,10 @@ export default function CommandConsole() {
   const [state, setState] = useState<ConsoleState>(INITIAL);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const sessionIdRef = useRef<string>("");
+  const prevP1 = useRef<PipelineStatus>("pending");
+  const prevP2 = useRef<PipelineStatus>("pending");
+  const prevP3 = useRef<PipelineStatus>("pending");
 
   const stopPolling = useCallback(() => {
     if (pollingRef.current !== null) {
@@ -191,6 +195,60 @@ export default function CommandConsole() {
       abortRef.current?.abort();
     };
   }, [stopPolling]);
+
+  useEffect(() => {
+    sessionIdRef.current = getOrCreateSessionId();
+  }, []);
+
+  useEffect(() => {
+    if (!state.submittedDomain) return;
+    const sid = sessionIdRef.current;
+    const domain = state.submittedDomain;
+    const ts = new Date().toISOString();
+
+    if (prevP1.current !== state.pipeline1.status) {
+      const s = state.pipeline1.status;
+      if (s === "in_progress" || (prevP1.current === "pending" && s !== "pending")) {
+        trackEvent({ event_name: "brand_extraction_started", domain, domain_submitted: domain, session_id: sid, pipeline_stage: "brand_intelligence", status: "in_progress", timestamp: ts });
+      }
+      if (s === "completed") {
+        trackEvent({ event_name: "brand_extraction_completed", domain, domain_submitted: domain, session_id: sid, pipeline_stage: "brand_intelligence", status: "completed", timestamp: ts });
+      } else if (s === "failed") {
+        trackEvent({ event_name: "brand_extraction_failed", domain, domain_submitted: domain, session_id: sid, pipeline_stage: "brand_intelligence", status: "failed", timestamp: ts, error_message: state.pipeline1.message });
+      }
+      prevP1.current = s;
+    }
+
+    if (prevP2.current !== state.pipeline2.status) {
+      const s = state.pipeline2.status;
+      if (s === "in_progress" || (prevP2.current === "pending" && s !== "pending")) {
+        trackEvent({ event_name: "mockup_generation_started", domain, domain_submitted: domain, session_id: sid, pipeline_stage: "mockup_generation", status: "in_progress", timestamp: ts });
+      }
+      if (s === "completed") {
+        trackEvent({ event_name: "mockup_generation_completed", domain, domain_submitted: domain, session_id: sid, pipeline_stage: "mockup_generation", status: "completed", timestamp: ts });
+      } else if (s === "failed") {
+        trackEvent({ event_name: "mockup_generation_failed", domain, domain_submitted: domain, session_id: sid, pipeline_stage: "mockup_generation", status: "failed", timestamp: ts, error_message: state.pipeline2.message });
+      }
+      prevP2.current = s;
+    }
+
+    if (prevP3.current !== state.pipeline3.status) {
+      const s = state.pipeline3.status;
+      if (s === "in_progress" || (prevP3.current === "pending" && s !== "pending")) {
+        trackEvent({ event_name: "storefront_generation_started", domain, domain_submitted: domain, session_id: sid, pipeline_stage: "shopify_provisioning", status: "in_progress", timestamp: ts });
+      }
+      if (s === "completed") {
+        trackEvent({ event_name: "storefront_generation_completed", domain, domain_submitted: domain, session_id: sid, pipeline_stage: "shopify_provisioning", status: "completed", timestamp: ts, context: { product_count: state.productCount, store_url: state.storefrontUrl } });
+      } else if (s === "failed") {
+        trackEvent({ event_name: "storefront_generation_failed", domain, domain_submitted: domain, session_id: sid, pipeline_stage: "shopify_provisioning", status: "failed", timestamp: ts, error_message: state.pipeline3.message });
+      }
+      prevP3.current = s;
+    }
+  }, [
+    state.pipeline1.status, state.pipeline2.status, state.pipeline3.status,
+    state.pipeline1.message, state.pipeline2.message, state.pipeline3.message,
+    state.submittedDomain, state.productCount, state.storefrontUrl,
+  ]);
 
   const validate = (value: string): boolean => {
     const clean = value.toLowerCase().trim();
@@ -273,14 +331,14 @@ export default function CommandConsole() {
     abortRef.current?.abort();
 
     const cleanDomain = domain.toLowerCase().trim();
-    const sessionId = getOrCreateSessionId();
 
-    trackEvent({ event_name: "domain_submitted", domain: cleanDomain, user_id: sessionId });
     trackEvent({
-      event_name: "brand_extraction_started",
+      event_name: "domain_submitted",
       domain: cleanDomain,
-      user_id: sessionId,
-      pipeline_stage: "brand_intelligence",
+      domain_submitted: cleanDomain,
+      session_id: sessionIdRef.current,
+      status: "submitted",
+      timestamp: new Date().toISOString(),
     });
 
     setState({
@@ -316,38 +374,6 @@ export default function CommandConsole() {
         await res.json();
       applyOrchState(data.orchestration);
 
-      if (data.orchestration.status === "completed") {
-        const bd = data.orchestration.brandData;
-        if (bd) {
-          trackEvent({
-            event_name: "brand_extraction_completed",
-            domain: cleanDomain,
-            user_id: sessionId,
-            pipeline_stage: "brand_intelligence",
-            context: {
-              fidelity_score: bd.confidence,
-              colors_extracted: bd.colors.length,
-              logo_url: bd.logoUrl ?? null,
-            },
-          });
-        }
-        trackEvent({
-          event_name: "storefront_generation_started",
-          domain: cleanDomain,
-          user_id: sessionId,
-          pipeline_stage: "shopify_provisioning",
-        });
-        trackEvent({
-          event_name: "storefront_generation_completed",
-          domain: cleanDomain,
-          user_id: sessionId,
-          pipeline_stage: "shopify_provisioning",
-          context: {
-            product_count: data.orchestration.storefront?.productCount ?? 0,
-            store_url: data.orchestration.storefront?.url ?? null,
-          },
-        });
-      }
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;
       stopPolling();
@@ -366,6 +392,9 @@ export default function CommandConsole() {
     stopPolling();
     abortRef.current?.abort();
     abortRef.current = null;
+    prevP1.current = "pending";
+    prevP2.current = "pending";
+    prevP3.current = "pending";
     setState(INITIAL);
     setDomain("");
     setValidationError("");
