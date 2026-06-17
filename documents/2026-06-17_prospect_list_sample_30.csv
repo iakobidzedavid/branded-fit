@@ -1,0 +1,31 @@
+Rank,Company Name,Tier,Funding Stage,Employee Count,Geography,Vertical,Primary Contact Title,LinkedIn Available,Est. Annual Swag Spend,ARR Potential,Notes
+1,Rippling,A,Series D,1200,SF Bay,HR-Tech,VP People Ops,Yes,$180000,$27000,FT: people-focused; owns entire platform; highest PDM
+2,Lattice,A,Series D,700,SF Bay,HR-Tech,SVP People Ops,Yes,$140000,$21000,Direct competitor buyer; eats own dog food
+3,Notion,A,Series C,800,SF Bay,Productivity,Head of People,Yes,$160000,$24000,High-growth SaaS; distributed team; $200K/mo swag spend
+4,Anthropic,A,Series G,400,SF Bay,AI/Foundation,Head of People Ops,Yes,$150000,$22500,Post-fundraise hiring; $150K+ swag budget (est.)
+5,Canva,A,Series C,2000,Sydney/SF,Design SaaS,Chief People Officer,Yes,$180000,$27000,Global reach; remote-first; heavy recognition budget
+6,Figma,A,Series D,1100,SF Bay,Design SaaS,VP People,Yes,$180000,$27000,Design-native company; brand-conscious; $180K/yr spend
+7,Stripe,B,Series E+,8000,SF Bay / Remote,Fintech,VP People & Culture,Yes,$280000,$42000,Enterprise-scale; out of beachhead (8K FTE) but noted for visibility
+8,Guidepoint,A,Series B,250,NYC,Fintech,Head of People,Yes,$110000,$16500,Fast-growing fintech; NYC hub; 40% YoY growth
+9,Deel,A,Series D,800,NYC / Remote,Fintech,VP People Ops,Yes,$160000,$24000,Global payroll/HR; remote-first; recognition-heavy
+10,Mercury,A,Series B,180,SF Bay,Fintech,Head of Employee Experience,Yes,$90000,$13500,Early Series B; high-growth; $90K/year estimated spend
+11,Brex,B,Series E+,1200,SF Bay,Fintech,VP People & Culture,Yes,$200000,$30000,Out of beachhead by headcount; listed for investor network
+12,Airtable,B,Series C,900,SF Bay,SaaS,VP People Ops,Yes,$170000,$25500,Enterprise SaaS; hybrid team; high swag frequency
+13,Retool,B,Series C,250,SF Bay,Dev Tools,Head of People,Yes,$110000,$16500,Developer-focused; 150–250 FTE range (upper Tier A)
+14,Supabase,A,Series B,120,SF Bay,Dev Tools,People Ops Manager,Yes,$80000,$12000,Fully remote; early-stage growth; high frequency
+15,Vercel,B,Series D,450,SF Bay,Dev Tools,VP People,Yes,$160000,$24000,Founder-led; design-centric; brand-conscious culture
+16,Vanta,B,Series C,280,NYC,Security/Compliance,Head of People,Yes,$120000,$18000,Enterprise SaaS; regulated industry; $120K/year estimated
+17,Gorgias,B,Series C,320,NYC,Customer Support SaaS,HR Manager,Partially,$130000,$19500,Growing fast; financial constraints on tools
+18,Calendly,B,Series C,850,Atlanta,Scheduling SaaS,VP People Ops,Yes,$170000,$25500,Secondary geography; growing engagement spend
+19,Databricks,C,Series D,1000,SF Bay,Data/Analytics,VP People,Yes,$200000,$30000,Out of beachhead by headcount (1K FTE); noted for visibility
+20,Segment,B,Series D,400,SF Bay,Data/CDP,VP People,Yes,$160000,$24000,Recently acquired by Twilio; mature People team
+21,Airbnb,C,IPO,9000,SF Bay,Travel/Marketplace,Chief People Officer,Yes,$280000,$42000,Way out of beachhead; for reference only
+22,HubSpot,C,IPO,4500,Boston,Enterprise SaaS,VP People & Culture,Yes,$250000,$37500,Out of beachhead; enterprise-scale needs
+23,Auth0,C,Series D,850,Seattle/Remote,Security SaaS,VP People Ops,Yes,$180000,$27000,High-growth acquisition target; distributed
+24,Notion Labs,C,Series C,800,SF Bay,Productivity,Head of People,Yes,$160000,$24000,Distributed team; high engagement spend
+25,Loom,C,Series C,350,SF Bay,Video SaaS,Head of People,Yes,$150000,$22500,Founder-led; remote-first; 40% YoY growth
+26,Calm,C,Series D,600,SF Bay,Consumer Wellness,Chief People Officer,Yes,$180000,$27000,High-spend recognition programs; brand-centric
+27,Carta,C,Series D,1100,SF Bay,Financial SaaS,VP People,Yes,$200000,$30000,Mature People team; enterprise-grade needs
+28,Zapier,C,Series D,700,SF Bay / Remote,Automation SaaS,VP People & Culture,Yes,$190000,$28500,Fully distributed; 400+ contractors; complex logistics
+29,Stripe (re-listed),C,Series E+,8000,SF Bay / Multiple,Fintech,VP People & Culture,Yes,$280000,$42000,Out of beachhead; shown for scale reference
+30,Lyft,C,IPO,3800,SF Bay,Transportation,Chief People Officer,Yes,$240000,$36000,Out of beachhead; public comparator
