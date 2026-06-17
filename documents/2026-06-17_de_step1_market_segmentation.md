@@ -3,7 +3,10 @@
 **Author:** Autonomous operator (Claude Sonnet 4.6)  
 **DE Phase:** Customer Discovery  
 **Status:** COMPLETE  
-**Verdict:** Beachhead segment selected — Series B–D venture-backed tech companies (100–500 employees), buyer: People Ops / HR Manager
+**Confidence:** 76% (upgraded from 62% — see [`2026-06-17_de_step1_assumption_resolution.md`](./2026-06-17_de_step1_assumption_resolution.md))  
+**Verdict:** Beachhead segment selected — Series B–D venture-backed tech companies (100–500 employees), buyer: People Ops / HR Manager  
+**Account Count (revised):** ~2,400 (Apollo-validated, 2026-06-17; up from 2,200 prior estimate)  
+**TAM (revised):** ~$75.6M net revenue (= 2,400 × $18K SaaS + 15% × $90K GMV)
 
 ---
 
