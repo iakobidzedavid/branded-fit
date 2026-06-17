@@ -3,9 +3,11 @@
 **Author:** Autonomous operator (Claude Sonnet 4.6)  
 **DE Phase:** Customer Discovery  
 **Status:** COMPLETE  
-**Confidence:** 76% (upgraded from 62% — see [`2026-06-17_de_step1_assumption_resolution.md`](./2026-06-17_de_step1_assumption_resolution.md))  
-**Verdict:** Beachhead segment selected — Series B–D venture-backed tech companies (100–500 employees), buyer: People Ops / HR Manager  
-**Account Count (revised):** ~2,400 (Apollo-validated, 2026-06-17; up from 2,200 prior estimate)  
+**Confidence:** 80% (final — see [`2026-06-17_de_step1_final_completion_report.md`](./2026-06-17_de_step1_final_completion_report.md))  
+**Confidence chain:** 62% (ledger baseline) → 76% (pass 1 assumption resolution) → 80% (pass 2 Apollo + Brandfetch proxy)  
+**Verdict:** Beachhead segment selected — US Series A–B venture-backed SaaS (100–300 FTE), buyer: People Ops Generalist  
+**Account Count (revised):** ~2,400 (Apollo stable across 2 independent queries on 2026-06-17)  
+**Buyer Pool:** 953 Maya-archetype People Ops Generalists directly reachable (email + phone)  
 **TAM (revised):** ~$75.6M net revenue (= 2,400 × $18K SaaS + 15% × $90K GMV)
 
 ---
