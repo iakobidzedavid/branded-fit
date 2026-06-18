@@ -1,0 +1,50 @@
+{
+  "view_type": "report",
+  "headline": "Live-to-Testing Gate Framework: 4-metric decision criteria + weekly learnings sync to prevent premature campaign escalation",
+  "primary_stat": {
+    "label": "Metrics to Gate Live Escalation",
+    "value": 4
+  },
+  "highlights": [
+    "Testing phase duration: 7–14 days with clear Day 7 checkpoint",
+    "4 success metrics (all must be met): Response rate ≥30%, Objection rate <40%, Pilot intent ≥1, Email open rate ≥40%",
+    "Go/No-Go logic: SCALE to 50+ prospects, ITERATE fresh 10-prospect cohort, or PAUSE & PIVOT strategy",
+    "Single decision authority: Outreach Lead (Founder or Head of Growth) makes unilateral call on Day 7",
+    "Weekly learnings sync: 30-min Monday standup with Founder + Product Lead to track metrics, objections, product blockers",
+    "Escalation path: 48-hour extension for borderline decisions (metric exactly at threshold)",
+    "18-column response tracker: All sends, opens, replies, objections logged systematically",
+    "Objection taxonomy: Hard vs. Soft classification criteria with sales counters and severity levels",
+    "Live campaign success metrics: ≥25% response rate, ≥4% pilot conversion, <30% hard objection rate",
+    "Post-campaign learning: Data archival, Founder decision memo, GTM playbook updates with winning templates"
+  ],
+  "next_actions": [
+    {
+      "label": "Assign Outreach Lead & schedule first weekly sync",
+      "task_template": "operational",
+      "args": {
+        "description": "Designate Founder or Head of Growth as Outreach Lead; schedule first Monday 10 AM PT weekly learnings sync (recurring) for June 12, 2026"
+      }
+    },
+    {
+      "label": "Set up 18-column response tracker (Google Sheet or Supabase)",
+      "task_template": "operational",
+      "args": {
+        "description": "Create shared tracker with columns: Prospect Name, Company, Email, Role, Warm-Path Signal, Email Variant, Send Date, Open?, Reply?, Objection Type, Pilot Intent, Next Action, Status, Notes"
+      }
+    },
+    {
+      "label": "Execute first 10 warm email sends to testing cohort",
+      "task_template": "marketing",
+      "args": {
+        "description": "Validate Apollo ≥90% confidence for all 10 Step-9 prospects; queue personalized cold/warm-intro emails via Gmail; log Send Date/Time in tracker; start Day 1 clock"
+      }
+    },
+    {
+      "label": "Share gate framework with #outreach Slack channel",
+      "task_template": "communication",
+      "args": {
+        "description": "Post LIVE_TO_TESTING_GATE.md summary to team; clarify Day 7 decision criteria and weekly sync meeting link; confirm Outreach Lead assignment and escalation authority"
+      }
+    }
+  ]
+}

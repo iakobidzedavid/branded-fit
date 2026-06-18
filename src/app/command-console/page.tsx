@@ -1,0 +1,522 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import {
+  Check,
+  AlertCircle,
+  Loader,
+  Clock,
+  ExternalLink,
+  ArrowLeft,
+  Zap,
+  Palette,
+  Package,
+  ShoppingBag,
+  Globe,
+} from "lucide-react";
+
+type PipelineStatus = "pending" | "in_progress" | "completed" | "failed";
+
+interface PipelineState {
+  status: PipelineStatus;
+  message: string;
+}
+
+type ConsolePhase = "input" | "running" | "success";
+
+interface ConsoleState {
+  phase: ConsolePhase;
+  pipeline1: PipelineState;
+  pipeline2: PipelineState;
+  pipeline3: PipelineState;
+  submittedDomain: string;
+  storefrontUrl: string;
+}
+
+const INITIAL: ConsoleState = {
+  phase: "input",
+  pipeline1: { status: "pending", message: "Ready to extract brand data" },
+  pipeline2: { status: "pending", message: "Awaiting brand assets" },
+  pipeline3: { status: "pending", message: "Awaiting product mockups" },
+  submittedDomain: "",
+  storefrontUrl: "",
+};
+
+const MOCK_PRODUCTS = [
+  { id: 1, name: "Branded Tee", category: "Apparel", price: "$28" },
+  { id: 2, name: "Premium Hoodie", category: "Apparel", price: "$65" },
+  { id: 3, name: "Canvas Tote", category: "Accessories", price: "$22" },
+];
+
+const STATUS_BORDER: Record<PipelineStatus, string> = {
+  pending: "border-border",
+  in_progress: "border-accent",
+  completed: "border-emerald-400",
+  failed: "border-danger",
+};
+
+const STATUS_LABEL: Record<PipelineStatus, string> = {
+  pending: "Pending",
+  in_progress: "Processing…",
+  completed: "Complete",
+  failed: "Failed",
+};
+
+const STATUS_BADGE: Record<PipelineStatus, string> = {
+  pending: "bg-surface text-text-muted border-border",
+  in_progress: "bg-accent/10 text-accent border-accent/20",
+  completed: "bg-emerald-400/10 text-emerald-400 border-emerald-400/20",
+  failed: "bg-danger/10 text-danger border-danger/20",
+};
+
+const STATUS_ICON_RING: Record<PipelineStatus, string> = {
+  pending: "bg-surface border-border",
+  in_progress: "bg-accent/10 border-accent/30",
+  completed: "bg-emerald-400/10 border-emerald-400/30",
+  failed: "bg-danger/10 border-danger/30",
+};
+
+const STATUS_MSG: Record<PipelineStatus, string> = {
+  pending: "text-text-muted",
+  in_progress: "text-text-muted",
+  completed: "text-emerald-400",
+  failed: "text-danger",
+};
+
+const PROGRESS_WIDTH: Record<PipelineStatus, number> = {
+  pending: 0,
+  in_progress: 65,
+  completed: 100,
+  failed: 0,
+};
+
+const PROGRESS_COLOR: Record<PipelineStatus, string> = {
+  pending: "bg-border",
+  in_progress: "bg-accent",
+  completed: "bg-emerald-400",
+  failed: "bg-danger",
+};
+
+function StatusIcon({ status }: { status: PipelineStatus }) {
+  if (status === "completed") return <Check className="w-4 h-4 text-emerald-400" />;
+  if (status === "in_progress") return <Loader className="w-4 h-4 text-accent animate-spin" />;
+  if (status === "failed") return <AlertCircle className="w-4 h-4 text-danger" />;
+  return <Clock className="w-4 h-4 text-text-muted" />;
+}
+
+function PipelineCard({
+  number,
+  title,
+  pipeline,
+}: {
+  number: string;
+  title: string;
+  pipeline: PipelineState;
+}) {
+  const { status, message } = pipeline;
+  return (
+    <div
+      className={`bg-surface border-2 rounded-xl p-5 transition-all duration-300 ${STATUS_BORDER[status]}`}
+    >
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="flex items-start gap-3 min-w-0">
+          <div
+            className={`w-9 h-9 rounded-full border flex items-center justify-center flex-shrink-0 ${STATUS_ICON_RING[status]}`}
+          >
+            <StatusIcon status={status} />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className="text-xs font-mono text-text-muted">{number}</span>
+              <h3 className="font-semibold text-text text-sm">{title}</h3>
+            </div>
+            <p className={`text-sm ${STATUS_MSG[status]}`}>{message}</p>
+          </div>
+        </div>
+        <span
+          className={`text-xs rounded-full px-2.5 py-1 font-medium border whitespace-nowrap flex-shrink-0 ${STATUS_BADGE[status]}`}
+        >
+          {STATUS_LABEL[status]}
+        </span>
+      </div>
+      <div className="w-full bg-bg rounded-full h-1.5 overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-700 ${PROGRESS_COLOR[status]} ${
+            status === "in_progress" ? "animate-pulse" : ""
+          }`}
+          style={{ width: `${PROGRESS_WIDTH[status]}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+export default function CommandConsole() {
+  const [domain, setDomain] = useState("");
+  const [validationError, setValidationError] = useState("");
+  const [state, setState] = useState<ConsoleState>(INITIAL);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlDomain = params.get("domain");
+      if (urlDomain) setDomain(urlDomain);
+    }
+    return () => {
+      timeoutsRef.current.forEach(clearTimeout);
+    };
+  }, []);
+
+  const validate = (value: string): boolean => {
+    const clean = value.toLowerCase().trim();
+    if (!clean) {
+      setValidationError("Domain is required");
+      return false;
+    }
+    const regex =
+      /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
+    if (!regex.test(clean)) {
+      setValidationError("Enter a valid domain (e.g., ramp.com)");
+      return false;
+    }
+    setValidationError("");
+    return true;
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setDomain(value);
+    if (validationError && value) validate(value);
+    else if (!value) setValidationError("");
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate(domain)) return;
+
+    timeoutsRef.current.forEach(clearTimeout);
+    timeoutsRef.current = [];
+
+    const cleanDomain = domain.toLowerCase().trim();
+    const slug = cleanDomain.replace(/\./g, "-");
+
+    setState({
+      phase: "running",
+      submittedDomain: cleanDomain,
+      storefrontUrl: `https://branded-fit.vercel.app/store/demo`,
+      pipeline1: {
+        status: "in_progress",
+        message: "Extracting brand colors, logo, and typography…",
+      },
+      pipeline2: { status: "pending", message: "Awaiting brand assets" },
+      pipeline3: { status: "pending", message: "Awaiting product mockups" },
+    });
+
+    timeoutsRef.current.push(
+      setTimeout(() => {
+        setState((prev) => ({
+          ...prev,
+          pipeline1: {
+            status: "completed",
+            message: "Brand assets extracted — 4 colors, 2 logo variants, 1 font",
+          },
+          pipeline2: {
+            status: "in_progress",
+            message: "Generating on-brand product mockups with Printify…",
+          },
+        }));
+      }, 2500)
+    );
+
+    timeoutsRef.current.push(
+      setTimeout(() => {
+        setState((prev) => ({
+          ...prev,
+          pipeline2: {
+            status: "completed",
+            message: "3 products generated — tee, hoodie, tote",
+          },
+          pipeline3: {
+            status: "in_progress",
+            message: `Provisioning Shopify storefront for ${slug}…`,
+          },
+        }));
+      }, 5500)
+    );
+
+    timeoutsRef.current.push(
+      setTimeout(() => {
+        setState((prev) => ({
+          ...prev,
+          phase: "success",
+          pipeline3: {
+            status: "completed",
+            message: "Storefront live — 3 products published",
+          },
+        }));
+      }, 9000)
+    );
+  };
+
+  const handleReset = () => {
+    timeoutsRef.current.forEach(clearTimeout);
+    timeoutsRef.current = [];
+    setState(INITIAL);
+    setDomain("");
+    setValidationError("");
+  };
+
+  const { phase, pipeline1, pipeline2, pipeline3 } = state;
+  const showPipelines = phase === "running" || phase === "success";
+
+  return (
+    <div className="min-h-screen bg-bg text-text flex flex-col">
+      {/* Nav */}
+      <header className="bg-surface border-b border-border px-4 py-3 flex-shrink-0">
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-text-muted hover:text-text transition text-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Branded Fit
+          </Link>
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-2 h-2 rounded-full transition-colors ${
+                phase === "running"
+                  ? "bg-amber-400 animate-pulse"
+                  : phase === "success"
+                  ? "bg-emerald-400"
+                  : "bg-text-muted/30"
+              }`}
+            />
+            <span className="text-xs font-mono text-text-muted tracking-wider">
+              {phase === "running"
+                ? "PIPELINE RUNNING"
+                : phase === "success"
+                ? "PIPELINE COMPLETE"
+                : "COMMAND CONSOLE"}
+            </span>
+          </div>
+        </div>
+      </header>
+
+      {/* Main */}
+      <main className="flex-1 flex flex-col">
+        {!showPipelines ? (
+          /* ---- INPUT PHASE ---- */
+          <div className="flex-1 flex flex-col items-center justify-center px-4 py-16">
+            <div className="w-full max-w-xl">
+              <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/30 rounded-full px-4 py-1.5 text-accent text-sm font-medium mb-6">
+                <Zap className="w-3.5 h-3.5" />
+                Domain to live storefront in 10 minutes
+              </div>
+
+              <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
+                Command Console
+              </h1>
+              <p className="text-text-muted text-lg mb-10">
+                Enter your company domain. Three automated pipelines will build
+                your branded Shopify storefront in real time.
+              </p>
+
+              <form onSubmit={handleSubmit} className="space-y-4 mb-10">
+                <div>
+                  <label htmlFor="domain-input" className="sr-only">
+                    Company domain
+                  </label>
+                  <input
+                    ref={inputRef}
+                    id="domain-input"
+                    type="text"
+                    autoFocus
+                    placeholder="Enter your domain (e.g., ramp.com)"
+                    value={domain}
+                    onChange={handleChange}
+                    className={`w-full px-6 py-5 bg-surface border-2 text-text text-lg placeholder-text-muted rounded-xl focus:border-accent focus:ring-2 focus:ring-accent/20 transition ${
+                      validationError ? "border-danger" : "border-border"
+                    }`}
+                  />
+                  {validationError && (
+                    <p className="text-danger text-sm mt-2 flex items-center gap-1.5">
+                      <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                      {validationError}
+                    </p>
+                  )}
+                </div>
+                <button
+                  type="submit"
+                  disabled={!domain || !!validationError}
+                  className="w-full py-5 bg-accent text-white font-semibold rounded-xl hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition text-lg flex items-center justify-center gap-2"
+                >
+                  Generate Brand Drop
+                  <ExternalLink className="w-5 h-5" />
+                </button>
+              </form>
+
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { icon: Palette, label: "Brand Intelligence", time: "~30s" },
+                  { icon: Package, label: "Mockup Generation", time: "~60s" },
+                  { icon: Globe, label: "Shopify Provisioning", time: "~3 min" },
+                ].map(({ icon: Icon, label, time }) => (
+                  <div
+                    key={label}
+                    className="bg-surface border border-border rounded-lg p-3 text-center"
+                  >
+                    <Icon className="w-4 h-4 text-accent mx-auto mb-2" />
+                    <p className="text-text text-xs font-medium leading-tight mb-0.5">
+                      {label}
+                    </p>
+                    <p className="text-text-muted text-xs font-mono">{time}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* ---- RUNNING / SUCCESS PHASE ---- */
+          <div className="flex-1 px-4 py-8 md:py-10">
+            <div className="max-w-5xl mx-auto">
+              {/* Domain + reset */}
+              <div className="flex items-start justify-between mb-8 gap-4">
+                <div>
+                  <p className="text-text-muted text-sm">Processing domain</p>
+                  <h2 className="text-2xl md:text-3xl font-bold">
+                    {state.submittedDomain}
+                  </h2>
+                </div>
+                <button
+                  onClick={handleReset}
+                  className="text-sm text-text-muted hover:text-text border border-border rounded-lg px-4 py-2 transition flex-shrink-0"
+                >
+                  Start Over
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Pipelines */}
+                <div className="space-y-4">
+                  <p className="text-xs font-mono text-text-muted uppercase tracking-widest mb-2">
+                    Pipeline Status
+                  </p>
+                  <PipelineCard
+                    number="01"
+                    title="Brand Intelligence"
+                    pipeline={pipeline1}
+                  />
+                  <PipelineCard
+                    number="02"
+                    title="Mockup Generation"
+                    pipeline={pipeline2}
+                  />
+                  <PipelineCard
+                    number="03"
+                    title="Shopify Provisioning"
+                    pipeline={pipeline3}
+                  />
+                </div>
+
+                {/* Right panel */}
+                <div>
+                  {phase === "success" ? (
+                    <div className="space-y-4">
+                      {/* Success card */}
+                      <div className="bg-emerald-900/20 border-2 border-emerald-400/40 rounded-xl p-5">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-9 h-9 rounded-full bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center flex-shrink-0">
+                            <Check className="w-4 h-4 text-emerald-400" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-emerald-300">
+                              Brand Drop Ready!
+                            </h3>
+                            <p className="text-text-muted text-sm">
+                              3 products published to your Shopify storefront
+                            </p>
+                          </div>
+                        </div>
+                        <div className="bg-bg/60 rounded-lg px-4 py-3 mb-4">
+                          <p className="text-text-muted text-xs mb-1">
+                            Shopify Storefront URL
+                          </p>
+                          <p className="text-accent text-sm font-mono break-all">
+                            {state.storefrontUrl}
+                          </p>
+                        </div>
+                        <a
+                          href={state.storefrontUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 w-full py-3 bg-accent text-white font-semibold rounded-lg hover:bg-purple-600 transition"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          View Shopify Storefront
+                        </a>
+                      </div>
+
+                      {/* Product preview */}
+                      <p className="text-xs font-mono text-text-muted uppercase tracking-widest">
+                        Product Preview
+                      </p>
+                      <div className="grid grid-cols-3 gap-3">
+                        {MOCK_PRODUCTS.map((product) => (
+                          <div
+                            key={product.id}
+                            className="bg-surface border border-border rounded-lg overflow-hidden hover:border-accent/50 transition group cursor-default"
+                          >
+                            <div className="aspect-square flex items-center justify-center bg-accent/10 border-b border-border group-hover:bg-accent/15 transition">
+                              <ShoppingBag className="w-8 h-8 text-accent opacity-50 group-hover:opacity-80 transition" />
+                            </div>
+                            <div className="p-3">
+                              <p className="text-text text-xs font-semibold leading-snug">
+                                {product.name}
+                              </p>
+                              <p className="text-text-muted text-xs">
+                                {product.category}
+                              </p>
+                              <p className="text-accent text-sm font-bold mt-1">
+                                {product.price}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    /* Waiting state */
+                    <div className="flex flex-col items-center justify-center bg-surface border border-border rounded-xl p-8 text-center min-h-64 h-full">
+                      <div className="w-14 h-14 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center mb-4">
+                        <Loader className="w-6 h-6 text-accent animate-spin" />
+                      </div>
+                      <p className="font-semibold text-text mb-1">
+                        Building your storefront…
+                      </p>
+                      <p className="text-text-muted text-sm max-w-xs">
+                        Product preview will appear once all three pipelines
+                        complete
+                      </p>
+                      <div className="flex gap-1.5 mt-5">
+                        {[0, 1, 2].map((i) => (
+                          <div
+                            key={i}
+                            className="w-1.5 h-1.5 rounded-full bg-accent/50 animate-pulse"
+                            style={{ animationDelay: `${i * 0.25}s` }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
