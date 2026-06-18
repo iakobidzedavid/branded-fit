@@ -1,0 +1,9 @@
+=== DATA (prior loop digest — reference only) ===
+Most recent completed goal loop: Advance DE Step 8 — Quantify the Value Proposition: produce t…
+Summary: Produced three interlocking deliverables for DE Step 8. First, a 750-line comprehensive document (documents/2026-06-18_de_step8_quantified_value_proposition.md) that re-grounds the before/after ROI analysis in Step 5's validated n=12 People Ops interview data: the true hours-before figure rises from the original 48 hrs/yr estimate to 88 hrs/yr based on 5 validated use-case narratives (new-hire kits, summer gift, holiday campaign, offsite events), yielding 81 hrs/yr saved, $9,252 net annual benefit, 4.9× ROI, and a 2.5-month payback. The document includes use-case-level hour tables, sensitivity analysis, competitive value framing, and the full ROI scoreboard Maya uses to pitch her CFO. Second, an interactive ROI calculator page (src/app/roi-calculator/page.tsx) — a live 'use client' Next.js
+Recommended next steps from that loop:
+- Run 2 design-partner accounts through 3 swag cycles with time-tracking to get controlled before/after pilot data (target: 2026-09-01, +7 confidence pts)
+- A/B test model-driven curation vs. manual on 3 pilot customers to confirm the +30pt redemption lift (target: 2026-10-01, +6 confidence pts)
+- Complete Step 15 (Pricing) to replace the $199/mo assumption with willingness-to-pay validated price (+4 confidence pts)
+- Embed the /roi-calculator link in Wave 1 outreach emails to Vanta, Ashby, Hightouch prospects as the sales qualification trigger
+- Advance DE Step 9 prospect outreach — schedule the 10 named demos, track show-up rate and paid pilot conversion
