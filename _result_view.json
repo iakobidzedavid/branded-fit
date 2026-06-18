@@ -1,0 +1,44 @@
+{
+  "view_type": "report",
+  "headline": "Formalized 3 Branded Fit Pilot SOWs ($4,800 each, 30-day scope) with legal terms, success metrics, CEO conversion clause, ready for signature.",
+  "primary_stat": {
+    "label": "Pilot SOW Contracts Ready",
+    "value": "3 fully-drafted, customizable SOWs + CEO cover letter template + implementation guide"
+  },
+  "highlights": [
+    "Master SOW template with 5-phase scope: domain intake, storefront provisioning, 50-unit fulfillment, analytics, completion decision",
+    "Success metrics quantified: brand extraction ≥95%, provisioning <10 min, fidelity ≥4/5, delivery ≤14 days, NPS >7",
+    "Automatic expansion clause: if 2+ metrics met + NPS >7, auto-offer $24K annual Growth contract (5x revenue multiplier)",
+    "Pricing: $4,800 all-in per pilot, non-refundable with 50% refund triggers for missed deliverables",
+    "Timeline: 30-day pilot window with 5 concrete deliverables on Days 2, 5, 14, 30",
+    "3 specimen SOWs ready for immediate customization with prospect name/contact/dates",
+    "CEO cover letter template positioned as strategic commitment to success; includes personalization guidance",
+    "30-day execution checklist: day-by-day activities, milestone tracking, NPS survey, expansion decision workflow",
+    "Payment workflow defined: DocuSign signature method, invoice generation, 7-day payment terms",
+    "Legal terms included: liability cap ($4,800), data ownership, confidentiality, change order process, dispute resolution",
+    "Conversion playbook: metrics scorecard, automatic Growth contract offer sequence, debrief template for non-conversions",
+    "FAQ & troubleshooting section: 8 common scenarios (missed deadlines, scope changes, low NPS, technical issues)"
+  ],
+  "next_actions": [
+    {
+      "label": "Customize 3 SOWs with actual prospect details",
+      "task_template": "Select 2-3 qualified prospects from warm outreach; fill in company names, contact details, dates; have CEO review"
+    },
+    {
+      "label": "Sign & deploy SOWs via DocuSign",
+      "task_template": "Upload customized SOWs to DocuSign; CEO signs; send signature requests to 3 prospects; target 24-48 hour turnaround"
+    },
+    {
+      "label": "Collect payment & schedule Day 1 kickoff",
+      "task_template": "Generate invoices upon SOW signature; collect $4,800 per prospect within 7 days; schedule domain intake call upon payment receipt"
+    },
+    {
+      "label": "Begin 30-day pilot execution",
+      "task_template": "Execute Days 1-30 per implementation checklist: brand extraction, storefront preview, fulfillment, analytics, completion; track metrics daily"
+    },
+    {
+      "label": "Conduct NPS survey & expansion decision (Day 30)",
+      "task_template": "Collect NPS scores; review metrics scorecard; auto-offer Growth contracts if 2+ metrics met + NPS >7; schedule expansion calls for qualified prospects"
+    }
+  ]
+}
