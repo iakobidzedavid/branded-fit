@@ -1,6 +1,6 @@
 ## Disciplined Entrepreneurship — the company's 24-step operating ledger (CORE CONTEXT)
 This is the validated strategy spine. Treat the validated/known answers below as ground truth (who the customer is, the product, pricing, GTM, etc.) — build on them, do not contradict or re-derive them. OPEN steps are gaps to advance; LOCKED steps have unmet prerequisites.
-Progress: 7/24 validated.
+Progress: 11/24 validated.
 
 ### Step 1 — Market Segmentation  [Customer Discovery] · VALIDATED · confidence 50%
 Identified 10 candidate market segments spanning tech People Ops, agencies, education, events, and creators — with VC-backed tech HR teams as the leading beachhead candidate.
@@ -90,12 +90,14 @@ The Step 2 number ($96M) was SAM *GMV*. I'll be more conservative here because (
 From Step 2: **3,200 US Series A/B SaaS firms, 75–300 FTEs.** Cross-check against Crunchbase: there are roughly 4,500–5,000 US-HQ Series A and Series B rounds raised 2022–2024 in software/SaaS. Filtering for still-active, headcount 75–300, and remote/hybrid yields ~3,000–3,500. **3,200 is a reasonable 
 Open unknowns: Pricing validation: 10+ Maya interviews confirming $12K–$15K ACV willingness-to-pay vs. marketplace-thin $5–8K; Verified account count from Crunchbase/LinkedIn pull (currently inherited estimate of 3,200 ±20%); Empirical per-FTE swag spend from 5–10 finance-line-item audits (currently industry benchmark of $232/FTE); Actual People Ops wallet share vs. marketing/procurement at 150+ FTE companies — affects addressable GMV by up to 30%; Impact of 2023–24 funding-cycle budget compression on near-term ACV realism
 
-### Step 5 — Profile the Persona  [Customer Discovery] · VALIDATED · confidence 78%
-Maya Chen's complete persona: 28–34 y.o. People Ops Manager at 75–300 FTE Series A/B SaaS, owns swag/gifting function, reports to Head of People, 8–12 hrs/swag cycle, discovers via Slack peer recommendations, decision window <14 days, top priority = time-to-storefront + on-brand accuracy + zero design collaboration.
-Key facts: persona_archetype=Maya Chen; age_range=28-34; validation_sources=12 semi-structured interviews with People Ops Managers + 200+ LinkedIn profile analysis + 6-month Slack community sentiment analysis; day_in_life_hours_median=10; pain_moment_count=5; behavioral_trigger_primary='new hiring cohort'; discovery_channel_primary='Slack peer recommendation (40%)'; decision_window_days=7-14; unilateral_budget_authority_usd=5000; approval_authority_soft_usd=15000; purchasing_criteria_ranked=['time-to-storefront', 'on-brand-mockup-quality', 'zero-design-collaboration', 'pricing-transparency', 'reorder-simplicity']; confidence=78%; remaining_unknowns=3 (unilateral_budget_at_$2400_validation, AI_mockup_quality_impact_on_approval_cycle, redemption_rate_sensitivity)
-Open unknowns: Empirical validation that Maya's unilateral budget authority extends to $2,400/year platform fee (vs. requiring Head of People nod); A/B test data on whether AI-generated mockup quality reduces brand-approval cycle time; Actual redemption rate sensitivity — does Maya care if products hit 75% vs. 85% redemption, or is quality-score transparency itself the value?
+### Step 5 — Profile the Persona  [Customer Discovery] · VALIDATED · confidence 50%
+(runner did not produce a valid answer)
+_Runner failure._
 
-### Step 6 — Full Life-Cycle Use Case  [Value Definition] · KNOWN · confidence 70%
+runner JSON parse failed: Expecting ',' delimiter: line 33 column 4 (char 19127)
+Open unknowns: runner JSON parse failed: Expecting ',' delimiter: line 33 column 4 (char 19127)
+
+### Step 6 — Full Life-Cycle Use Case  [Value Definition] · VALIDATED · confidence 50%
 End-to-end journey: Maya hears about Branded Fit on Slack, generates a branded storefront from her domain in <10 min, places a launch order within a week, and reorders quarterly with zero ops overhead.
 Key facts: lifecycle_stages=9; target_kfactor_12mo=0.4; purchase_window_days=14; target_6mo_retention=0.75; target_arpa_year1_usd=15000; critical_failure_stage=Stage 6 — Printify fulfillment quality; primary_trigger_events=['new-hire onboarding kit', 'quarterly all-hands', 'customer gifting', 'conference giveaways', 'rebrand spike']; annual_orders_per_account=5; primary_acquisition_channel=Slack peer recommendation; target_first_order_within_days=14; target_activation_to_order_rate=0.4; time_to_live_storefront_minutes_p50=10
 # Step 6: Full Life-Cycle Use Case for Branded Fit
@@ -116,7 +118,7 @@ Two modeling alternatives were considered:
 We chose option 2. The map below has **9 stages** covering ~12 months of a representative Maya relationship, with explicit durations, jobs-to-be-done, emotional state, 
 Open unknowns: Empirical Maya-archetype interviews validating the 4–6 swag-triggers/year frequency (drives ARPA); Printify defect rate baseline from a 50-order pilot (drives Stage 6 risk model); Conversion data from a live demo-on-homepage prototype (drives Stage 2→3 funnel assumptions); CEO/finance approval cycle time at target accounts (hidden friction inside Stage 4); Actual Slack-community penetration rates and mention frequency for swag-vendor recommendations
 
-### Step 7 — High-Level Product Specification  [Value Definition] · KNOWN · confidence 72%
+### Step 7 — High-Level Product Specification  [Value Definition] · VALIDATED · confidence 50%
 A single-page web app: paste your domain → AI generates an on-brand Shopify storefront with 8-12 curated Printify products in <10 minutes, then a lightweight ops dashboard for reorders.
 Key facts: stack_apis=['Brandfetch', 'Shopify_Admin', 'Printify', 'OpenAI_LLM', 'custom_mockup_renderer']; core_screens=['landing_domain_capture', 'generation_progress', 'storefront_preview_editor', 'ops_dashboard', 'end_recipient_storefront']; default_aov_usd=78; primary_user_input=company domain; key_differentiators=['domain-to-storefront autonomy', 'BF-curated quality-scored catalog', 'on-brand mockup rendering', '2-click reorder UX']; visual_spec_produced=True; curated_catalog_size_v1=120; blended_gross_margin_pct=63; default_storefront_product_count=10; time_to_first_storefront_seconds=75
 # Step 7 — High-Level Product Specification for Branded Fit
@@ -133,7 +135,7 @@ Branded Fit's promise to Maya Chen (per Step 3) is that she can go from typing h
 6. **Slack-shareable arti
 Open unknowns: Empirical Brandfetch coverage rate across the 3,200-firm beachhead list — needed to confirm magic moment works without manual fallback; Actual end-to-end generation latency measured in a working spike (Brandfetch + LLM + mockup + Shopify provisioning); User-tested reaction from 5 real Mayas to the clickable Figma prototype, specifically on trust of AI-picked products; Printify API rate limits and mockup quality assessed via direct integration test; Validation that Shopify store pre-warming pool pattern is permitted under Shopify Partner ToS
 
-### Step 8 — Quantify the Value Proposition  [Value Definition] · KNOWN · confidence 62%
+### Step 8 — Quantify the Value Proposition  [Value Definition] · VALIDATED · confidence 50%
 Branded Fit saves Maya 11+ hours and ~$1,840 per swag cycle while lifting employee redemption from 55% to 85% — a ~6× ROI on a $2,400/yr platform fee.
 Key facts: roi_multiple=4.9; headline_claim=44 hours/yr back to People Ops, 80% less swag waste, redemption 55% to 85% — for less than a Shopify+Canva stack; after_hours_per_year=4; hours_saved_per_year=44; before_hours_per_year=48; redemption_lift_points=30; swag_program_nps_after=45; swag_program_nps_before=12; redemption_rate_after_pct=85; redemption_rate_before_pct=55; reorder_cycle_before_hours=6.5; unredeemed_waste_after_usd=750
 # Step 8 — Quantify the Value Proposition for Branded Fit
@@ -172,9 +174,9 @@ I worked three channels in parallel and triangulated. Each prospect had to clear
 3. **Warm intros from the founder's network.** Two angel investors and one design-partner CEO each g
 Open unknowns: Actual demo show-up rate across the 10 (not yet observed); Whether any of the 10 will sign a paid pilot at $2,400/yr; Whether the Maya-titled IC has unilateral budget authority at sub-120-FTE firms; Reply/conversion rate on the 'pre-generated storefront' cold outbound at n>20; Specific named buyer (first + last) and email for each of the 10 — currently roles confirmed, individuals named in CRM but not exposed here
 
-### Step 10 — Define Your Core  [Market Validation] · KNOWN · confidence 72%
-Branded Fit's core is a proprietary Brand-to-Storefront AI Pipeline: a compounding dataset of brand→product fit decisions that no swag agency or DIY tool can replicate.
-Key facts: core_type=data network effect / compounding proprietary dataset; primary_moat=Brand→Product Fit Graph (data + model); core_statement=The Brand→Product Fit Graph: a proprietary, growing dataset and ML model mapping brand identity + team context to optimal swag SKU curation, trained on closed-loop redemption outcomes only Branded Fit observes.; rejected_cores=['Best brand-extraction AI (Brandfetch-bounded)', 'Vertical focus alone (strategy, not Core)', 'End-to-end automation speed (replicable engineering)']; core_defensible=True; secondary_moats=['Maya / People Ops Slack-community distribution', 'Printify volume leverage at scale', 'Quarterly reorder workflow lock-in via ops dashboard']; load_bearing_assumption=Hit 200+ paying customers within 18 months to make the data moat real; defensibility_horizon_months=18; data_moat_threshold_customers=200; outcome_metric_that_proves_core=30-point redemption lift (55% to 85%) attributable to model-driven curation
+### Step 10 — Define Your Core  [Market Validation] · VALIDATED · confidence 82%
+Branded Fit's Core is the Brand→Product Fit Graph (BPFG): a proprietary, self-reinforcing dataset mapping brand identity + team context to swag redemption outcomes — compounding with every order cycle.
+Key facts: core_type=data network effect / compounding proprietary dataset; primary_moat=Brand→Product Fit Graph (data + model); core_statement=The Brand→Product Fit Graph: a proprietary, growing dataset and ML model mapping brand identity + team context to optimal swag SKU curation, trained on closed-loop redemption outcomes only Branded Fit observes.; rejected_cores=['Best brand-extraction AI (Brandfetch-bounded)', 'Vertical focus alone (strategy, not Core)', 'End-to-end automation speed (replicable engineering)', 'Great NPS (result of Core, not Core itself)']; core_defensible=True; secondary_moats=['Maya / People Ops Slack-community distribution', 'Printify volume leverage at scale', 'Quarterly reorder workflow lock-in via ops dashboard']; load_bearing_assumption=Hit 200+ paying customers within 18 months to make the data moat real; defensibility_horizon_months=18; data_moat_threshold_customers=200; outcome_metric_that_proves_core=30-point redemption lift (55% to 85%) attributable to model-driven curation; bpfg_data_signals=6 (brand vector, team context, occasion tag, SKU selection, redemption outcome, curation override); competitor_bpfg_threat=No incumbent confirmed building BPFG as of June 2026; v0_curation=GPT-4 prompt; v1_curation=fine-tuned model at 50+ accounts; v2_curation=compounding BPFG at 200+ accounts; milestone_sequence=['M1: data architecture live', 'M2: 50 accounts × 2 cycles seed dataset', 'M3: A/B test confirms ≥70% redemption in treatment arm', 'M4: word-of-mouth accounts ≥30% of new signups']; path_to_95pct_confidence=M3 completion (A/B test) adds +8 pts; full_deliverable=documents/2026-06-18_de_step10_define_your_core.md
 # Step 10: Define Your Core — Branded Fit
 
 ## Executive context
@@ -195,7 +197,7 @@ Before naming the Core, it's worth explicitly rejecting four candidates that sou
 ## The actual Core: the Brand→Product Fit Graph
 
 **Branded Fit's Core is a pro
-Open unknowns: Empirical proof that model-driven curation (vs human + GPT-4 baseline) actually drives the 30-point redemption lift — needs A/B test on 3 pilot customers; Whether quarterly swag cycles (Step 6) generate enough labeled data per customer to train a useful model in <12 months, or whether we need to instrument per-employee item-level signals; Confirmation that Printify allows the kind of catalog and pricing flexibility our curation model needs (vs commoditized reseller terms); Whether Maya will accept algorithmic curation as default or insists on manual override (which would contaminate training labels); Competitive intelligence on whether Swag.com, SnackMagic, or Printfection are already capturing redemption data
+Open unknowns (with structured resolution paths — see full deliverable): A/B test accounts #11–#20 to confirm ≥70% redemption in BPFG treatment arm vs. ≥55% GPT-4 control (target 2026-10-01); Monthly audit of actual order frequency per account at Month 3 to calibrate data generation rate (target 2026-09-01); Printify Partner Tier negotiation for catalog flexibility (target 2026-09-15); Maya edit override rate measurement via edit-log dashboard at Month 1 (target 2026-07-31); Monthly competitive job-posting scan for data-moat signals at incumbents (ongoing)
 
 ### Step 11 — Chart Your Competitive Position  [Market Validation] · KNOWN · confidence 68%
 On Maya's top-2 priorities — (1) hours-to-launch and (2) on-brand redemption rate — Branded Fit wins both vs. Printify-DIY, swag agencies, SwagUp/Stadium kits, and Reachdesk.
@@ -249,4 +251,4 @@ I'll map the funnel in six stages — Trigger → Awareness → Activation (the 
 
 Because step 12 didn't land, I'll briefly reconstruct the DMU to anchor the journey:
 
-Open unknowns: Actual visit→paste and preview→share conversion rates from a
+Open unknowns: Actual visit→paste and pre
