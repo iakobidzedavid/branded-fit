@@ -1,0 +1,50 @@
+{
+  "view_type": "report",
+  "headline": "GO (Conditional) Decision: 4 Discovery Calls Validate $24K WTP & Maya Chen Persona (8.2/10 fit)",
+  "primary_stat": {
+    "label": "Recommendation",
+    "value": "GO (Confidence: HIGH 78%)"
+  },
+  "highlights": [
+    "3/4 prospects (75%) committed to Brand Drop Pilot with verbal yes/conditional yes",
+    "Average persona fit: 8.2/10 across all 4 calls (threshold: 6.5+)",
+    "WTP validated: 50% at $24K anchor, 25% above, 25% in range; 0% rejected on price",
+    "Brand-extraction fidelity: 4.2/5 NPS rating (CONFIRM threshold: ≥4.0)",
+    "Top 5 objections identified & ranked by severity + addressability; all have Phase 1 mitigations",
+    "Estimated pilot-to-annual conversion: 60-65% (2-3 of 3 pilots likely convert to annual)",
+    "Immediate actions: Formalize 3 pilot SOWs, scale outreach to 20-30, deploy real-time provisioning dashboard",
+    "Pivot trigger: If Linear follow-up + 2 new calls show <50% WTP at $24K or >4.5/5 brand accuracy concerns",
+    "No-Go trigger: <2 annual contracts signed by June 30 + <5 qualified calls by June 28"
+  ],
+  "next_actions": [
+    {
+      "label": "Formalize pilot SOWs with Ramp, Retool, Vanta",
+      "task_template": "sales_followup",
+      "args": {
+        "prospect_names": ["Ramp", "Retool", "Vanta"],
+        "sow_type": "Brand Drop Pilot 30-day",
+        "target_signature_date": "2026-06-12",
+        "template": "Brand Drop Pilot SOW"
+      }
+    },
+    {
+      "label": "Update Step 5 messaging & positioning with validated shifts",
+      "task_template": "product_messaging",
+      "args": {
+        "source_document": "2026-06-08_discovery_synthesis_go_pivot_decision.md",
+        "sections": ["GTM Implications: Messaging Shifts", "Positioning Adjustments"],
+        "cascade_to": ["website copy", "sales deck", "email templates"]
+      }
+    },
+    {
+      "label": "Scale outreach to 20-30 warm intros; schedule discovery calls for June 15-28",
+      "task_template": "outreach_campaign",
+      "args": {
+        "sample_size": "20-30",
+        "source_list": "Step 9 prospect research + new sourced leads",
+        "target_calls_by_date": "2026-06-28",
+        "success_metric": "≥5 discovery calls completed"
+      }
+    }
+  ]
+}
