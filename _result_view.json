@@ -1,0 +1,63 @@
+{
+  "view_type": "report",
+  "headline": "Converted discovery call signals into 3 production-ready pilot SOWs + execution playbook; targeted 4 prospects (Vanta, Linear, Census, Hex) with $4.8K–$24K pricing tiers.",
+  "primary_stat": {
+    "label": "Pilot-Ready Prospects",
+    "value": "4 of 5"
+  },
+  "highlights": [
+    "Prospect Roster: 4 qualified prospects scored & ranked by pilot conversion probability (80% → 35%)",
+    "SOW Template: Production-ready 8-section Statement of Work with customizable pain points, ROI cases, and 3 pricing tiers ($4.8K/$12K/$24K)",
+    "4 Customized SOWs: Ready for founder signature (Vanta Growth $24K, Linear Professional $12K + Scale-Up, Census Professional $12K + CEO brief, Hex Entry $4.8K)",
+    "Execution Playbook: 5-phase step-by-step guide from SOW customization → founder signature → warm outreach → pilot launch → Growth conversion",
+    "Warm-Path Hooks: Customized cover letters & CEO briefings for each prospect based on discovery call context",
+    "ROI Cases: Prospect-specific financial models (Vanta $48K→$24K savings, Linear $63K→$51K savings, Census/Hex adapted)",
+    "Risk Mitigations: Documented blockers (finance gatekeeping, CEO approval, budget constraints) with specific remediation strategies",
+    "Success Metrics: Target 75% SOW signature rate (3+ of 4); 50%+ pilot-to-Growth conversion; $24K–$36K ARR expected from cohort",
+    "Timeline: 7-day execution window from Phase 1 (today) through Phase 4 (outreach launch); 45-day total cycle to Growth contracts"
+  ],
+  "next_actions": [
+    {
+      "label": "Founder Review & SOW Customization",
+      "task_template": "Execute Phase 1-2 of execution playbook: Review prospect roster, confirm warm-path hooks, customize each SOW with discovery call data (pain points, ROI cases, pricing tiers)",
+      "args": {
+        "documents_to_review": [
+          "documents/2026-06-15_pilot_sow_prospect_roster.md",
+          "documents/2026-06-15_pilot_sow_template.md"
+        ],
+        "timeline_days": 2
+      }
+    },
+    {
+      "label": "Sign Customized SOWs",
+      "task_template": "Phase 3: Founder signature on 4 customized SOW PDFs (Vanta, Linear, Census, Hex) using official letterhead & signature",
+      "args": {
+        "artifacts": [
+          "2026-06-15_SOW_VANTA_Sarah_Chen_SIGNED.pdf",
+          "2026-06-15_SOW_LINEAR_Alex_Thompson_SIGNED.pdf",
+          "2026-06-15_SOW_CENSUS_Maya_Patel_SIGNED.pdf",
+          "2026-06-15_SOW_HEX_Jordan_Lee_SIGNED.pdf"
+        ],
+        "timeline_days": 1
+      }
+    },
+    {
+      "label": "Execute Warm Outreach Campaign",
+      "task_template": "Phase 4: Send founder-signed SOWs + warm-intro emails to 4 prospects; execute 48-72 hour follow-up cadence per prospect segment (strong Yes vs. Maybe intent); track responses",
+      "args": {
+        "prospects_count": 4,
+        "email_templates": "Vanta (strong Yes), Linear (Maybe + ROI), Census (Maybe + CEO brief), Hex (Maybe + startup positioning)",
+        "response_tracking_required": true,
+        "timeline_days": 7
+      }
+    },
+    {
+      "label": "Pilot Launch & Mid-Pilot Check-In",
+      "task_template": "Phase 5: Coordinate storefront launches for signed SOWs (within 3 days of signature); execute Day 14 check-in calls; prepare for Day 28 debrief + Growth conversion decision",
+      "args": {
+        "timeline_days": 28,
+        "key_milestones": ["Storefront launch", "Day 14 check-in", "Day 28 debrief call", "Growth contract signature (if approved)"]
+      }
+    }
+  ]
+}
