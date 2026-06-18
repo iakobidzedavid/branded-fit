@@ -1,8 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function Home() {
-  return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
-      <h1>Branded Fit</h1>
-      <p>Welcome to your application. Edit <code>src/app/page.tsx</code> to get started.</p>
-    </main>
-  );
+  redirect("/command-console");
 }
