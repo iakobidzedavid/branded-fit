@@ -1,0 +1,84 @@
+{
+  "view_type": "report",
+  "headline": "Step 20-21 Unblocked: Warm Outreach + Assumption Validation Framework Complete",
+  "primary_stat": {
+    "label": "Deliverables Created",
+    "value": 4
+  },
+  "highlights": [
+    "✓ Outreach Campaign Playbook: 6 low-cost experiments, email templates, discovery call script",
+    "✓ Assumption Validation Test Plan: Detailed test designs for brand fidelity, speed, price, conversion, use case, storefront impact",
+    "✓ Response Tracking Dashboard: Production-ready React component with metrics, filters, assumption validation, go/no-go framework",
+    "✓ CSV Import Template: Ready to collect response data from real outreach",
+    "Timeline: 8-day execution (June 4-11) with clear go/pivot/no-go decision criteria",
+    "Budget: $0 spend (email + discovery calls only)",
+    "Success Threshold: ≥3 replies + ≥1 call + ≥1 assumption validated = GO TO PILOT"
+  ],
+  "links": [
+    {
+      "label": "View Outreach Playbook",
+      "url": "documents/2026-06-03_outreach_campaign_playbook.md"
+    },
+    {
+      "label": "View Test Plan (6 Experiments)",
+      "url": "documents/2026-06-03_step21_assumption_validation_tests.md"
+    },
+    {
+      "label": "Response Tracking Dashboard",
+      "url": "src/app/response-tracking/page.tsx"
+    },
+    {
+      "label": "CSV Template for Responses",
+      "url": "documents/outreach_responses_template.csv"
+    },
+    {
+      "label": "Execution Summary",
+      "url": "documents/2026-06-03_step20_step21_execution_summary.md"
+    }
+  ],
+  "next_actions": [
+    {
+      "label": "Approve Outreach Copy & Test Plan",
+      "task_template": "review_and_approve",
+      "args": {
+        "items": [
+          "outreach_email_copy",
+          "6_experiments_framework",
+          "success_criteria"
+        ],
+        "estimated_time": "30 minutes"
+      }
+    },
+    {
+      "label": "Enrich Prospect List with Verified Emails",
+      "task_template": "data_enrichment",
+      "args": {
+        "source": "step_9_prospects",
+        "target": "outreach_campaign_playbook",
+        "fields": ["email", "linkedin_url"],
+        "count": 10
+      }
+    },
+    {
+      "label": "Launch Outreach Campaign (June 4)",
+      "task_template": "send_email_campaign",
+      "args": {
+        "recipients": 10,
+        "split": "A/B (5+5)",
+        "subject_line_variant": "A",
+        "tracking": "opens_clicks_replies",
+        "stagger_interval_minutes": 30
+      }
+    },
+    {
+      "label": "Collect & Analyze Responses (June 4-11)",
+      "task_template": "run_experiments",
+      "args": {
+        "experiments": 6,
+        "days": 8,
+        "discovery_calls": "≥3",
+        "upload_to_dashboard": "response_tracking_page"
+      }
+    }
+  ]
+}

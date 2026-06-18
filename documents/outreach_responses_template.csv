@@ -1,0 +1,6 @@
+prospectName,company,email,sentDate,responseDate,responseStatus,demoClicked,brandAccuracyRating,priceReaction,primaryUseCase,notes,callDate,nextSteps
+Sarah Chen,Ramp,sarah@ramp.com,2026-06-04,2026-06-04,interested,true,4,neutral,team_morale,"Loved the speed. Interested in pilot. Said team would appreciate branded hoodie.",2026-06-06,"Send contract + proposal"
+Marcus Rodriguez,Vanta,marcus@vanta.com,2026-06-04,2026-06-05,call_completed,true,5,positive,team_morale,"Brand colors were spot-on. Said $4,800 is 'totally reasonable.' Wants to pilot.",2026-06-05,"Qualified prospect — move to Pilot Phase"
+Aisha Patel,Linear,aisha@linear.app,2026-06-04,,no_response,false,,,,"Follow-up sent 2026-06-06. Awaiting response.",,"Send follow-up"
+Jordan Smith,Webflow,jordan@webflow.com,2026-06-04,,no_response,false,,,,"No click. Not opened yet.",,"Retry on Day 5"
+Taylor Wong,Retool,taylor@retool.com,2026-06-04,2026-06-04,declined,true,2,negative,unknown,"Clicked demo but replied 'Not the right time.' Wants to revisit in Q3.",,"Follow up Q3 2026"
