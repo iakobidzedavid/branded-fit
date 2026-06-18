@@ -1,0 +1,67 @@
+{
+  "view_type": "report",
+  "headline": "Discovery call execution framework: 5 email templates + call tracker + 30-min playbook. Ready to conduct 5+ warm-outreach calls.",
+  "primary_stat": {
+    "label": "Deliverables Created",
+    "value": 3
+  },
+  "highlights": [
+    "5 production-ready email templates (Template 1: Warm Intro High Intent, Template 2: Gentle Re-Engagement, Template 3: Pilot Offer, Template 4: Objection Reframe, Template 5: Multi-Touch Opener)",
+    "Van Westendorp WTP tracker with 4-anchor ladder ($2K, $4.8K, $24K, $36K) + aggregate synthesis for 5+ calls",
+    "30-minute call structure: Warmup → Current State → Value Prop → Van Westendorp → Objections → Pilot Intent → Close",
+    "Objection library with quick counters (color accuracy, vendor lock-in, multi-brand support, timeline concerns)",
+    "Post-call logging template capturing verbatim quotes on speed, fidelity, fulfillment quality",
+    "Success metrics: 5+ calls, ≥60% pilot intent, top 3 objection themes identified, 2–3 pilots in pipeline",
+    "Call quality checklist (70/30 listen/talk ratio, 4 WTP anchors captured, clear next steps)"
+  ],
+  "links": [
+    {
+      "label": "Email Templates & Outreach Checklist",
+      "url": "documents/discovery_call_outreach_templates.md"
+    },
+    {
+      "label": "Discovery Calls Tracker (Van Westendorp + Synthesis)",
+      "url": "documents/discovery_calls_tracker.md"
+    },
+    {
+      "label": "30-Minute Call Execution Playbook",
+      "url": "documents/discovery_call_execution_playbook.md"
+    }
+  ],
+  "next_actions": [
+    {
+      "label": "Schedule 5+ warm-outreach prospects using email templates",
+      "task_template": "contact_prospect",
+      "args": {
+        "template_num": "1-5",
+        "goal": "Book 5+ discovery calls within 48 hours",
+        "tracking_doc": "documents/discovery_calls_tracker.md"
+      }
+    },
+    {
+      "label": "Conduct discovery calls following 30-minute playbook",
+      "task_template": "run_discovery_call",
+      "args": {
+        "duration_min": 30,
+        "segments": 7,
+        "key_capture": "Van Westendorp anchors, top 3 objections, pilot intent, verbatim quotes"
+      }
+    },
+    {
+      "label": "Log call data in discovery_calls_tracker.md immediately post-call",
+      "task_template": "data_logging",
+      "args": {
+        "required_fields": "WTP responses, objection severity, pilot intent + confidence, 2-3 verbatim quotes",
+        "target_completion": "within 1 hour of call end"
+      }
+    },
+    {
+      "label": "Synthesize 5+ calls into WTP distribution, objection patterns, pilot conversion forecast",
+      "task_template": "analysis",
+      "args": {
+        "deliverable": "Aggregate synthesis section in tracker (post-calls 1-5+)",
+        "feeds_into": "Founder decision memo (Step 6)"
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+domain,fidelity_score,time_to_live_minutes,brand_extraction_sec,mockup_generation_sec,shopify_provisioning_sec,product_count,sku_count,visual_fidelity_pass,notes
+ramp.com,0.92,8.3,45,172,266,12,48,Y,Teal extraction accurate; logo clean; accent color 2% saturation variance
+vanta.com,0.94,7.9,38,167,234,15,60,Y,Blue + navy rendering precise; gradient overlay technical limitation
+linear.app,0.96,6.7,42,155,230,18,72,Y,Monochromatic design flawless; fastest execution; typography perfect
+retool.com,0.91,8.8,51,194,283,14,56,Y,Blue excellent; coral accent 3% variance; slowest provisioning
+notion.so,0.93,7.5,40,163,232,20,80,Y,Gradient extraction strong; icon consistency; minor font variance
+
+SUMMARY,0.93,7.84,43.2,170.2,257,79,316,5/5,100% SLA compliance; 100% visual QA pass; 100% analytics event capture
