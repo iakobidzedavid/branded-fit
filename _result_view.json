@@ -1,0 +1,53 @@
+{
+  "view_type": "report",
+  "headline": "GTM readiness audit completed: 3 critical gaps mapped to 9 remediation tasks with owners, effort estimates, and go/no-go metrics by June 25.",
+  "primary_stat": {
+    "label": "Audit Coverage",
+    "value": "Business Model (3 gaps) + Messaging (3 gaps) + Launch Infrastructure (1 gap) = 7 remediation tasks across 6 functions"
+  },
+  "highlights": [
+    "Business Model Gap: Credit-burn rate from pilots, independent WTP study (15–20 leaders), win/loss pricing data — 28–40 hours effort by June 25",
+    "Messaging Gap: Documented framework, resonance testing in discovery calls, 3x playbooks (email/landing/deck) — 18–28 hours effort by June 25",
+    "Launch Infrastructure Gap: Analytics dashboard seeded with real pilot data by June 20 — 2–3 hours effort (dependent on pilot launch)",
+    "Execution Roadmap: 3-phase sequence (Phase 1: Prep, Phase 2: Validation, Phase 3: Synthesis) with parallel task execution and clear dependencies",
+    "Success Metrics: Business model (gross margin ≥65%, WTP acceptance ≥50% at $24K), Messaging (resonance ≥4/5, playbooks approved), Analytics (≥50 real events by day-5 pilot)",
+    "Team Effort: ~93–136 hours across 7 roles (Product, Sales, Finance, Content, Research, Data, Discovery) over 3-week execution cycle",
+    "Risk Mitigation: Contingencies for low WTP acceptance, poor message resonance, delayed pilots, and unavailable sales team resources"
+  ],
+  "links": [
+    {
+      "label": "View Full Audit Document",
+      "url": "documents/2026-06-08_gtm_readiness_audit_and_remediation_roadmap.md"
+    }
+  ],
+  "next_actions": [
+    {
+      "label": "Phase 1: Kick off messaging framework documentation (3–5 hrs) + begin discovery calls with embedded resonance testing",
+      "task_template": "content_writing",
+      "args": {
+        "title": "Document Messaging Framework for Branded Fit",
+        "sections": ["headline", "proof_points", "objection_handlers", "segment_variants"],
+        "deadline": "June 12, 2026"
+      }
+    },
+    {
+      "label": "Phase 2: Conduct independent WTP study (15–20 People Ops leaders) parallel to Task 2 discovery calls",
+      "task_template": "market_research",
+      "args": {
+        "research_type": "Van Westendorp Price Sensitivity Analysis",
+        "sample_size": "15–20 prospects",
+        "price_anchors": ["18000", "24000", "30000", "36000"],
+        "deadline": "June 25, 2026"
+      }
+    },
+    {
+      "label": "Phase 3: Create messaging playbook (email, landing, deck) based on discovery call synthesis + WTP insights by June 25",
+      "task_template": "content_writing",
+      "args": {
+        "deliverables": ["outreach_email", "landing_page_copy", "sales_deck"],
+        "based_on": "Task 2 discovery synthesis + WTP study results",
+        "deadline": "June 25, 2026"
+      }
+    }
+  ]
+}
