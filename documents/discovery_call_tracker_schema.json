@@ -1,0 +1,417 @@
+{
+  "metadata": {
+    "study_name": "Brand Drop Pilot Discovery Call Validation (Step 21)",
+    "date_created": "2026-06-14",
+    "target_customers": ["Vanta", "Linear", "Census", "Hex", "Mercury"],
+    "total_calls": 5,
+    "call_duration_minutes": 45,
+    "objectives": [
+      "Validate 6 critical gray assumptions",
+      "Measure WTP for $24K annual Growth tier",
+      "Identify expansion use-case priorities",
+      "Assess pilot-to-contract conversion readiness"
+    ]
+  },
+  "call_schedule": {
+    "week_1_scheduling": {
+      "date": "2026-06-15",
+      "action": "Send calendar invites to all 5 customers (72-hour lead time)",
+      "confirmation_deadline": "2026-06-18"
+    },
+    "week_2_execution": {
+      "start_date": "2026-06-19",
+      "end_date": "2026-06-23",
+      "calls_per_day": "1-2"
+    },
+    "week_3_synthesis": {
+      "start_date": "2026-06-24",
+      "end_date": "2026-06-26",
+      "deliverable_date": "2026-06-26"
+    }
+  },
+  "assumption_thresholds": {
+    "A1_brand_fidelity_nps": {
+      "name": "Brand-Fidelity NPS ≥8/10",
+      "question": "On a scale 1–10, how accurately does the generated storefront match your brand identity?",
+      "success_threshold": "≥4/5 customers rate ≥8 (avg ≥8.0)",
+      "gray_threshold": "3/5 customers rate ≥8 (avg 7.0-7.9)",
+      "failure_threshold": "≤2/5 customers rate ≥8 (avg ≤7.0)",
+      "required_evidence": ["verbatim_score", "design_element_feedback", "ceo_perception"]
+    },
+    "A2_provisioning_speed": {
+      "name": "Provisioning Speed ≤10 minutes",
+      "question": "From domain submit to first mockup render, how many minutes elapsed?",
+      "success_threshold": "≥4/5 perceive ≤10 min (avg ≤10 min)",
+      "gray_threshold": "3/5 perceive ≤10 min (avg 10-12 min)",
+      "failure_threshold": "≤2/5 perceive ≤10 min (avg >12 min)",
+      "required_evidence": ["estimated_minutes", "perception_assessment", "competitive_comparison"]
+    },
+    "A3_wtp_24k": {
+      "name": "$24K Annual Growth Tier WTP",
+      "question": "Would you sign a contract for $24K/year Growth tier (18K swag credits + Brand DNA platform)?",
+      "success_threshold": "≥4/5 customers: Yes or Hesitant-but-open",
+      "gray_threshold": "3/5 customers: Yes",
+      "failure_threshold": "≤2/5 customers: Yes",
+      "required_evidence": ["yes_no_response", "confidence_1_5", "objection_if_no", "alternate_price"]
+    },
+    "A4_warm_intro": {
+      "name": "Warm-Intro Conversion Path",
+      "question": "How did you first hear about Branded Fit?",
+      "success_threshold": "≥3/5 came through warm intro (peer referral)",
+      "gray_threshold": "2-3/5 warm intros",
+      "failure_threshold": "≤1/5 warm intros",
+      "required_evidence": ["referral_source", "referrer_name", "conversion_time", "reference_willingness"]
+    },
+    "A5_expansion_use_cases": {
+      "name": "Expansion Use-Cases Beyond Onboarding",
+      "question": "Beyond onboarding kits, what other use cases do you see for Branded Fit?",
+      "success_threshold": "Each customer identifies ≥2 use-cases (avg ≥2.0)",
+      "gray_threshold": "Avg 1.5-2.0 use-cases per customer",
+      "failure_threshold": "Avg <1.5 use-cases per customer",
+      "required_evidence": ["use_case_list", "priority_ranking", "feature_gaps", "expansion_revenue_potential"]
+    },
+    "A6_storefront_impact": {
+      "name": "Storefront Impact on Brand Perception & Retention",
+      "question": "Has the storefront changed employee perception of the brand or onboarding experience?",
+      "success_threshold": "≥3/5 report positive shift OR quantified NPS/retention lift",
+      "gray_threshold": "2-3/5 report impact (qualitative or quantified)",
+      "failure_threshold": "≤1/5 report measurable impact",
+      "required_evidence": ["perception_shift", "employee_feedback", "quantified_metric", "strategic_value"]
+    }
+  },
+  "call_structure": {
+    "opening": {
+      "duration_minutes": 3,
+      "objectives": ["rapport_building", "context_setting", "recording_consent"]
+    },
+    "discovery": {
+      "duration_minutes": 15,
+      "questions": [
+        "Q1: Brand-fidelity NPS (1-10)",
+        "Q2: Provisioning speed perception (minutes)",
+        "Q3: WTP $24K annual (yes/no/hesitant)",
+        "Q4: Warm-intro source",
+        "Q5: Expansion use-cases (≥2 expected)",
+        "Q6: Storefront impact on brand/retention"
+      ],
+      "listening_ratio": "70% customer, 30% facilitator"
+    },
+    "validation": {
+      "duration_minutes": 20,
+      "actions": [
+        "Van Westendorp WTP ladder (if hesitant on A3)",
+        "Use-case drilling (if low count on A5)",
+        "Design feedback (if low score on A1)",
+        "Feature request capture"
+      ]
+    },
+    "closing": {
+      "duration_minutes": 7,
+      "objectives": ["reference_willingness", "next_steps", "thank_you"]
+    }
+  },
+  "call_scorecard_template": {
+    "customer_name": "",
+    "call_date": "",
+    "call_start_time": "",
+    "call_duration_minutes": 0,
+    "attendee_name": "",
+    "attendee_title": "",
+    "recorded": true,
+    "consent_given": true,
+    "Q1_brand_fidelity": {
+      "score_1_10": null,
+      "specific_matches": "",
+      "specific_misses": "",
+      "verbatim_quote": ""
+    },
+    "Q2_provisioning_speed": {
+      "estimated_minutes": null,
+      "perception": "",
+      "competitive_comparison": "",
+      "verbatim_quote": ""
+    },
+    "Q3_wtp_24k": {
+      "response": "",
+      "confidence_1_5": null,
+      "objection_if_no": "",
+      "alternate_price": null,
+      "budget_notes": "",
+      "verbatim_quote": ""
+    },
+    "Q4_warm_intro": {
+      "source": "",
+      "referrer_name": "",
+      "referrer_company": "",
+      "conversion_time_days": null,
+      "reference_willingness": "",
+      "verbatim_quote": ""
+    },
+    "Q5_expansion_use_cases": {
+      "use_cases": [],
+      "top_priority": "",
+      "feature_gaps": [],
+      "expansion_revenue_potential_annual": null,
+      "verbatim_quote": ""
+    },
+    "Q6_storefront_impact": {
+      "brand_perception_shift": "",
+      "employee_feedback": [],
+      "quantified_metrics": {
+        "onboarding_nps_delta": null,
+        "retention_rate_delta": null,
+        "other_metric": null
+      },
+      "strategic_value": "",
+      "verbatim_quote": ""
+    },
+    "key_insights": [],
+    "unexpected_signals": [],
+    "next_steps": [],
+    "recording_link": ""
+  },
+  "master_tracker_template": {
+    "assumption_tally": [
+      {
+        "assumption_id": "A1",
+        "assumption_name": "Brand-Fidelity NPS ≥8/10",
+        "customers": {
+          "Vanta": {
+            "score": null,
+            "status": "PENDING"
+          },
+          "Linear": {
+            "score": null,
+            "status": "PENDING"
+          },
+          "Census": {
+            "score": null,
+            "status": "PENDING"
+          },
+          "Hex": {
+            "score": null,
+            "status": "PENDING"
+          },
+          "Mercury": {
+            "score": null,
+            "status": "PENDING"
+          }
+        },
+        "summary": {
+          "confirms": 0,
+          "grays": 0,
+          "refutes": 0,
+          "average_score": null,
+          "overall_status": "PENDING"
+        }
+      },
+      {
+        "assumption_id": "A2",
+        "assumption_name": "Provisioning Speed ≤10 minutes",
+        "customers": {
+          "Vanta": {
+            "minutes": null,
+            "status": "PENDING"
+          },
+          "Linear": {
+            "minutes": null,
+            "status": "PENDING"
+          },
+          "Census": {
+            "minutes": null,
+            "status": "PENDING"
+          },
+          "Hex": {
+            "minutes": null,
+            "status": "PENDING"
+          },
+          "Mercury": {
+            "minutes": null,
+            "status": "PENDING"
+          }
+        },
+        "summary": {
+          "confirms": 0,
+          "grays": 0,
+          "refutes": 0,
+          "average_minutes": null,
+          "overall_status": "PENDING"
+        }
+      },
+      {
+        "assumption_id": "A3",
+        "assumption_name": "$24K WTP (≥4/5 Yes)",
+        "customers": {
+          "Vanta": {
+            "response": "PENDING",
+            "status": "PENDING"
+          },
+          "Linear": {
+            "response": "PENDING",
+            "status": "PENDING"
+          },
+          "Census": {
+            "response": "PENDING",
+            "status": "PENDING"
+          },
+          "Hex": {
+            "response": "PENDING",
+            "status": "PENDING"
+          },
+          "Mercury": {
+            "response": "PENDING",
+            "status": "PENDING"
+          }
+        },
+        "summary": {
+          "yes_count": 0,
+          "hesitant_count": 0,
+          "no_count": 0,
+          "overall_status": "PENDING"
+        }
+      },
+      {
+        "assumption_id": "A4",
+        "assumption_name": "Warm-Intro Conversion (≥3/5)",
+        "customers": {
+          "Vanta": {
+            "source": "PENDING",
+            "status": "PENDING"
+          },
+          "Linear": {
+            "source": "PENDING",
+            "status": "PENDING"
+          },
+          "Census": {
+            "source": "PENDING",
+            "status": "PENDING"
+          },
+          "Hex": {
+            "source": "PENDING",
+            "status": "PENDING"
+          },
+          "Mercury": {
+            "source": "PENDING",
+            "status": "PENDING"
+          }
+        },
+        "summary": {
+          "warm_intros": 0,
+          "other_sources": 0,
+          "overall_status": "PENDING"
+        }
+      },
+      {
+        "assumption_id": "A5",
+        "assumption_name": "Expansion Use-Cases (≥2 per customer avg)",
+        "customers": {
+          "Vanta": {
+            "use_case_count": 0,
+            "status": "PENDING"
+          },
+          "Linear": {
+            "use_case_count": 0,
+            "status": "PENDING"
+          },
+          "Census": {
+            "use_case_count": 0,
+            "status": "PENDING"
+          },
+          "Hex": {
+            "use_case_count": 0,
+            "status": "PENDING"
+          },
+          "Mercury": {
+            "use_case_count": 0,
+            "status": "PENDING"
+          }
+        },
+        "summary": {
+          "average_per_customer": null,
+          "top_use_cases": [],
+          "overall_status": "PENDING"
+        }
+      },
+      {
+        "assumption_id": "A6",
+        "assumption_name": "Storefront Impact on Retention (≥3/5 positive)",
+        "customers": {
+          "Vanta": {
+            "impact": "PENDING",
+            "status": "PENDING"
+          },
+          "Linear": {
+            "impact": "PENDING",
+            "status": "PENDING"
+          },
+          "Census": {
+            "impact": "PENDING",
+            "status": "PENDING"
+          },
+          "Hex": {
+            "impact": "PENDING",
+            "status": "PENDING"
+          },
+          "Mercury": {
+            "impact": "PENDING",
+            "status": "PENDING"
+          }
+        },
+        "summary": {
+          "positive_count": 0,
+          "mixed_count": 0,
+          "negative_count": 0,
+          "overall_status": "PENDING"
+        }
+      }
+    ],
+    "final_scorecard": {
+      "CONFIRM_count": 0,
+      "GRAY_count": 0,
+      "REFUTE_count": 0,
+      "recommended_action": "PENDING",
+      "confidence_level": "PENDING"
+    },
+    "top_objections": [
+      {
+        "objection": "",
+        "frequency": 0,
+        "counter": "",
+        "priority": "HIGH"
+      }
+    ],
+    "expansion_use_case_priorities": [
+      {
+        "use_case_name": "",
+        "frequency": 0,
+        "revenue_potential_annual": null,
+        "feature_requirements": []
+      }
+    ],
+    "reference_customer_readiness": [
+      {
+        "customer_name": "",
+        "willing_to_reference": false,
+        "at_churn_risk": false,
+        "renewal_probability": null
+      }
+    ]
+  },
+  "decision_rules": {
+    "go_recommendation": {
+      "criteria": "≥4/6 assumptions CONFIRMED",
+      "confidence": "HIGH",
+      "action": "Launch $24K annual Growth tier pricing; proceed with current roadmap"
+    },
+    "contingent_recommendation": {
+      "criteria": "Exactly 3/6 assumptions CONFIRMED",
+      "confidence": "MEDIUM",
+      "action": "Conditional GO: price adjustment ($18K-$20K), feature roadmap acceleration, or extended pilot period required"
+    },
+    "pivot_recommendation": {
+      "criteria": "≤2/6 assumptions CONFIRMED",
+      "confidence": "LOW",
+      "action": "PAUSE annual pricing launch; stay with one-off pilots; remediate product/messaging before re-validation"
+    }
+  }
+}

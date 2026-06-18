@@ -1,0 +1,66 @@
+{
+  "view_type": "report",
+  "headline": "Brand Drop Pilot Discovery Call Validation Framework (Step 21) — Production-Ready Execution Plan",
+  "primary_stat": {
+    "label": "Assumptions to Validate",
+    "value": "6 Critical Gray Assumptions"
+  },
+  "highlights": [
+    "45-minute structured call script with fixed question framework for 5 target customers (Vanta, Linear, Census, Hex, Mercury)",
+    "6 assumption validation thresholds with clear CONFIRM/GRAY/REFUTE decision rules",
+    "Real-time scorecard template for immediate post-call data capture and synthesis",
+    "Master tracker schema for aggregating results across all 5 calls (6 assumptions × 5 customers)",
+    "Van Westendorp WTP methodology embedded in Question 3 for precise pricing validation",
+    "Objection handling counters and remediation paths for each assumption",
+    "3-week execution timeline: Scheduling (June 15) → Calls (June 19–23) → Synthesis (June 24–26)",
+    "Go/No-Go decision framework for Step 23 founder decision memo (HIGH: ≥4/6 CONFIRMED; MEDIUM: 3/6; LOW: ≤2/6)",
+    "Reference customer readiness assessment + expansion use-case prioritization for Y1 roadmap",
+    "Post-call email templates and synthesis checklist for rapid knowledge transfer"
+  ],
+  "links": [
+    {
+      "label": "View Full Discovery Call Validation Plan",
+      "url": "documents/2026-06-14_discovery_call_validation_plan_step21.md"
+    },
+    {
+      "label": "View Tracker Schema (JSON)",
+      "url": "documents/discovery_call_tracker_schema.json"
+    }
+  ],
+  "next_actions": [
+    {
+      "label": "Send Calendar Invites to 5 Target Customers",
+      "task_template": "Schedule 45-minute discovery calls (June 19–23 target)",
+      "args": {
+        "customers": ["Vanta", "Linear", "Census", "Hex", "Mercury"],
+        "duration_minutes": 45,
+        "lead_time_hours": 72
+      }
+    },
+    {
+      "label": "Conduct 5 Discovery Calls Using Fixed Script",
+      "task_template": "Execute calls following 45-minute structure (opening → discovery → validation → close)",
+      "args": {
+        "framework": "Brand-fidelity NPS (Q1) → Provisioning speed (Q2) → WTP $24K (Q3) → Warm-intro (Q4) → Expansion use-cases (Q5) → Storefront impact (Q6)",
+        "recording_required": true,
+        "scorecard_template": "Complete immediately post-call"
+      }
+    },
+    {
+      "label": "Synthesize Results & Populate Master Tracker",
+      "task_template": "Aggregate 5 call scorecards into 6-assumption tally sheet by June 26",
+      "args": {
+        "deliverables": ["Master tracker (CONFIRM/GRAY/REFUTE status per assumption)", "Verbatim quote extraction (2–3 per assumption)", "Objection synthesis (top 3 with counters)", "Reference customer readiness assessment", "Expansion use-case prioritization"],
+        "deadline": "June 26, 2026"
+      }
+    },
+    {
+      "label": "Deliver Synthesis Report to Founder for Step 23 Memo",
+      "task_template": "Provide raw data + summary for founder decision memo (GO/CONTINGENT/PIVOT recommendation)",
+      "args": {
+        "success_criteria": "≥4/6 assumptions CONFIRMED = HIGH confidence GO; 3/6 = MEDIUM CONTINGENT; ≤2/6 = LOW PIVOT",
+        "confidence_determination": "Based on assumption tally + objection frequency + reference readiness"
+      }
+    }
+  ]
+}
