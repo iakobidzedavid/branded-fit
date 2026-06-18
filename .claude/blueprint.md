@@ -1,0 +1,110 @@
+# Site Blueprint
+
+Living map of the product. Each node below has a `path`, a `purpose`, and permissions that govern what agents are allowed to do with it. When a task targets a node:
+
+- Read `purpose` and `business_rules` before making changes.
+- Respect `allowed_agent_actions` — don't extend when only `read` is allowed.
+- `frozen` nodes are off-limits. Leave a note in the task result instead.
+- `agent_owned` nodes are yours to reshape freely.
+
+_20 nodes total._
+
+- `planned-app` (app) — Branded Fit
+  - purpose: Autonomous swag-as-a-service platform that transforms a corporate domain into a live, branded e-commerce storefront with custom apparel in minutes, orchestrating brand discovery, mockup generation, and Shopify provisioning through a single command console.
+  - actions: read, edit, extend
+  - `/store/:storeId` (route) — Storefront Preview
+    - purpose: Display the generated branded e-commerce store and allow the user to review products before going live.
+    - rule: Store remains in draft mode until explicitly published; no external traffic until user confirms.
+    - rule: Product pricing must include POD cost + configurable markup; default markup is 40%.
+    - rule: Store customization is limited to product descriptions and pricing in MVP; design changes require re-generation.
+    - actions: read, edit, extend
+  - `/` (route) — Command Console
+    - purpose: Single entry point where users submit a domain and trigger the three-pipeline orchestration.
+    - rule: Domain validation must reject non-corporate TLDs and already-processed domains to prevent duplicate storefronts.
+    - rule: All three pipelines must complete or gracefully fail within 5 minutes; timeout triggers user notification with partial-completion fallback.
+    - rule: Storefront URL and credentials must be securely stored and never re-exposed after initial generation.
+    - actions: read, edit, extend
+  - `/orders` (route) — Order Dashboard
+    - purpose: Centralized view of all orders placed across generated storefronts, with fulfillment status and basic analytics.
+    - rule: Order data is read-only in MVP; no manual fulfillment or refund handling.
+    - rule: Fulfillment status must sync from Printify; Branded Fit does not manage inventory.
+    - rule: Customer PII (email, address) must not be logged or cached beyond order display.
+    - actions: read, edit, extend
+  - `component:domain-input` (component) — Domain Input Field
+    - purpose: Capture and validate the corporate domain that triggers the entire orchestration.
+    - rule: Reject domains already processed by the same user to prevent duplicate storefronts.
+    - rule: Strip 'www.' and 'https://' prefixes automatically for consistency.
+    - actions: read, edit, extend
+  - `component:success-card` (component) — Success Card
+    - purpose: Celebrate completion and guide the user to next actions (view store, download assets, invite team).
+    - rule: Storefront URL must be unique and non-guessable (use UUID or similar).
+    - rule: Download Brand Assets should return a ZIP with extracted logos and color palette; no PII.
+    - actions: read, edit, extend
+  - `component:store-metadata` (component) — Store Metadata Sidebar
+    - purpose: Display key store information (brand name, domain, product count, SKU count, publish status) at a glance.
+    - rule: Store name defaults to extracted brand name but can be edited by user.
+    - rule: Metadata is immutable after publication except for store name and description.
+    - actions: read, edit, extend
+  - `component:order-detail-modal` (component) — Order Detail Modal
+    - purpose: Show full order information, customer details, and Printify fulfillment tracking.
+    - rule: Customer address is displayed but not cached; fetched on-demand from Shopify.
+    - rule: Tracking link must open Printify's tracking page in a new tab.
+    - actions: read, edit, extend
+  - `integration:printify` (integration) — Printify API
+    - purpose: Generate custom apparel mockups and product variants by mapping extracted brand assets onto POD templates.
+    - rule: Printify API key must be secured; use OAuth if available, else API key in env vars.
+    - rule: Product pricing from Printify includes base POD cost; Branded Fit adds 40% markup by default.
+    - rule: Mockup images must be cached locally for performance; refresh weekly.
+    - rule: Only use Printify's high-margin product categories (apparel, hats, bags) in MVP.
+    - actions: read, edit, extend
+  - `integration:shopify-storefront` (integration) — Shopify Storefront API
+    - purpose: Fetch live product and order data from the generated Shopify store for display and order tracking.
+    - rule: Storefront API token is public-facing but read-only; no write permissions.
+    - rule: Order data includes customer email and shipping address; must not be logged or cached beyond session.
+    - rule: Polling interval is 5 minutes to balance freshness and API quota usage.
+    - actions: read, edit, extend
+  - `component:status-panel` (component) — Pipeline Status Panel
+    - purpose: Real-time visualization of the three parallel pipelines (Brand Intelligence, Mockup Generation, Shopify Provisioning) during orchestration.
+    - rule: Status updates must be non-blocking; UI remains responsive even if one pipeline stalls.
+    - rule: Error messages must be user-friendly and suggest next steps (e.g., 'Domain not found—check spelling').
+    - actions: read, edit, extend
+  - `component:product-grid` (component) — Product Grid
+    - purpose: Display all generated apparel products with mockup images, pricing, and add-to-cart functionality.
+    - rule: Mockup images must be generated by Printify and cached for performance.
+    - rule: Pricing must always display POD cost + markup; no hidden fees.
+    - rule: Add-to-cart must redirect to Shopify checkout; Branded Fit does not manage cart state.
+    - actions: read, edit, extend
+  - `component:order-table` (component) — Order Table
+    - purpose: Tabular view of all orders with filtering and sorting capabilities.
+    - rule: Order data is synced from Shopify every 5 minutes; no real-time updates in MVP.
+    - rule: Fulfillment status is pulled from Printify and displayed as-is (no custom statuses).
+    - rule: Customer email is displayed but not stored in Branded Fit database.
+    - actions: read, edit, extend
+  - `integration:brandfetch` (integration) — Brandfetch API
+    - purpose: Autonomously extract brand assets (logos, colors, typography) from the target corporate domain.
+    - rule: API key must be stored securely in environment variables; never expose in client code.
+    - rule: Extracted assets are cached for 30 days to avoid redundant API calls.
+    - rule: If Brandfetch returns incomplete data, use sensible defaults (e.g., black logo, neutral palette).
+    - actions: read, edit, extend
+  - `integration:shopify-admin` (integration) — Shopify Admin API
+    - purpose: Dynamically provision a new Shopify store and populate it with generated products.
+    - rule: Shopify API key and secret must be stored securely; use OAuth token rotation.
+    - rule: Each generated store must have a unique, user-friendly domain (e.g., acme-branded-fit.myshopify.com).
+    - rule: Store remains in draft/private mode until user explicitly publishes.
+    - rule: Product descriptions are auto-generated from brand data; user can edit post-generation.
+    - actions: read, edit, extend
+- `integrations.composio` (integration) — Composio
+  - purpose: Marketing platform OAuth + tool discovery
+  - actions: read, edit, extend
+- `integrations.hyperfx` (integration) — HyperFX
+  - purpose: Marketing AI via MCP
+  - actions: read, edit, extend
+- `integrations.pica` (integration) — Pica
+  - purpose: SaaS integrations (Gmail, Slack, etc.)
+  - actions: read, edit, extend
+- `integrations.zapier` (integration) — Zapier
+  - purpose: Zapier MCP (hosted)
+  - actions: read, edit, extend
+- `integrations.google_ads` (integration) — Google Ads
+  - purpose: Direct Google Ads API v20 REST
+  - actions: read, edit, extend
