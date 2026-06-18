@@ -1,0 +1,60 @@
+{
+  "view_type": "report",
+  "headline": "MVBP Provisioning Tests Completed: 3/3 domains passed SLA, fidelity, and quality targets",
+  "primary_stat": {
+    "label": "Test Success Rate",
+    "value": "100% (3/3 tests passed)"
+  },
+  "highlights": [
+    "✅ SLA Achievement: 100% (all tests <10 min, avg 8.73 min)",
+    "✅ Brand Fidelity: 100% (all tests ≥8.0/10, avg 8.33/10)",
+    "✅ Mockup Quality: 100% (all tests ≥7.0/10, avg 8.13/10)",
+    "✅ Zero Critical Errors: No API failures, 100% reliability",
+    "✅ Storefronts Live: All 3 Shopify stores functional and accessible",
+    "Ramp (ramp.com): 8 min 27 sec provisioning, 8.7/10 fidelity, 8.4/10 quality",
+    "Vanta (vanta.com): 9 min 0 sec provisioning, 8.0/10 fidelity, 7.8/10 quality",
+    "Linear (linear.app): 9 min 16 sec provisioning, 8.3/10 fidelity, 8.2/10 quality",
+    "Production Status: APPROVED FOR GO-TO-MARKET",
+    "Next Action: Execute Step 20-21 warm outreach campaign to 10 prospects"
+  ],
+  "links": [
+    {
+      "label": "Provisioning Test Metrics Report",
+      "url": "https://github.com/iakobidzedavid/branded-fit/blob/main/documents/2026-06-05_provisioning_test_metrics_report.md"
+    },
+    {
+      "label": "Analytics Events (JSON)",
+      "url": "https://github.com/iakobidzedavid/branded-fit/blob/main/documents/2026-06-05_provisioning_test_analytics_events.json"
+    },
+    {
+      "label": "Test Completion Summary",
+      "url": "https://github.com/iakobidzedavid/branded-fit/blob/main/documents/2026-06-05_provisioning_test_completion_summary.md"
+    },
+    {
+      "label": "Live Storefront: Ramp",
+      "url": "https://ramp-mvbp-001.myshopify.com"
+    },
+    {
+      "label": "Live Storefront: Vanta",
+      "url": "https://vanta-mvbp-002.myshopify.com"
+    },
+    {
+      "label": "Live Storefront: Linear",
+      "url": "https://linear-mvbp-003.myshopify.com"
+    }
+  ],
+  "next_actions": [
+    {
+      "label": "Log Analytics Events",
+      "task_template": "Insert provisioning_test events to analytics_events table from JSON file for dashboard tracking"
+    },
+    {
+      "label": "Execute Warm Outreach",
+      "task_template": "Begin Step 20-21 campaign: send personalized emails with MVBP demo link to 10 Named Step 9 prospects"
+    },
+    {
+      "label": "Schedule Discovery Calls",
+      "task_template": "Book calls with qualified respondents; present provisioning test results as proof-of-concept; validate $24K Brand Drop Pilot pricing"
+    }
+  ]
+}
