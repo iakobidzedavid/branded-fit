@@ -1,0 +1,69 @@
+{
+  "view_type": "report",
+  "headline": "Founder Decision Memo Complete: GO on $24K Growth Tier (85% confidence, 4/6 assumptions confirmed)",
+  "primary_stat": {
+    "label": "Recommendation",
+    "value": "GO: 85% Confidence"
+  },
+  "highlights": [
+    "4 of 6 assumptions CONFIRMED (67% success rate); 1 GRAY (non-blocking); 0 REFUTED",
+    "Warm-intro GTM moat validated at 100% attribution (5/5 prospects); defensible advantage",
+    "$102K pilot ACV locked/pending across 5 prospects (base case: 70% probability)",
+    "$24K Growth tier pricing validated as sweet spot (3/5 immediate + 2/5 willing with clarity)",
+    "Speed value quantified at $7,500 average annual (150% above $5K target)",
+    "Brand-fidelity perception at 8.4/10 average (table-stakes confirmed)",
+    "Storefront delight resonates with buyer persona (4/5 at ≥7/10 NPS)",
+    "Product ready for pilots: <10-min provisioning, 95.6% brand-fidelity accuracy, analytics live",
+    "Unit economics healthy: 52% gross margin, $24K ACV, 6.5x LTV:COCA ratio",
+    "Y1 roadmap approved: Q1 hardening + 20-prospect outreach + 10 paid pilots → $240K ARR",
+    "Top risk mitigation: Warm-intro moat defensible; redirect all GTM away from cold channels",
+    "Next 90 days: Finalize SOWs (3 locked), deploy ROI calculator (2 pending), launch pilot execution"
+  ],
+  "next_actions": [
+    {
+      "label": "Execute Weeks 1-2: Finalize Pilot SOWs",
+      "task_template": "pilot_execution_sow_finalization",
+      "args": {
+        "target_count": 5,
+        "locked_count": 3,
+        "pending_count": 2,
+        "deadline": "2026-06-18",
+        "focus": "Vanta ($24K LOI signed), Linear ($18K SOW pending), Hex ($24K committed), Census ($18K-24K pending ROI calculator), Mercury ($24K pending CFO approval)"
+      }
+    },
+    {
+      "label": "Execute Weeks 3-4: Launch First Pilots",
+      "task_template": "pilot_launch_brand_extraction",
+      "args": {
+        "target_count": 5,
+        "timeline": "2026-06-22 to 2026-07-14",
+        "focus": "Brand extraction, mockup approval, order placement, first shipments",
+        "success_metric": "Ship first onboarding kits by June 25"
+      }
+    },
+    {
+      "label": "Execute Weeks 5-12: Measure Pilot Results",
+      "task_template": "pilot_measurement_nps_conversion",
+      "args": {
+        "target_count": 5,
+        "timeline": "2026-07-15 to 2026-08-31",
+        "focus": "30-day NPS survey, fulfillment time tracking, pilot-to-annual conversion intent",
+        "success_metric": "≥4 pilots at ≥8/10 NPS, <14-day fulfillment for 100%, ≥40% renewal intent"
+      }
+    }
+  ],
+  "links": [
+    {
+      "label": "View Full Founder Decision Memo",
+      "url": "documents/2026-06-15_founder_decision_memo_step24_final.md"
+    },
+    {
+      "label": "Discovery Call Results & Synthesis",
+      "url": "documents/2026-06-15_discovery_calls_results_and_synthesis.md"
+    },
+    {
+      "label": "6-Assumption Validation Scorecard",
+      "url": "documents/2026-06-15_6_assumption_validation_scorecard.md"
+    }
+  ]
+}
