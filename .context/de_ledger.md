@@ -225,10 +225,14 @@ The deliverable plots the top-2. Priorities #3–#5 appear in the sensitivity se
 From step 9's prospect conversations and step 1's segment research, M
 Open unknowns: Empirical redemption rate from a production cohort of ≥30 customers (current 85% claim rests on ~12 design-partner observations); Explicit ranking of Maya's purchase criteria from ≥5 step-9 prospect interviews (time vs. cost vs. redemption); Measured time-to-live for SwagUp, Stadium, and a representative agency via head-to-head bake-off with same domain; Confirmation that no current incumbent (Stadium, SwagUp, Alyce) is shipping AI-curation in next 2 quarters — competitive intel scan; Win/loss data from the first 20 Branded Fit sales cycles segmented by which alternative the prospect was also evaluating
 
-### Step 12 — Determine the Decision-Making Unit (DMU)  [Business Model Design] · VALIDATED · confidence 65%
-6-role DMU mapped end-to-end: Champion (Maya / People Ops Generalist), Economic Buyer/Approver (Head of People), Purchaser (Controller), Technical Influencer (Head of Brand, present at 150+ FTE), Technical Vetter (IT/InfoSec, present at 200+ FTE), Saboteur (incumbent vendor AM). 6-stage decision flow documented with median 14-day / P90 28-day cycle. Finance gate is primary delay driver; brand-review shareable link and Finance vendor packet are key product priorities derived from DMU analysis.
-Key facts: dmu_roles=['Champion/End User (Maya, People Ops Generalist)', 'Economic Buyer/Approver (Head of People)', 'Purchaser/Budget Gatekeeper (Controller)', 'Technical Influencer/Brand (Head of Brand, 150+ FTE)', 'Technical Vetter/IT (IT/InfoSec Lead, 200+ FTE)', 'Saboteur (Incumbent vendor AM)']; champion_title=People Ops Manager / People Ops Generalist; economic_buyer_title=Head of People / VP People; purchaser_title=Controller / Head of Finance; dmu_size_at_75_150_fte=3; dmu_size_at_150_300_fte=5; median_cycle_days_to_paid=14; p90_cycle_days_to_paid=28; dominant_bottleneck=Finance/IT review (Stage 4); veto_adjusted_close_rate_75_150_fte=0.75; veto_adjusted_close_rate_150_300_fte=0.55; optimal_beachhead_headcount_for_speed=75-150 FTE; key_product_priorities_from_dmu=['domain-to-preview wow in <10 min', 'no-login Brand Review shareable link', 'Finance vendor packet auto-generation', 'Trust Center public page', 'month-to-month trial path at $299/mo']; internal_sell_kit_artifacts=['Loom-style storefront video', '1-page ROI summary', 'Finance FAQ PDF', 'Brand Review shareable link']; acquisition_motion=PLG-assisted hybrid; saboteur_preemption=target 60-90 days before incumbent contract renewal
-Open unknowns: Budget authority thresholds by headcount band (need 5 Head of People interviews); Brand Designer presence rate at 150-FTE threshold (30-company LinkedIn sample); IT/InfoSec VSQ trigger rate for $2,400/yr vendors (10-prospect survey); Incumbent renewal date observability via Apollo/LinkedIn job posts; Head of People vs. COO decision authority at <100 FTE; Actual Stage 4 duration distribution from first 20 paying customers' CRM data
+### Step 12 — Determine the Decision-Making Unit (DMU)  [Business Model Design] · VALIDATED · confidence 50%
+(runner did not produce a valid answer)
+_Runner failure._
+
+runner output had no JSON object: {
+  "summary": "DMU for Branded Fit beachhead: Champion & Primary Economic Buyer = Maya (People Ops Generalist); Approver = Head of People/COO above $5K; End Users = all employees; key influencers = B
+Open unknowns: runner output had no JSON object: {
+  "summary": "DMU for Branded Fit beachhead: Champion & Primary Economic Buyer = Maya (People Ops Generalist); Approver = Head of People/COO above $5K; End Users = all employees; key influencers = B
 
 ### Step 13 — Map the Process to Acquire a Paying Customer  [Business Model Design] · KNOWN · confidence 62%
 Maya's path to paid: Slack/peer trigger → free domain-to-storefront demo in <10 min → 7-day stakeholder loop → $2,400/yr subscription + launch order, ~14 days median.
@@ -247,4 +251,4 @@ I'll map the funnel in six stages — Trigger → Awareness → Activation (the 
 
 Because step 12 didn't land, I'll briefly reconstruct the DMU to anchor the journey:
 
-Open unknowns: Actual visit→paste
+Open unknown
