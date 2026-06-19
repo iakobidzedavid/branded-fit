@@ -117,6 +117,40 @@ export default function Home() {
           Fulfillment speed and redemption rate based on market research (June 2026). SwagUp pricing from SaaSWorthy/ColdIQ April 2026. Branded Fit at $199/mo.
         </p>
       </section>
+
+      {/* Get a Demo CTA */}
+      <section
+        style={{
+          marginTop: "3rem",
+          padding: "2.5rem",
+          background: "#eef2ff",
+          borderRadius: 12,
+          textAlign: "center",
+        }}
+      >
+        <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#111827", marginBottom: "0.75rem" }}>
+          See Branded Fit in action
+        </h2>
+        <p style={{ color: "#4b5563", fontSize: "0.95rem", marginBottom: "1.75rem", maxWidth: 480, margin: "0 auto 1.75rem" }}>
+          Built for forward-thinking brands. We&apos;ll walk you through the 8-minute storefront setup and show you how the AI curation works for your team.
+        </p>
+        <Link
+          href="/demo"
+          style={{
+            display: "inline-block",
+            padding: "0.875rem 2rem",
+            background: "#4f46e5",
+            color: "white",
+            borderRadius: 8,
+            textDecoration: "none",
+            fontWeight: 700,
+            fontSize: "1rem",
+            letterSpacing: "0.01em",
+          }}
+        >
+          Get a Demo →
+        </Link>
+      </section>
     </main>
   );
 }
