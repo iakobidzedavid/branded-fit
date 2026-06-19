@@ -1,4 +1,5 @@
 import Link from "next/link";
+import DomainHero from "@/components/DomainHero";
 
 const CHECK = "✓";
 const CROSS = "✗";
@@ -119,35 +120,19 @@ export default function Home() {
           ))}
         </ul>
 
-        <div style={{ display: "flex", gap: "0.875rem", flexWrap: "wrap" }}>
-          <Link
-            href="/get-started"
-            style={{
-              display: "inline-block",
-              padding: "0.875rem 1.75rem",
-              background: "var(--primary)",
-              color: "white",
-              borderRadius: "var(--radius-md)",
-              fontWeight: 700,
-              fontSize: "0.975rem",
-            }}
-          >
-            Get Started →
-          </Link>
+        <DomainHero />
+        <div style={{ marginTop: "1.5rem" }}>
           <Link
             href="/demo"
             style={{
-              display: "inline-block",
-              padding: "0.875rem 1.5rem",
-              background: "white",
-              color: "var(--primary)",
-              border: "2px solid var(--primary)",
-              borderRadius: "var(--radius-md)",
-              fontWeight: 600,
-              fontSize: "0.95rem",
+              fontSize: "0.875rem",
+              color: "var(--text-muted)",
+              fontWeight: 500,
+              textDecoration: "underline",
+              textUnderlineOffset: 3,
             }}
           >
-            Get a Demo
+            Prefer a guided demo? Book one here →
           </Link>
         </div>
       </section>
@@ -208,7 +193,7 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Get a Demo CTA */}
+      {/* Try It CTA */}
       <section
         style={{
           padding: "3rem",
@@ -218,7 +203,7 @@ export default function Home() {
         }}
       >
         <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.75rem" }}>
-          See Branded Fit in action
+          Try it with your own domain
         </h2>
         <p
           style={{
@@ -230,10 +215,10 @@ export default function Home() {
             lineHeight: 1.65,
           }}
         >
-          Built for forward-thinking brands. We&apos;ll walk you through the 8-minute storefront setup and show you how the AI curation works for your team.
+          Paste your domain and see your brand-matched storefront preview in under 15 seconds. No signup. No commitment.
         </p>
         <Link
-          href="/demo"
+          href="/try"
           style={{
             display: "inline-block",
             padding: "0.875rem 2rem",
@@ -245,7 +230,7 @@ export default function Home() {
             letterSpacing: "0.01em",
           }}
         >
-          Get a Demo →
+          See Your Storefront →
         </Link>
       </section>
     </main>
