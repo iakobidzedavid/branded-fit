@@ -3,6 +3,7 @@ import Link from "next/link";
 const navLinks = [
   { href: "/try", label: "Try It" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/compare", label: "Compare" },
   { href: "/roi-calculator", label: "ROI Calculator" },
   { href: "/get-started", label: "How It Works" },
   { href: "/for-your-boss", label: "For Your Boss" },

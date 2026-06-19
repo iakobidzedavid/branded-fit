@@ -3,6 +3,7 @@ import Link from "next/link";
 const footerLinks = [
   { href: "/", label: "Home" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/compare", label: "Compare" },
   { href: "/roi-calculator", label: "ROI Calculator" },
   { href: "/get-started", label: "How It Works" },
   { href: "/demo", label: "Get a Demo" },
