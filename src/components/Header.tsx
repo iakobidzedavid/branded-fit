@@ -7,6 +7,7 @@ const navLinks = [
   { href: "/roi-calculator", label: "ROI Calculator" },
   { href: "/expansion", label: "Market Story" },
   { href: "/for-your-boss", label: "For Your Boss" },
+  { href: "/true-cost", label: "True Cost" },
 ];
 
 export default function Header() {
