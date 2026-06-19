@@ -2,10 +2,10 @@ import Link from "next/link";
 
 const navLinks = [
   { href: "/try", label: "Try It" },
+  { href: "/how-it-works", label: "How It Works" },
   { href: "/pricing", label: "Pricing" },
   { href: "/compare", label: "Compare" },
   { href: "/roi-calculator", label: "ROI Calculator" },
-  { href: "/expansion", label: "Market Story" },
   { href: "/for-your-boss", label: "For Your Boss" },
   { href: "/true-cost", label: "True Cost" },
 ];
