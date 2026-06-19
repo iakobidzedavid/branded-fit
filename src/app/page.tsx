@@ -81,6 +81,22 @@ export default function Home() {
         >
           ROI Calculator →
         </Link>
+        <Link
+          href="/pricing"
+          style={{
+            display: "inline-block",
+            padding: "0.75rem 1.5rem",
+            background: "white",
+            color: "#4f46e5",
+            border: "2px solid #4f46e5",
+            borderRadius: 8,
+            textDecoration: "none",
+            fontWeight: 600,
+            fontSize: "0.95rem",
+          }}
+        >
+          Pricing →
+        </Link>
       </nav>
 
       {/* Why Branded Fit section */}
