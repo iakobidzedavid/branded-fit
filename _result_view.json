@@ -1,0 +1,43 @@
+{
+  "view_type": "report",
+  "headline": "Competitive intelligence matrix & defensible advantage analysis for 10 major competitors; identified 2 moats",
+  "primary_stat": {
+    "label": "Competitors Analyzed",
+    "value": 10
+  },
+  "highlights": [
+    "SwagUp, Swag.com, Stadium, Printful, Printfection, Brilliant, Merchology, Bonusly, Karma, Bulu Box",
+    "Branded Fit identified in unique upper-right quadrant: <10min provisioning + 95% fidelity + $24K/yr",
+    "Defensible Advantage #1: Autonomous brand extraction (Brandfetch API) - no competitor has replicated",
+    "Defensible Advantage #2: Enterprise fidelity at mid-market pricing (3-7x cheaper than Merchology)",
+    "No direct competitor identified; Merchology is closest (custom design) but 21-28 days slower",
+    "Competitive positioning ready for GTM messaging: '3x faster + 2-3x cheaper than Merchology'",
+    "Economic moat: Brandfetch licensing ($20-30K/yr) too expensive for SMB competitors to justify",
+    "Threat assessment: Bonusly & Brilliant (Workday) are medium risk 18-month horizon",
+    "Created 3 comprehensive research documents for sales & marketing enablement",
+    "All competitor data sourced from public websites, not proprietary research"
+  ],
+  "next_actions": [
+    {
+      "label": "Update website with competitor comparisons",
+      "task_template": "content_task",
+      "args": {
+        "description": "Add 3 side-by-side comparison charts (vs Merchology, Stadium, Bonusly) to landing page using data from competitor_analysis_detailed.md"
+      }
+    },
+    {
+      "label": "Create discovery call playbook",
+      "task_template": "sales_operations_task",
+      "args": {
+        "description": "Map each competitor to objection handling framework using talking points from competitive_intelligence_summary.md"
+      }
+    },
+    {
+      "label": "Build ROI calculator on landing page",
+      "task_template": "frontend_development_task",
+      "args": {
+        "description": "Interactive tool showing cost/time savings vs top 3 alternatives (Merchology, Stadium, Bonusly) with company size inputs"
+      }
+    }
+  ]
+}
