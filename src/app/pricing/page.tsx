@@ -268,26 +268,44 @@ export default function PricingPage() {
         }}
       >
         <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#111827", marginBottom: "0.75rem" }}>
-          Still have questions?
+          Ready to launch your swag program?
         </h2>
-        <p style={{ color: "#4b5563", fontSize: "0.95rem", marginBottom: "1.75rem" }}>
-          We&apos;ll walk you through the 8-minute storefront demo and answer any pricing questions live.
+        <p style={{ color: "#4b5563", fontSize: "0.95rem", marginBottom: "1.75rem", maxWidth: 460, margin: "0 auto 1.75rem" }}>
+          See exactly how the 48-hour concierge onboarding works — then book your kickoff call.
         </p>
-        <Link
-          href="/demo"
-          style={{
-            display: "inline-block",
-            padding: "0.875rem 2rem",
-            background: "#4f46e5",
-            color: "white",
-            borderRadius: 8,
-            textDecoration: "none",
-            fontWeight: 700,
-            fontSize: "1rem",
-          }}
-        >
-          Get a Demo →
-        </Link>
+        <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
+          <Link
+            href="/get-started"
+            style={{
+              display: "inline-block",
+              padding: "0.875rem 2rem",
+              background: "#4f46e5",
+              color: "white",
+              borderRadius: 8,
+              textDecoration: "none",
+              fontWeight: 700,
+              fontSize: "1rem",
+            }}
+          >
+            Get Started →
+          </Link>
+          <Link
+            href="/demo"
+            style={{
+              display: "inline-block",
+              padding: "0.875rem 1.5rem",
+              background: "white",
+              color: "#4f46e5",
+              border: "2px solid #4f46e5",
+              borderRadius: 8,
+              textDecoration: "none",
+              fontWeight: 600,
+              fontSize: "0.95rem",
+            }}
+          >
+            Get a Demo
+          </Link>
+        </div>
       </section>
     </main>
   );

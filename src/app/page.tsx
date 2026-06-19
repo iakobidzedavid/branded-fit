@@ -67,7 +67,7 @@ export default function Home() {
 
       <nav style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "4rem" }}>
         <Link
-          href="/roi-calculator"
+          href="/get-started"
           style={{
             display: "inline-block",
             padding: "0.75rem 1.5rem",
@@ -75,11 +75,11 @@ export default function Home() {
             color: "white",
             borderRadius: 8,
             textDecoration: "none",
-            fontWeight: 600,
+            fontWeight: 700,
             fontSize: "0.95rem",
           }}
         >
-          ROI Calculator →
+          Get Started →
         </Link>
         <Link
           href="/pricing"
@@ -96,6 +96,22 @@ export default function Home() {
           }}
         >
           Pricing →
+        </Link>
+        <Link
+          href="/roi-calculator"
+          style={{
+            display: "inline-block",
+            padding: "0.75rem 1.5rem",
+            background: "white",
+            color: "#6b7280",
+            border: "2px solid #e5e7eb",
+            borderRadius: 8,
+            textDecoration: "none",
+            fontWeight: 600,
+            fontSize: "0.95rem",
+          }}
+        >
+          ROI Calculator →
         </Link>
       </nav>
 
