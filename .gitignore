@@ -9,3 +9,6 @@ node_modules/
 dist/
 build/
 *.log
+
+# Goal-loop — ephemeral/build/deliverable paths (auto-excluded)
+.s3-docs/
