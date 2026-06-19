@@ -1,9 +1,0 @@
-=== DATA (prior loop digest — reference only) ===
-Most recent completed goal loop: Advance DE Step 12 — Determine the Decision-Making Unit (DMU)…
-Summary: Produced the full DE Step 12 DMU deliverable (~550 lines) at documents/2026-06-19_de_step12_determine_dmu.md, advancing Step 12 from KNOWN/runner-failure to VALIDATED/65%. The deliverable maps 6 DMU roles end-to-end: Champion (Maya, People Ops Generalist), Economic Buyer/Approver (Head of People), Purchaser (Controller), Technical Influencer (Head of Brand, present at 150+ FTE), Technical Vetter (IT/InfoSec Lead, present at 200+ FTE), and Saboteur (incumbent vendor AM). It includes a 6-stage organizational decision flow with median 14-day / P90 28-day cycle; individual role profiles covering motivations, objections, activation triggers, and reach channels; a veto-influence map showing Finance as the primary delay driver; veto-adjusted close rates by headcount band (75% at 75–150 FTE, 55% a
-Recommended next steps from that loop:
-- Build the no-login 'Brand Review & Edit' shareable link — removes veto from Head of Brand at 150–300 FTE accounts (highest-leverage product priority from DMU)
-- Build Finance vendor packet auto-generation (W-9, MSA, DPA, pricing sheet PDF) — compresses Stage 4 from 7–10 days to 1–2 days
-- Create and publish a Trust Center page — unblocks IT/InfoSec gate at 200+ FTE enterprise accounts
-- Advance DE Step 13 (Map the Process to Acquire a Paying Customer) — currently KNOWN at 62%; DMU is now complete and Step 13 should be re-validated with full DMU map as input
-- Run 5 budget-authority interviews with Heads of People at 75–150 FTE Series A/B companies to confirm unilateral spend threshold

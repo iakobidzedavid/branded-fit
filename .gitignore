@@ -1,3 +1,11 @@
 
 # Goal-loop agent temp context (auto-excluded)
 .context/
+
+# Goal-loop — ephemeral/build/deliverable paths (auto-excluded)
+documents/
+.next/
+node_modules/
+dist/
+build/
+*.log
