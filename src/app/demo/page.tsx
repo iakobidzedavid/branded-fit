@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 
 type FormState = { name: string; email: string; company: string };
@@ -50,41 +49,35 @@ export default function DemoPage() {
   }
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif", maxWidth: 520, margin: "0 auto" }}>
-      <Link
-        href="/"
-        style={{ fontSize: "0.875rem", color: "#6b7280", textDecoration: "none", display: "inline-block", marginBottom: "1.5rem" }}
-      >
-        ← Back to home
-      </Link>
-
+    <main style={{ maxWidth: 560, margin: "0 auto", padding: "4rem 1.5rem 5rem" }}>
       {submitted ? (
         <div
           style={{
-            marginTop: "2rem",
-            padding: "2.5rem",
-            background: "#f0fdf4",
-            border: "1px solid #bbf7d0",
-            borderRadius: 12,
+            padding: "3rem 2.5rem",
+            background: "var(--accent-bg)",
+            border: "1px solid var(--accent-border)",
+            borderRadius: "var(--radius-lg)",
             textAlign: "center",
           }}
         >
           <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🎉</div>
-          <h1 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#111827", marginBottom: "0.5rem" }}>
+          <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.5rem" }}>
             You&apos;re on the list
           </h1>
-          <p style={{ color: "#4b5563", fontSize: "0.95rem" }}>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", lineHeight: 1.65 }}>
             Thanks, {form.name.split(" ")[0]}. We&apos;ll reach out to {form.email} shortly to schedule your demo.
           </p>
         </div>
       ) : (
         <>
-          <h1 style={{ fontSize: "1.75rem", fontWeight: 700, color: "#111827", marginBottom: "0.5rem" }}>
-            Get a Demo
-          </h1>
-          <p style={{ color: "#6b7280", fontSize: "0.95rem", marginBottom: "2rem" }}>
-            We&apos;ll show you how Branded Fit gets your team from domain to live storefront in 8 minutes.
-          </p>
+          <div style={{ marginBottom: "2rem" }}>
+            <h1 style={{ fontSize: "2rem", fontWeight: 800, letterSpacing: "-0.03em", marginBottom: "0.625rem" }}>
+              Get a Demo
+            </h1>
+            <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", lineHeight: 1.65 }}>
+              We&apos;ll show you how Branded Fit gets your team from domain to live storefront in 8 minutes.
+            </p>
+          </div>
 
           <form onSubmit={handleSubmit} noValidate style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
             <div>
@@ -124,7 +117,7 @@ export default function DemoPage() {
             </div>
 
             {serverError && (
-              <p style={{ color: "#ef4444", fontSize: "0.875rem", margin: 0 }}>{serverError}</p>
+              <p style={{ color: "var(--danger)", fontSize: "0.875rem" }}>{serverError}</p>
             )}
 
             <button
@@ -133,10 +126,10 @@ export default function DemoPage() {
               style={{
                 marginTop: "0.5rem",
                 padding: "0.875rem",
-                background: submitting ? "#818cf8" : "#4f46e5",
+                background: submitting ? "#818cf8" : "var(--primary)",
                 color: "white",
                 border: "none",
-                borderRadius: 8,
+                borderRadius: "var(--radius-md)",
                 fontWeight: 700,
                 fontSize: "1rem",
                 cursor: submitting ? "not-allowed" : "pointer",
@@ -156,7 +149,7 @@ function labelStyle(): React.CSSProperties {
     display: "block",
     fontWeight: 600,
     fontSize: "0.875rem",
-    color: "#374151",
+    color: "var(--text-body)",
     marginBottom: "0.375rem",
   };
 }
@@ -166,11 +159,12 @@ function inputStyle(hasError: boolean): React.CSSProperties {
     width: "100%",
     padding: "0.625rem 0.875rem",
     fontSize: "0.95rem",
-    border: `1px solid ${hasError ? "#ef4444" : "#d1d5db"}`,
-    borderRadius: 6,
+    border: `1px solid ${hasError ? "var(--danger)" : "var(--border)"}`,
+    borderRadius: "var(--radius-md)",
     outline: "none",
     boxSizing: "border-box",
-    color: "#111827",
+    color: "var(--text-primary)",
+    background: "white",
   };
 }
 
@@ -178,6 +172,6 @@ function errorStyle(): React.CSSProperties {
   return {
     marginTop: "0.375rem",
     fontSize: "0.8rem",
-    color: "#ef4444",
+    color: "var(--danger)",
   };
 }

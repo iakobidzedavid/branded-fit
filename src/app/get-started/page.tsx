@@ -72,33 +72,17 @@ const faqs = [
 
 export default function GetStartedPage() {
   return (
-    <main
-      style={{
-        padding: "2rem",
-        fontFamily: "system-ui, sans-serif",
-        maxWidth: 820,
-        margin: "0 auto",
-      }}
-    >
-      {/* Breadcrumb */}
-      <div style={{ marginBottom: "2rem" }}>
-        <Link
-          href="/"
-          style={{ color: "#4f46e5", fontSize: "0.875rem", textDecoration: "none" }}
-        >
-          ← Branded Fit
-        </Link>
-      </div>
-
+    <main style={{ maxWidth: 860, margin: "0 auto", padding: "0 1.5rem 5rem" }}>
       {/* Hero */}
-      <div style={{ marginBottom: "3.5rem" }}>
+      <div style={{ padding: "4rem 0 3.5rem" }}>
         <h1
           style={{
-            fontSize: "2.5rem",
+            fontSize: "clamp(2rem, 4vw, 2.75rem)",
             fontWeight: 800,
-            color: "#111827",
+            color: "var(--text-primary)",
             marginBottom: "0.75rem",
-            lineHeight: 1.15,
+            lineHeight: 1.1,
+            letterSpacing: "-0.03em",
           }}
         >
           Your storefront in 48 hours.
@@ -108,7 +92,7 @@ export default function GetStartedPage() {
         <p
           style={{
             fontSize: "1.1rem",
-            color: "#4b5563",
+            color: "var(--text-muted)",
             maxWidth: 560,
             lineHeight: 1.65,
             marginBottom: "1.75rem",
@@ -118,16 +102,15 @@ export default function GetStartedPage() {
           No Shopify expertise, no catalog browsing, no design work — just a
           live, on-brand swag storefront your team can order from in 48 hours.
         </p>
-        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "0.875rem", flexWrap: "wrap" }}>
           <Link
             href="/demo"
             style={{
               display: "inline-block",
               padding: "0.875rem 2rem",
-              background: "#4f46e5",
+              background: "var(--primary)",
               color: "white",
-              borderRadius: 8,
-              textDecoration: "none",
+              borderRadius: "var(--radius-md)",
               fontWeight: 700,
               fontSize: "1rem",
             }}
@@ -140,10 +123,9 @@ export default function GetStartedPage() {
               display: "inline-block",
               padding: "0.875rem 1.5rem",
               background: "white",
-              color: "#4f46e5",
-              border: "2px solid #4f46e5",
-              borderRadius: 8,
-              textDecoration: "none",
+              color: "var(--primary)",
+              border: "2px solid var(--primary)",
+              borderRadius: "var(--radius-md)",
               fontWeight: 600,
               fontSize: "0.95rem",
             }}
@@ -159,7 +141,6 @@ export default function GetStartedPage() {
           style={{
             fontSize: "1.375rem",
             fontWeight: 700,
-            color: "#111827",
             marginBottom: "2rem",
           }}
         >
@@ -190,8 +171,8 @@ export default function GetStartedPage() {
                     width: 48,
                     height: 48,
                     borderRadius: "50%",
-                    background: "#eef2ff",
-                    border: "2px solid #4f46e5",
+                    background: "var(--primary-light)",
+                    border: "2px solid var(--primary)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -206,7 +187,7 @@ export default function GetStartedPage() {
                     style={{
                       width: 2,
                       flex: 1,
-                      background: "#e5e7eb",
+                      background: "var(--border)",
                       marginTop: 8,
                       marginBottom: 0,
                       minHeight: 32,
@@ -221,7 +202,7 @@ export default function GetStartedPage() {
                   style={{
                     fontSize: "0.75rem",
                     fontWeight: 700,
-                    color: "#4f46e5",
+                    color: "var(--primary)",
                     letterSpacing: "0.06em",
                     textTransform: "uppercase",
                     marginBottom: "0.25rem",
@@ -233,7 +214,6 @@ export default function GetStartedPage() {
                   style={{
                     fontSize: "1.1rem",
                     fontWeight: 700,
-                    color: "#111827",
                     marginBottom: "0.5rem",
                   }}
                 >
@@ -241,7 +221,7 @@ export default function GetStartedPage() {
                 </h3>
                 <p
                   style={{
-                    color: "#4b5563",
+                    color: "var(--text-muted)",
                     fontSize: "0.9rem",
                     lineHeight: 1.65,
                     marginBottom: "0.5rem",
@@ -252,12 +232,12 @@ export default function GetStartedPage() {
                 <span
                   style={{
                     display: "inline-block",
-                    background: "#f0fdf4",
-                    border: "1px solid #bbf7d0",
-                    borderRadius: 6,
+                    background: "var(--accent-bg)",
+                    border: "1px solid var(--accent-border)",
+                    borderRadius: "var(--radius-sm)",
                     padding: "0.25rem 0.625rem",
                     fontSize: "0.78rem",
-                    color: "#15803d",
+                    color: "var(--accent-text)",
                     fontWeight: 600,
                   }}
                 >
@@ -272,9 +252,9 @@ export default function GetStartedPage() {
       {/* What's included */}
       <section
         style={{
-          background: "#f9fafb",
-          border: "1px solid #e5e7eb",
-          borderRadius: 12,
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius-lg)",
           padding: "2rem",
           marginBottom: "3.5rem",
         }}
@@ -283,7 +263,6 @@ export default function GetStartedPage() {
           style={{
             fontSize: "1.25rem",
             fontWeight: 700,
-            color: "#111827",
             marginBottom: "1.25rem",
           }}
         >
@@ -307,10 +286,10 @@ export default function GetStartedPage() {
                 alignItems: "flex-start",
                 gap: "0.625rem",
                 fontSize: "0.9rem",
-                color: "#374151",
+                color: "var(--text-body)",
               }}
             >
-              <span style={{ color: "#16a34a", fontWeight: 700, flexShrink: 0, marginTop: 1 }}>
+              <span style={{ color: "var(--accent)", fontWeight: 700, flexShrink: 0, marginTop: 1 }}>
                 ✓
               </span>
               <span>{item}</span>
@@ -321,8 +300,8 @@ export default function GetStartedPage() {
           style={{
             marginTop: "1.25rem",
             fontSize: "0.8rem",
-            color: "#9ca3af",
-            borderTop: "1px solid #e5e7eb",
+            color: "var(--text-subtle)",
+            borderTop: "1px solid var(--border)",
             paddingTop: "1rem",
           }}
         >
@@ -337,7 +316,6 @@ export default function GetStartedPage() {
           style={{
             fontSize: "1.25rem",
             fontWeight: 700,
-            color: "#111827",
             marginBottom: "1.5rem",
           }}
         >
@@ -349,7 +327,7 @@ export default function GetStartedPage() {
               <p
                 style={{
                   fontWeight: 600,
-                  color: "#111827",
+                  color: "var(--text-primary)",
                   fontSize: "0.9rem",
                   marginBottom: "0.375rem",
                 }}
@@ -358,9 +336,8 @@ export default function GetStartedPage() {
               </p>
               <p
                 style={{
-                  color: "#6b7280",
+                  color: "var(--text-muted)",
                   fontSize: "0.875rem",
-                  margin: 0,
                   lineHeight: 1.65,
                 }}
               >
@@ -374,9 +351,9 @@ export default function GetStartedPage() {
       {/* Bottom CTA */}
       <section
         style={{
-          background: "#eef2ff",
-          borderRadius: 12,
-          padding: "2.5rem",
+          background: "var(--primary-light)",
+          borderRadius: "var(--radius-lg)",
+          padding: "3rem",
           textAlign: "center",
         }}
       >
@@ -384,7 +361,6 @@ export default function GetStartedPage() {
           style={{
             fontSize: "1.5rem",
             fontWeight: 700,
-            color: "#111827",
             marginBottom: "0.75rem",
           }}
         >
@@ -397,6 +373,7 @@ export default function GetStartedPage() {
             marginBottom: "1.75rem",
             maxWidth: 440,
             margin: "0 auto 1.75rem",
+            lineHeight: 1.65,
           }}
         >
           Book a 30-minute kickoff call. We&apos;ll confirm your brand profile and
@@ -415,10 +392,9 @@ export default function GetStartedPage() {
             style={{
               display: "inline-block",
               padding: "0.875rem 2rem",
-              background: "#4f46e5",
+              background: "var(--primary)",
               color: "white",
-              borderRadius: 8,
-              textDecoration: "none",
+              borderRadius: "var(--radius-md)",
               fontWeight: 700,
               fontSize: "1rem",
             }}
@@ -431,10 +407,9 @@ export default function GetStartedPage() {
               display: "inline-block",
               padding: "0.875rem 1.5rem",
               background: "white",
-              color: "#4f46e5",
-              border: "2px solid #4f46e5",
-              borderRadius: 8,
-              textDecoration: "none",
+              color: "var(--primary)",
+              border: "2px solid var(--primary)",
+              borderRadius: "var(--radius-md)",
               fontWeight: 600,
               fontSize: "0.95rem",
             }}

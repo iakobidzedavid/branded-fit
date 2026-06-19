@@ -43,85 +43,129 @@ const comparisonRows = [
 
 export default function Home() {
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif", maxWidth: 860, margin: "0 auto" }}>
-      <h1 style={{ fontSize: "2.5rem", fontWeight: 800, color: "#111827", marginBottom: "0.75rem", lineHeight: 1.15 }}>
-        Branded Fit
-      </h1>
-      <p style={{ fontSize: "1.2rem", fontWeight: 500, color: "#374151", marginBottom: "1.5rem" }}>
-        On-brand swag, live in 8 minutes.
-      </p>
-      <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2.5rem", display: "flex", flexDirection: "column", gap: "0.625rem" }}>
-        <li style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", color: "#374151", fontSize: "0.95rem" }}>
-          <span style={{ color: "#16a34a", fontWeight: 700, marginTop: 1 }}>{CHECK}</span>
-          <span><strong>8-minute setup</strong> — enter your domain and get a live, orderable storefront</span>
-        </li>
-        <li style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", color: "#374151", fontSize: "0.95rem" }}>
-          <span style={{ color: "#16a34a", fontWeight: 700, marginTop: 1 }}>{CHECK}</span>
-          <span><strong>AI-curated 120-SKU catalog</strong> — matched to your brand identity, zero manual browsing</span>
-        </li>
-        <li style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", color: "#374151", fontSize: "0.95rem" }}>
-          <span style={{ color: "#16a34a", fontWeight: 700, marginTop: 1 }}>{CHECK}</span>
-          <span><strong>85% employee redemption</strong> — our Brand&#8594;Product Fit AI learns what your team actually wears</span>
-        </li>
-      </ul>
-
-      <nav style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "4rem" }}>
-        <Link
-          href="/get-started"
+    <main style={{ maxWidth: "var(--max-width)", margin: "0 auto", padding: "0 1.5rem 5rem" }}>
+      {/* Hero */}
+      <section
+        style={{
+          padding: "5rem 0 4rem",
+          maxWidth: 680,
+        }}
+      >
+        <div
           style={{
             display: "inline-block",
-            padding: "0.75rem 1.5rem",
-            background: "#4f46e5",
-            color: "white",
-            borderRadius: 8,
-            textDecoration: "none",
+            padding: "0.3rem 0.875rem",
+            background: "var(--primary-light)",
+            color: "var(--primary)",
+            borderRadius: 20,
+            fontSize: "0.8rem",
             fontWeight: 700,
-            fontSize: "0.95rem",
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+            marginBottom: "1.5rem",
           }}
         >
-          Get Started →
-        </Link>
-        <Link
-          href="/pricing"
+          Early access
+        </div>
+        <h1
           style={{
-            display: "inline-block",
-            padding: "0.75rem 1.5rem",
-            background: "white",
-            color: "#4f46e5",
-            border: "2px solid #4f46e5",
-            borderRadius: 8,
-            textDecoration: "none",
-            fontWeight: 600,
-            fontSize: "0.95rem",
+            fontSize: "clamp(2.25rem, 5vw, 3.25rem)",
+            fontWeight: 800,
+            color: "var(--text-primary)",
+            marginBottom: "1.25rem",
+            lineHeight: 1.1,
+            letterSpacing: "-0.03em",
           }}
         >
-          Pricing →
-        </Link>
-        <Link
-          href="/roi-calculator"
+          On-brand swag,
+          <br />
+          live in 8 minutes.
+        </h1>
+        <p
           style={{
-            display: "inline-block",
-            padding: "0.75rem 1.5rem",
-            background: "white",
-            color: "#6b7280",
-            border: "2px solid #e5e7eb",
-            borderRadius: 8,
-            textDecoration: "none",
-            fontWeight: 600,
-            fontSize: "0.95rem",
+            fontSize: "1.15rem",
+            color: "var(--text-muted)",
+            marginBottom: "2rem",
+            lineHeight: 1.65,
+            maxWidth: 520,
           }}
         >
-          ROI Calculator →
-        </Link>
-      </nav>
+          Paste your domain, get a live Shopify storefront with an AI-curated 120-SKU catalog —
+          matched to your brand colors, fonts, and identity. Zero manual browsing.
+        </p>
 
-      {/* Why Branded Fit section */}
-      <section>
-        <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#111827", marginBottom: "0.5rem" }}>
+        <ul
+          style={{
+            listStyle: "none",
+            padding: 0,
+            margin: "0 0 2.5rem",
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.625rem",
+          }}
+        >
+          {[
+            "8-minute setup — enter your domain and get a live, orderable storefront",
+            "AI-curated 120-SKU catalog — matched to your brand identity, zero manual browsing",
+            "85% employee redemption — our Brand→Product Fit AI learns what your team actually wears",
+          ].map((item) => (
+            <li
+              key={item}
+              style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", color: "var(--text-body)", fontSize: "0.95rem" }}
+            >
+              <span style={{ color: "var(--accent)", fontWeight: 700, marginTop: 2, flexShrink: 0 }}>{CHECK}</span>
+              <span dangerouslySetInnerHTML={{ __html: item.replace(/([^—]+)(—)(.+)/, "<strong>$1</strong>$2$3") }} />
+            </li>
+          ))}
+        </ul>
+
+        <div style={{ display: "flex", gap: "0.875rem", flexWrap: "wrap" }}>
+          <Link
+            href="/get-started"
+            style={{
+              display: "inline-block",
+              padding: "0.875rem 1.75rem",
+              background: "var(--primary)",
+              color: "white",
+              borderRadius: "var(--radius-md)",
+              fontWeight: 700,
+              fontSize: "0.975rem",
+            }}
+          >
+            Get Started →
+          </Link>
+          <Link
+            href="/demo"
+            style={{
+              display: "inline-block",
+              padding: "0.875rem 1.5rem",
+              background: "white",
+              color: "var(--primary)",
+              border: "2px solid var(--primary)",
+              borderRadius: "var(--radius-md)",
+              fontWeight: 600,
+              fontSize: "0.95rem",
+            }}
+          >
+            Get a Demo
+          </Link>
+        </div>
+      </section>
+
+      {/* Why Branded Fit */}
+      <section style={{ paddingTop: "1rem", paddingBottom: "3rem" }}>
+        <h2
+          style={{
+            fontSize: "1.5rem",
+            fontWeight: 700,
+            color: "var(--text-primary)",
+            marginBottom: "0.5rem",
+          }}
+        >
           Why Branded Fit
         </h2>
-        <p style={{ color: "#6b7280", marginBottom: "2rem", fontSize: "0.95rem" }}>
-          We're the only swag platform that's both fast <em>and</em> high-redemption — alone in the winning quadrant.
+        <p style={{ color: "var(--text-muted)", marginBottom: "2rem", fontSize: "0.95rem" }}>
+          We&apos;re the only swag platform that&apos;s both fast <em>and</em> high-redemption — alone in the winning quadrant.
         </p>
 
         <div style={{ overflowX: "auto" }}>
@@ -136,22 +180,22 @@ export default function Home() {
             </thead>
             <tbody>
               {comparisonRows.map((row, i) => (
-                <tr key={row.criterion} style={{ background: i % 2 === 0 ? "#f9fafb" : "white" }}>
+                <tr key={row.criterion} style={{ background: i % 2 === 0 ? "var(--surface)" : "white" }}>
                   <td style={tdStyle({ isLabel: true })}>
-                    <div style={{ fontWeight: 600, color: "#111827" }}>{row.criterion}</div>
-                    <div style={{ color: "#9ca3af", fontSize: "0.75rem", marginTop: 2 }}>{row.detail}</div>
+                    <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{row.criterion}</div>
+                    <div style={{ color: "var(--text-subtle)", fontSize: "0.75rem", marginTop: 2 }}>{row.detail}</div>
                   </td>
                   <td style={tdStyle({ highlight: true })}>
-                    <span style={{ color: "#16a34a", fontWeight: 700, marginRight: 6 }}>{CHECK}</span>
-                    <span style={{ color: "#111827", fontWeight: 500 }}>{row.brandedFit.text}</span>
+                    <span style={{ color: "var(--accent)", fontWeight: 700, marginRight: 6 }}>{CHECK}</span>
+                    <span style={{ color: "var(--text-primary)", fontWeight: 500 }}>{row.brandedFit.text}</span>
                   </td>
                   <td style={tdStyle()}>
-                    <span style={{ color: "#dc2626", fontWeight: 700, marginRight: 6 }}>{CROSS}</span>
-                    <span style={{ color: "#374151" }}>{row.swagUp.text}</span>
+                    <span style={{ color: "var(--danger)", fontWeight: 700, marginRight: 6 }}>{CROSS}</span>
+                    <span style={{ color: "var(--text-body)" }}>{row.swagUp.text}</span>
                   </td>
                   <td style={tdStyle()}>
-                    <span style={{ color: "#dc2626", fontWeight: 700, marginRight: 6 }}>{CROSS}</span>
-                    <span style={{ color: "#374151" }}>{row.printify.text}</span>
+                    <span style={{ color: "var(--danger)", fontWeight: 700, marginRight: 6 }}>{CROSS}</span>
+                    <span style={{ color: "var(--text-body)" }}>{row.printify.text}</span>
                   </td>
                 </tr>
               ))}
@@ -159,7 +203,7 @@ export default function Home() {
           </table>
         </div>
 
-        <p style={{ marginTop: "1.5rem", color: "#6b7280", fontSize: "0.8rem" }}>
+        <p style={{ marginTop: "1.5rem", color: "var(--text-subtle)", fontSize: "0.8rem" }}>
           Fulfillment speed and redemption rate based on market research (June 2026). SwagUp pricing from SaaSWorthy/ColdIQ April 2026. Branded Fit at $199/mo.
         </p>
       </section>
@@ -167,17 +211,25 @@ export default function Home() {
       {/* Get a Demo CTA */}
       <section
         style={{
-          marginTop: "3rem",
-          padding: "2.5rem",
-          background: "#eef2ff",
-          borderRadius: 12,
+          padding: "3rem",
+          background: "var(--primary-light)",
+          borderRadius: "var(--radius-lg)",
           textAlign: "center",
         }}
       >
-        <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#111827", marginBottom: "0.75rem" }}>
+        <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.75rem" }}>
           See Branded Fit in action
         </h2>
-        <p style={{ color: "#4b5563", fontSize: "0.95rem", marginBottom: "1.75rem", maxWidth: 480, margin: "0 auto 1.75rem" }}>
+        <p
+          style={{
+            color: "#4b5563",
+            fontSize: "0.95rem",
+            marginBottom: "1.75rem",
+            maxWidth: 480,
+            margin: "0 auto 1.75rem",
+            lineHeight: 1.65,
+          }}
+        >
           Built for forward-thinking brands. We&apos;ll walk you through the 8-minute storefront setup and show you how the AI curation works for your team.
         </p>
         <Link
@@ -185,10 +237,9 @@ export default function Home() {
           style={{
             display: "inline-block",
             padding: "0.875rem 2rem",
-            background: "#4f46e5",
+            background: "var(--primary)",
             color: "white",
-            borderRadius: 8,
-            textDecoration: "none",
+            borderRadius: "var(--radius-md)",
             fontWeight: 700,
             fontSize: "1rem",
             letterSpacing: "0.01em",
@@ -209,9 +260,9 @@ function thStyle({ isLabel, highlight }: { isLabel?: boolean; highlight?: boolea
     fontSize: "0.8rem",
     textTransform: "uppercase" as const,
     letterSpacing: "0.04em",
-    color: highlight ? "#4f46e5" : isLabel ? "#111827" : "#6b7280",
-    background: highlight ? "#eef2ff" : isLabel ? "#f3f4f6" : "#f3f4f6",
-    borderBottom: "2px solid #e5e7eb",
+    color: highlight ? "var(--primary)" : isLabel ? "var(--text-primary)" : "var(--text-muted)",
+    background: highlight ? "var(--primary-light)" : "var(--surface)",
+    borderBottom: "2px solid var(--border)",
     whiteSpace: "nowrap" as const,
   };
 }
@@ -220,7 +271,7 @@ function tdStyle({ isLabel, highlight }: { isLabel?: boolean; highlight?: boolea
   return {
     padding: "0.875rem 1rem",
     verticalAlign: "top" as const,
-    borderBottom: "1px solid #e5e7eb",
+    borderBottom: "1px solid var(--border)",
     background: highlight ? "rgba(238,242,255,0.4)" : undefined,
     minWidth: isLabel ? 140 : 180,
   };

@@ -9,6 +9,7 @@ const tiers = [
     tagline: "Everything you need to launch your first swag program.",
     badge: null,
     cta: "Get a Demo",
+    ctaHref: "/demo",
     features: [
       "1 active branded storefront",
       "AI-curated 120-SKU catalog",
@@ -17,7 +18,6 @@ const tiers = [
       "Email support (48 hr)",
       "Self-serve onboarding",
     ],
-    notIncluded: ["Multiple storefronts", "Advanced analytics", "Priority support", "API access"],
   },
   {
     name: "Growth",
@@ -25,6 +25,7 @@ const tiers = [
     tagline: "For fast-growing teams managing multiple brands or sub-brands.",
     badge: "Most Popular",
     cta: "Get a Demo",
+    ctaHref: "/demo",
     features: [
       "Up to 3 active storefronts",
       "Advanced AI catalog (300 SKUs + seasonal)",
@@ -33,7 +34,6 @@ const tiers = [
       "Priority email + Slack support (24 hr)",
       "Guided setup call",
     ],
-    notIncluded: ["Unlimited storefronts", "API access", "SSO / SCIM", "Dedicated CSM"],
   },
   {
     name: "Scale",
@@ -41,6 +41,7 @@ const tiers = [
     tagline: "Enterprise-grade for HR platforms, APIs, and multi-entity orgs.",
     badge: null,
     cta: "Talk to Sales",
+    ctaHref: "/demo",
     features: [
       "Unlimited active storefronts",
       "Custom AI training on your brand data",
@@ -51,7 +52,6 @@ const tiers = [
       "Full REST API access",
       "SSO / SCIM",
     ],
-    notIncluded: [],
   },
 ];
 
@@ -86,22 +86,25 @@ const faqs = [
 
 export default function PricingPage() {
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif", maxWidth: 960, margin: "0 auto" }}>
+    <main style={{ maxWidth: "var(--max-width)", margin: "0 auto", padding: "0 1.5rem 5rem" }}>
       {/* Header */}
-      <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-        <Link
-          href="/"
-          style={{ color: "#4f46e5", fontSize: "0.875rem", textDecoration: "none", display: "block", marginBottom: "1.5rem" }}
+      <div style={{ textAlign: "center", padding: "4rem 0 3rem" }}>
+        <h1
+          style={{
+            fontSize: "clamp(2rem, 4vw, 2.75rem)",
+            fontWeight: 800,
+            color: "var(--text-primary)",
+            marginBottom: "0.75rem",
+            letterSpacing: "-0.03em",
+            lineHeight: 1.1,
+          }}
         >
-          ← Branded Fit
-        </Link>
-        <h1 style={{ fontSize: "2.5rem", fontWeight: 800, color: "#111827", marginBottom: "0.75rem", lineHeight: 1.15 }}>
           Simple, transparent pricing
         </h1>
-        <p style={{ fontSize: "1.1rem", color: "#4b5563", maxWidth: 520, margin: "0 auto 0.75rem" }}>
+        <p style={{ fontSize: "1.1rem", color: "var(--text-muted)", maxWidth: 520, margin: "0 auto 0.75rem", lineHeight: 1.65 }}>
           Pays for itself in the first swag cycle. Zero markup on merchandise — ever.
         </p>
-        <p style={{ fontSize: "0.875rem", color: "#9ca3af" }}>
+        <p style={{ fontSize: "0.875rem", color: "var(--text-subtle)" }}>
           All plans billed annually. Monthly billing available on Growth and Scale.
         </p>
       </div>
@@ -109,9 +112,9 @@ export default function PricingPage() {
       {/* ROI callout */}
       <div
         style={{
-          background: "#f0fdf4",
-          border: "1px solid #bbf7d0",
-          borderRadius: 10,
+          background: "var(--accent-bg)",
+          border: "1px solid var(--accent-border)",
+          borderRadius: "var(--radius-lg)",
           padding: "1rem 1.5rem",
           marginBottom: "2.5rem",
           display: "flex",
@@ -121,9 +124,9 @@ export default function PricingPage() {
           margin: "0 auto 2.5rem",
         }}
       >
-        <span style={{ fontSize: "1.5rem" }}>💡</span>
-        <p style={{ margin: 0, fontSize: "0.9rem", color: "#166534" }}>
-          <strong>Typical first-cycle ROI:</strong> People Ops teams save ~$3,800 in time, errors, and redemption lift per swag cycle — against a $2,400/yr Core subscription. You're ahead after cycle one.
+        <span style={{ fontSize: "1.5rem", flexShrink: 0 }}>💡</span>
+        <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--accent-text)", lineHeight: 1.6 }}>
+          <strong>Typical first-cycle ROI:</strong> People Ops teams save ~$3,800 in time, errors, and redemption lift per swag cycle — against a $2,400/yr Core subscription. You&apos;re ahead after cycle one.
         </p>
       </div>
 
@@ -140,11 +143,12 @@ export default function PricingPage() {
           <div
             key={tier.name}
             style={{
-              border: tier.badge ? "2px solid #4f46e5" : "1px solid #e5e7eb",
-              borderRadius: 12,
+              border: tier.badge ? "2px solid var(--primary)" : "1px solid var(--border)",
+              borderRadius: "var(--radius-lg)",
               padding: "1.75rem",
               position: "relative",
               background: "white",
+              boxShadow: tier.badge ? "var(--shadow-md)" : "var(--shadow-sm)",
             }}
           >
             {tier.badge && (
@@ -154,7 +158,7 @@ export default function PricingPage() {
                   top: -14,
                   left: "50%",
                   transform: "translateX(-50%)",
-                  background: "#4f46e5",
+                  background: "var(--primary)",
                   color: "white",
                   fontSize: "0.75rem",
                   fontWeight: 700,
@@ -168,34 +172,33 @@ export default function PricingPage() {
               </div>
             )}
 
-            <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#111827", marginBottom: "0.25rem" }}>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "0.25rem" }}>
               {tier.name}
             </h2>
-            <p style={{ fontSize: "0.8rem", color: "#6b7280", marginBottom: "1.25rem", lineHeight: 1.4 }}>
+            <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: "1.25rem", lineHeight: 1.5 }}>
               {tier.tagline}
             </p>
 
             <div style={{ marginBottom: "1.5rem" }}>
-              <span style={{ fontSize: "2.25rem", fontWeight: 800, color: "#111827" }}>
+              <span style={{ fontSize: "2.25rem", fontWeight: 800, color: "var(--text-primary)" }}>
                 ${tier.price.annual.toLocaleString()}
               </span>
-              <span style={{ fontSize: "0.9rem", color: "#6b7280", marginLeft: "0.25rem" }}>/&nbsp;year</span>
-              <div style={{ fontSize: "0.8rem", color: "#9ca3af", marginTop: "0.2rem" }}>
+              <span style={{ fontSize: "0.9rem", color: "var(--text-muted)", marginLeft: "0.25rem" }}>/&nbsp;year</span>
+              <div style={{ fontSize: "0.8rem", color: "var(--text-subtle)", marginTop: "0.2rem" }}>
                 ${tier.price.monthly}/mo if billed monthly
               </div>
             </div>
 
             <Link
-              href="/demo"
+              href={tier.ctaHref}
               style={{
                 display: "block",
                 textAlign: "center",
                 padding: "0.75rem 1rem",
-                background: tier.badge ? "#4f46e5" : "white",
-                color: tier.badge ? "white" : "#4f46e5",
-                border: "2px solid #4f46e5",
-                borderRadius: 8,
-                textDecoration: "none",
+                background: tier.badge ? "var(--primary)" : "white",
+                color: tier.badge ? "white" : "var(--primary)",
+                border: "2px solid var(--primary)",
+                borderRadius: "var(--radius-md)",
                 fontWeight: 700,
                 fontSize: "0.9rem",
                 marginBottom: "1.5rem",
@@ -206,8 +209,8 @@ export default function PricingPage() {
 
             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.6rem" }}>
               {tier.features.map((f) => (
-                <li key={f} style={{ display: "flex", gap: "0.5rem", fontSize: "0.85rem", color: "#374151" }}>
-                  <span style={{ color: "#16a34a", fontWeight: 700, flexShrink: 0 }}>{CHECK}</span>
+                <li key={f} style={{ display: "flex", gap: "0.5rem", fontSize: "0.85rem", color: "var(--text-body)" }}>
+                  <span style={{ color: "var(--accent)", fontWeight: 700, flexShrink: 0 }}>{CHECK}</span>
                   <span>{f}</span>
                 </li>
               ))}
@@ -218,8 +221,8 @@ export default function PricingPage() {
 
       {/* Add-ons */}
       <section style={{ marginBottom: "3rem" }}>
-        <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#111827", marginBottom: "1rem" }}>Add-ons</h2>
-        <div style={{ border: "1px solid #e5e7eb", borderRadius: 10, overflow: "hidden" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1rem" }}>Add-ons</h2>
+        <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
           {addOns.map((a, i) => (
             <div
               key={a.label}
@@ -228,12 +231,12 @@ export default function PricingPage() {
                 justifyContent: "space-between",
                 alignItems: "center",
                 padding: "0.875rem 1.25rem",
-                background: i % 2 === 0 ? "#f9fafb" : "white",
+                background: i % 2 === 0 ? "var(--surface)" : "white",
                 fontSize: "0.875rem",
               }}
             >
-              <span style={{ color: "#374151" }}>{a.label}</span>
-              <span style={{ fontWeight: 600, color: "#111827", whiteSpace: "nowrap", marginLeft: "1rem" }}>{a.price}</span>
+              <span style={{ color: "var(--text-body)" }}>{a.label}</span>
+              <span style={{ fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap", marginLeft: "1rem" }}>{a.price}</span>
             </div>
           ))}
         </div>
@@ -241,16 +244,16 @@ export default function PricingPage() {
 
       {/* FAQ */}
       <section style={{ marginBottom: "3rem" }}>
-        <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#111827", marginBottom: "1.25rem" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1.25rem" }}>
           Frequently asked questions
         </h2>
         <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
           {faqs.map((faq) => (
             <div key={faq.q}>
-              <p style={{ fontWeight: 600, color: "#111827", fontSize: "0.9rem", marginBottom: "0.375rem" }}>
+              <p style={{ fontWeight: 600, color: "var(--text-primary)", fontSize: "0.9rem", marginBottom: "0.375rem" }}>
                 {faq.q}
               </p>
-              <p style={{ color: "#6b7280", fontSize: "0.875rem", margin: 0, lineHeight: 1.6 }}>
+              <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", lineHeight: 1.65 }}>
                 {faq.a}
               </p>
             </div>
@@ -261,16 +264,25 @@ export default function PricingPage() {
       {/* Bottom CTA */}
       <section
         style={{
-          background: "#eef2ff",
-          borderRadius: 12,
-          padding: "2.5rem",
+          background: "var(--primary-light)",
+          borderRadius: "var(--radius-lg)",
+          padding: "3rem",
           textAlign: "center",
         }}
       >
-        <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#111827", marginBottom: "0.75rem" }}>
+        <h2 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.75rem" }}>
           Ready to launch your swag program?
         </h2>
-        <p style={{ color: "#4b5563", fontSize: "0.95rem", marginBottom: "1.75rem", maxWidth: 460, margin: "0 auto 1.75rem" }}>
+        <p
+          style={{
+            color: "#4b5563",
+            fontSize: "0.95rem",
+            marginBottom: "1.75rem",
+            maxWidth: 460,
+            margin: "0 auto 1.75rem",
+            lineHeight: 1.65,
+          }}
+        >
           See exactly how the 48-hour concierge onboarding works — then book your kickoff call.
         </p>
         <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
@@ -279,10 +291,9 @@ export default function PricingPage() {
             style={{
               display: "inline-block",
               padding: "0.875rem 2rem",
-              background: "#4f46e5",
+              background: "var(--primary)",
               color: "white",
-              borderRadius: 8,
-              textDecoration: "none",
+              borderRadius: "var(--radius-md)",
               fontWeight: 700,
               fontSize: "1rem",
             }}
@@ -295,10 +306,9 @@ export default function PricingPage() {
               display: "inline-block",
               padding: "0.875rem 1.5rem",
               background: "white",
-              color: "#4f46e5",
-              border: "2px solid #4f46e5",
-              borderRadius: 8,
-              textDecoration: "none",
+              color: "var(--primary)",
+              border: "2px solid var(--primary)",
+              borderRadius: "var(--radius-md)",
               fontWeight: 600,
               fontSize: "0.95rem",
             }}

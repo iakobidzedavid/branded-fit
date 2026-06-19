@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 
-const HOURLY_RATE = 35; // default assumed hourly value of employee time
+const HOURLY_RATE = 35;
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -30,26 +29,29 @@ export default function ROICalculatorPage() {
   const roiPositive = roi >= 0;
 
   return (
-    <main style={{ fontFamily: "system-ui, sans-serif", maxWidth: 720, margin: "0 auto", padding: "2rem 1.5rem" }}>
-      <nav style={{ marginBottom: "1.5rem" }}>
-        <Link href="/" style={{ color: "#4f46e5", textDecoration: "none", fontSize: "0.9rem" }}>
-          ← Back to Home
-        </Link>
-      </nav>
-
-      <h1 style={{ fontSize: "2rem", fontWeight: 700, color: "#111827", marginBottom: "0.5rem" }}>
+    <main style={{ maxWidth: 760, margin: "0 auto", padding: "4rem 1.5rem 5rem" }}>
+      <h1 style={{ fontSize: "2rem", fontWeight: 800, letterSpacing: "-0.03em", marginBottom: "0.5rem" }}>
         ROI Calculator
       </h1>
-      <p style={{ color: "#6b7280", marginBottom: "2rem", lineHeight: 1.6 }}>
+      <p style={{ color: "var(--text-muted)", marginBottom: "2.5rem", lineHeight: 1.65, fontSize: "1rem" }}>
         See the real return on your branded swag investment. Adjust the inputs below
         to calculate your team&apos;s annual ROI.
       </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", marginBottom: "2rem" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+          gap: "1.5rem",
+          marginBottom: "2rem",
+          padding: "2rem",
+          background: "var(--surface)",
+          borderRadius: "var(--radius-lg)",
+          border: "1px solid var(--border)",
+        }}
+      >
         <div style={{ gridColumn: "1 / -1" }}>
-          <label style={labelStyle}>
-            Number of Employees
-          </label>
+          <label style={labelStyle}>Number of Employees</label>
           <input
             type="number"
             min={1}
@@ -61,9 +63,7 @@ export default function ROICalculatorPage() {
         </div>
 
         <div>
-          <label style={labelStyle}>
-            Annual Swag Spend ($)
-          </label>
+          <label style={labelStyle}>Annual Swag Spend ($)</label>
           <input
             type="number"
             min={0}
@@ -76,9 +76,7 @@ export default function ROICalculatorPage() {
         </div>
 
         <div>
-          <label style={labelStyle}>
-            Hours Saved / Employee / Month
-          </label>
+          <label style={labelStyle}>Hours Saved / Employee / Month</label>
           <input
             type="number"
             min={0}
@@ -91,14 +89,16 @@ export default function ROICalculatorPage() {
         </div>
       </div>
 
-      <div style={{
-        background: roiPositive ? "#f0fdf4" : "#fef2f2",
-        border: `1px solid ${roiPositive ? "#86efac" : "#fca5a5"}`,
-        borderRadius: 12,
-        padding: "1.5rem",
-        marginBottom: "1.5rem",
-      }}>
-        <h2 style={{ fontSize: "1.1rem", fontWeight: 600, color: "#111827", marginBottom: "1.25rem" }}>
+      <div
+        style={{
+          background: roiPositive ? "var(--accent-bg)" : "#fef2f2",
+          border: `1px solid ${roiPositive ? "var(--accent-border)" : "#fca5a5"}`,
+          borderRadius: "var(--radius-lg)",
+          padding: "1.75rem",
+          marginBottom: "1.5rem",
+        }}
+      >
+        <h2 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: "1.25rem" }}>
           Your Estimated ROI
         </h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem" }}>
@@ -110,7 +110,7 @@ export default function ROICalculatorPage() {
           <Metric
             label="Net Annual Benefit"
             value={formatCurrency(netBenefit)}
-            sub={`Time savings minus swag spend`}
+            sub="Time savings minus swag spend"
             highlight={roiPositive ? "green" : "red"}
           />
           <Metric
@@ -123,12 +123,12 @@ export default function ROICalculatorPage() {
           <Metric
             label="Payback Period"
             value={paybackMonths != null ? `${paybackMonths.toFixed(1)} months` : "—"}
-            sub={`Time to recoup your investment`}
+            sub="Time to recoup your investment"
           />
         </div>
       </div>
 
-      <p style={{ fontSize: "0.8rem", color: "#9ca3af", lineHeight: 1.5 }}>
+      <p style={{ fontSize: "0.8rem", color: "var(--text-subtle)", lineHeight: 1.6 }}>
         Calculation assumes {formatCurrency(HOURLY_RATE)}/hr average employee time value. Actual results vary
         by industry, role, and usage. This tool is for illustrative purposes.
       </p>
@@ -150,26 +150,37 @@ function Metric({
   large?: boolean;
 }) {
   const valueColor =
-    highlight === "green" ? "#16a34a" :
-    highlight === "red" ? "#dc2626" :
-    "#111827";
+    highlight === "green" ? "var(--accent)" :
+    highlight === "red" ? "var(--danger)" :
+    "var(--text-primary)";
 
   return (
-    <div style={{ background: "white", borderRadius: 8, padding: "1rem", boxShadow: "0 1px 3px rgba(0,0,0,0.07)" }}>
-      <div style={{ fontSize: "0.8rem", color: "#6b7280", marginBottom: "0.25rem", fontWeight: 500 }}>{label}</div>
+    <div
+      style={{
+        background: "white",
+        borderRadius: "var(--radius-md)",
+        padding: "1rem",
+        boxShadow: "var(--shadow-sm)",
+      }}
+    >
+      <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: "0.25rem", fontWeight: 500 }}>
+        {label}
+      </div>
       <div style={{ fontSize: large ? "2rem" : "1.4rem", fontWeight: 700, color: valueColor, lineHeight: 1.2 }}>
         {value}
       </div>
-      <div style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "0.25rem" }}>{sub}</div>
+      <div style={{ fontSize: "0.75rem", color: "var(--text-subtle)", marginTop: "0.25rem" }}>
+        {sub}
+      </div>
     </div>
   );
 }
 
 const labelStyle: React.CSSProperties = {
   display: "block",
-  fontSize: "0.9rem",
+  fontSize: "0.875rem",
   fontWeight: 600,
-  color: "#374151",
+  color: "var(--text-body)",
   marginBottom: "0.4rem",
 };
 
@@ -177,15 +188,16 @@ const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "0.6rem 0.75rem",
   fontSize: "1rem",
-  border: "1px solid #d1d5db",
-  borderRadius: 8,
+  border: "1px solid var(--border)",
+  borderRadius: "var(--radius-md)",
   outline: "none",
   boxSizing: "border-box",
-  color: "#111827",
+  color: "var(--text-primary)",
+  background: "white",
 };
 
 const hintStyle: React.CSSProperties = {
   fontSize: "0.78rem",
-  color: "#9ca3af",
+  color: "var(--text-subtle)",
   marginTop: "0.3rem",
 };
