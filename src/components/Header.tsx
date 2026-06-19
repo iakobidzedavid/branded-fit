@@ -5,7 +5,7 @@ const navLinks = [
   { href: "/pricing", label: "Pricing" },
   { href: "/compare", label: "Compare" },
   { href: "/roi-calculator", label: "ROI Calculator" },
-  { href: "/get-started", label: "How It Works" },
+  { href: "/expansion", label: "Market Story" },
   { href: "/for-your-boss", label: "For Your Boss" },
 ];
 

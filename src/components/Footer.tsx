@@ -5,6 +5,7 @@ const footerLinks = [
   { href: "/pricing", label: "Pricing" },
   { href: "/compare", label: "Compare" },
   { href: "/roi-calculator", label: "ROI Calculator" },
+  { href: "/expansion", label: "Market Story" },
   { href: "/get-started", label: "How It Works" },
   { href: "/demo", label: "Get a Demo" },
 ];
