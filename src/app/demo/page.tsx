@@ -9,6 +9,8 @@ export default function DemoPage() {
   const [form, setForm] = useState<FormState>({ name: "", email: "", company: "" });
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Partial<FormState>>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   function validate(): boolean {
     const e: Partial<FormState> = {};
@@ -23,9 +25,28 @@ export default function DemoPage() {
     return Object.keys(e).length === 0;
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (validate()) setSubmitted(true);
+    if (!validate()) return;
+    setSubmitting(true);
+    setServerError(null);
+    try {
+      const res = await fetch("/api/demo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setServerError((data as { error?: string }).error ?? "Something went wrong. Please try again.");
+      } else {
+        setSubmitted(true);
+      }
+    } catch {
+      setServerError("Network error — please check your connection and try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -102,21 +123,26 @@ export default function DemoPage() {
               {errors.company && <p style={errorStyle()}>{errors.company}</p>}
             </div>
 
+            {serverError && (
+              <p style={{ color: "#ef4444", fontSize: "0.875rem", margin: 0 }}>{serverError}</p>
+            )}
+
             <button
               type="submit"
+              disabled={submitting}
               style={{
                 marginTop: "0.5rem",
                 padding: "0.875rem",
-                background: "#4f46e5",
+                background: submitting ? "#818cf8" : "#4f46e5",
                 color: "white",
                 border: "none",
                 borderRadius: 8,
                 fontWeight: 700,
                 fontSize: "1rem",
-                cursor: "pointer",
+                cursor: submitting ? "not-allowed" : "pointer",
               }}
             >
-              Request Demo →
+              {submitting ? "Sending…" : "Request Demo →"}
             </button>
           </form>
         </>
