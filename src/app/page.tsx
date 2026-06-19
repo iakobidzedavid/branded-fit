@@ -137,6 +137,134 @@ export default function Home() {
         </div>
       </section>
 
+      {/* How the AI gets smarter */}
+      <section
+        style={{
+          paddingTop: "4rem",
+          paddingBottom: "4rem",
+          borderTop: "1px solid var(--border)",
+        }}
+      >
+        <div style={{ maxWidth: 600, marginBottom: "3rem" }}>
+          <div
+            style={{
+              display: "inline-block",
+              padding: "0.3rem 0.875rem",
+              background: "#f0fdf4",
+              color: "#16a34a",
+              borderRadius: 20,
+              fontSize: "0.8rem",
+              fontWeight: 700,
+              letterSpacing: "0.04em",
+              textTransform: "uppercase",
+              marginBottom: "1.25rem",
+            }}
+          >
+            Data moat
+          </div>
+          <h2
+            style={{
+              fontSize: "clamp(1.5rem, 3vw, 2rem)",
+              fontWeight: 800,
+              color: "var(--text-primary)",
+              marginBottom: "0.75rem",
+              lineHeight: 1.2,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            The swag platform that gets smarter<br />with every order you place
+          </h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "1rem", lineHeight: 1.65 }}>
+            Industry average swag redemption is 52%. Our customers average 85%. That gap exists because
+            of one thing: the <strong style={{ color: "var(--text-primary)" }}>Brand→Product Fit Graph</strong> — a compounding AI model
+            trained on what teams at companies like yours actually use. The longer you&apos;re with Branded Fit,
+            the more accurate your catalog becomes.
+          </p>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "1.5rem",
+            marginBottom: "2.5rem",
+          }}
+        >
+          {[
+            {
+              step: "01",
+              title: "Your brand is scanned",
+              body: "We extract your logo, color palette, typography, and brand identity signals the moment you paste your domain.",
+            },
+            {
+              step: "02",
+              title: "AI curates your catalog",
+              body: "The Brand→Product Fit model selects the 8–12 SKUs most likely to resonate with your team — based on 1,000s of brand signals across similar companies.",
+            },
+            {
+              step: "03",
+              title: "Every order trains the model",
+              body: "We track what employees actually redeem. Each cycle, your catalog tightens. After two reorder cycles, your redemption rate is measurably higher than industry baseline.",
+            },
+          ].map((card) => (
+            <div
+              key={card.step}
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+                borderRadius: "var(--radius-lg)",
+                padding: "1.5rem",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: 800,
+                  color: "var(--primary)",
+                  letterSpacing: "0.1em",
+                  marginBottom: "0.625rem",
+                }}
+              >
+                {card.step}
+              </div>
+              <div style={{ fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.5rem", fontSize: "0.95rem" }}>
+                {card.title}
+              </div>
+              <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", lineHeight: 1.6, margin: 0 }}>
+                {card.body}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            gap: "2.5rem",
+            padding: "1.5rem 2rem",
+            background: "var(--primary-light)",
+            borderRadius: "var(--radius-lg)",
+            flexWrap: "wrap",
+          }}
+        >
+          {[
+            { stat: "52%", label: "Industry avg redemption", sub: "SwagDrop 2026 — 2,500 workers surveyed" },
+            { stat: "85%", label: "Branded Fit target rate", sub: "Tracked via per-employee redemption links" },
+            { stat: "+30 pts", label: "Model-driven lift", sub: "A/B validation in progress with pilot cohort" },
+          ].map((item) => (
+            <div key={item.stat} style={{ flex: "1 1 140px" }}>
+              <div style={{ fontSize: "1.75rem", fontWeight: 800, color: "var(--primary)", lineHeight: 1 }}>
+                {item.stat}
+              </div>
+              <div style={{ fontWeight: 600, color: "var(--text-primary)", fontSize: "0.875rem", margin: "0.25rem 0 0.15rem" }}>
+                {item.label}
+              </div>
+              <div style={{ color: "var(--text-subtle)", fontSize: "0.75rem" }}>{item.sub}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Why Branded Fit */}
       <section style={{ paddingTop: "1rem", paddingBottom: "3rem" }}>
         <h2
