@@ -5,6 +5,7 @@ const navLinks = [
   { href: "/pricing", label: "Pricing" },
   { href: "/roi-calculator", label: "ROI Calculator" },
   { href: "/get-started", label: "How It Works" },
+  { href: "/for-your-boss", label: "For Your Boss" },
 ];
 
 export default function Header() {
