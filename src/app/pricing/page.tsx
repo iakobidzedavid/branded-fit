@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 const CHECK = "✓";
+const CROSS = "✗";
 
 const tiers = [
   {
@@ -61,6 +62,49 @@ const addOns = [
   { label: "Custom domain white-label", price: "$599 / yr" },
 ];
 
+const competitors = [
+  {
+    name: "Branded Fit Core",
+    annual: "$2,400 / yr",
+    markup: "0% (zero markup)",
+    storefront: true,
+    aiCuration: true,
+    highlight: true,
+  },
+  {
+    name: "SwagUp Silver",
+    annual: "$1,188 / yr",
+    markup: "~18% on merch",
+    storefront: false,
+    aiCuration: false,
+    highlight: false,
+  },
+  {
+    name: "Stadium Swag Pro",
+    annual: "$5,400 / yr",
+    markup: "Yes (undisclosed)",
+    storefront: true,
+    aiCuration: false,
+    highlight: false,
+  },
+  {
+    name: "PerkUp",
+    annual: "$1,800 / yr",
+    markup: "N/A (gift cards only)",
+    storefront: false,
+    aiCuration: false,
+    highlight: false,
+  },
+  {
+    name: "Sendoso / Postal",
+    annual: "$15,000+ / yr",
+    markup: "Yes + warehousing",
+    storefront: false,
+    aiCuration: false,
+    highlight: false,
+  },
+];
+
 const faqs = [
   {
     q: "Is there a free trial?",
@@ -72,11 +116,15 @@ const faqs = [
   },
   {
     q: "What does 'zero markup on merchandise' mean?",
-    a: "You pay exactly what Printify charges for production and fulfillment. We don't add a margin on top. Our revenue comes only from the platform subscription.",
+    a: "You pay exactly what Printify charges for production and fulfillment. We don't add a margin on top. Our revenue comes only from the platform subscription. Most competitors charge 15–25% on top of every order.",
   },
   {
     q: "Is the $2,400/yr under my team's PO threshold?",
     a: "Most Series A/B People Ops teams have discretionary budget up to $5,000/year without a formal PO. Core fits within that range and is typically expensed as a culture or remote-work tool.",
+  },
+  {
+    q: "How does the net cost compare to SwagUp or Stadium?",
+    a: "SwagUp Silver is $1,188/yr but adds ~18% markup on every order — at $15K/yr in merch spend that's $2,700/yr in hidden markup. Branded Fit Core at $2,400/yr with zero markup costs you less when you run the math. Stadium Swag Pro is $5,400/yr, also with markup.",
   },
   {
     q: "Do you offer non-profit discounts?",
@@ -118,16 +166,24 @@ export default function PricingPage() {
           padding: "1rem 1.5rem",
           marginBottom: "2.5rem",
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex-start",
           gap: "0.75rem",
           maxWidth: 700,
           margin: "0 auto 2.5rem",
         }}
       >
-        <span style={{ fontSize: "1.5rem", flexShrink: 0 }}>💡</span>
-        <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--accent-text)", lineHeight: 1.6 }}>
-          <strong>Typical first-cycle ROI:</strong> People Ops teams save ~$3,800 in time, errors, and redemption lift per swag cycle — against a $2,400/yr Core subscription. You&apos;re ahead after cycle one.
-        </p>
+        <span style={{ fontSize: "1.5rem", flexShrink: 0, marginTop: "0.1rem" }}>💡</span>
+        <div>
+          <p style={{ margin: "0 0 0.5rem", fontSize: "0.9rem", color: "var(--accent-text)", lineHeight: 1.6 }}>
+            <strong>Typical first-cycle ROI:</strong> People Ops teams save ~$3,800 in time, markup, and redemption waste per swag cycle — against a $2,400/yr Core subscription. You&apos;re ahead after cycle one.
+          </p>
+          <Link
+            href="/roi-calculator"
+            style={{ fontSize: "0.82rem", color: "var(--accent)", fontWeight: 600, textDecoration: "none" }}
+          >
+            Calculate your exact ROI →
+          </Link>
+        </div>
       </div>
 
       {/* Tier cards */}
@@ -202,6 +258,7 @@ export default function PricingPage() {
                 fontWeight: 700,
                 fontSize: "0.9rem",
                 marginBottom: "1.5rem",
+                textDecoration: "none",
               }}
             >
               {tier.cta} →
@@ -218,6 +275,116 @@ export default function PricingPage() {
           </div>
         ))}
       </div>
+
+      {/* Competitor comparison */}
+      <section style={{ marginBottom: "3.5rem" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "0.5rem" }}>
+          How we compare — 2026 market landscape
+        </h2>
+        <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", marginBottom: "1.25rem", lineHeight: 1.6 }}>
+          Most swag platforms charge a markup on every order on top of their platform fee. That hidden cost adds up fast. Below is the transparent comparison.
+        </p>
+        <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+          {/* Header row */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "2fr 1.5fr 2fr 1fr 1fr",
+              background: "var(--surface)",
+              borderBottom: "1px solid var(--border)",
+              padding: "0.625rem 1.25rem",
+              gap: "0.5rem",
+            }}
+          >
+            {["Platform", "Annual fee", "Merch markup", "Branded storefront", "AI curation"].map((h) => (
+              <div key={h} style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                {h}
+              </div>
+            ))}
+          </div>
+          {competitors.map((c) => (
+            <div
+              key={c.name}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "2fr 1.5fr 2fr 1fr 1fr",
+                padding: "0.875rem 1.25rem",
+                gap: "0.5rem",
+                alignItems: "center",
+                background: c.highlight ? "var(--accent-bg)" : "white",
+                borderBottom: "1px solid var(--border)",
+                borderLeft: c.highlight ? "3px solid var(--accent)" : "3px solid transparent",
+              }}
+            >
+              <div style={{ fontWeight: c.highlight ? 700 : 500, fontSize: "0.875rem", color: c.highlight ? "var(--accent-text)" : "var(--text-primary)" }}>
+                {c.name}
+              </div>
+              <div style={{ fontSize: "0.875rem", fontWeight: c.highlight ? 700 : 400, color: c.highlight ? "var(--accent-text)" : "var(--text-body)" }}>
+                {c.annual}
+              </div>
+              <div style={{ fontSize: "0.8rem", color: c.highlight ? "var(--accent)" : "var(--text-muted)" }}>
+                {c.markup}
+              </div>
+              <div style={{ fontSize: "0.9rem", fontWeight: 700, color: c.storefront ? "var(--accent)" : "var(--danger)" }}>
+                {c.storefront ? CHECK : CROSS}
+              </div>
+              <div style={{ fontSize: "0.9rem", fontWeight: 700, color: c.aiCuration ? "var(--accent)" : "var(--danger)" }}>
+                {c.aiCuration ? CHECK : CROSS}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p style={{ fontSize: "0.75rem", color: "var(--text-subtle)", marginTop: "0.75rem" }}>
+          Competitor pricing sourced from public pricing pages and review sites (TrustRadius, Vendr, G2, PerkUp). Verified June 2026.
+        </p>
+      </section>
+
+      {/* Zero markup explainer */}
+      <section
+        style={{
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius-lg)",
+          padding: "1.75rem",
+          marginBottom: "3rem",
+        }}
+      >
+        <h2 style={{ fontSize: "1.15rem", fontWeight: 700, marginBottom: "0.75rem" }}>
+          Why zero markup changes the math
+        </h2>
+        <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", lineHeight: 1.7, marginBottom: "1.25rem" }}>
+          Most platforms charge a 15–25% markup on every order — on top of their platform subscription. On a typical $15,000/yr swag budget, that&apos;s $2,250–$3,750/yr in hidden fees. Branded Fit charges zero.
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
+          {[
+            { label: "SwagUp Gold", fee: "$4,800/yr", markup: "~$2,700/yr markup on $15K", total: "$7,500/yr total" },
+            { label: "Stadium Swag Pro", fee: "$5,400/yr", markup: "markup (undisclosed)", total: "$7,000+/yr total" },
+            { label: "Branded Fit Core", fee: "$2,400/yr", markup: "$0 markup ever", total: "$2,400/yr total", highlight: true },
+          ].map((item) => (
+            <div
+              key={item.label}
+              style={{
+                background: item.highlight ? "var(--accent-bg)" : "white",
+                border: item.highlight ? "1px solid var(--accent-border)" : "1px solid var(--border)",
+                borderRadius: "var(--radius-md)",
+                padding: "1rem",
+              }}
+            >
+              <div style={{ fontWeight: 700, fontSize: "0.875rem", color: item.highlight ? "var(--accent-text)" : "var(--text-primary)", marginBottom: "0.5rem" }}>
+                {item.label}
+              </div>
+              <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: "0.2rem" }}>Platform: {item.fee}</div>
+              <div style={{ fontSize: "0.8rem", color: item.highlight ? "var(--accent)" : "var(--text-muted)", marginBottom: "0.5rem" }}>Markup: {item.markup}</div>
+              <div style={{ fontSize: "0.875rem", fontWeight: 700, color: item.highlight ? "var(--accent)" : "var(--text-primary)", borderTop: "1px solid var(--border)", paddingTop: "0.5rem" }}>
+                {item.total}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p style={{ fontSize: "0.8rem", color: "var(--text-subtle)", marginTop: "1rem" }}>
+          Based on $15K/yr in merchandise spend — typical for a 120-person Series A/B SaaS team. <Link href="/roi-calculator" style={{ color: "var(--primary)", fontWeight: 600 }}>Run your own numbers →</Link>
+        </p>
+      </section>
 
       {/* Add-ons */}
       <section style={{ marginBottom: "3rem" }}>
@@ -296,6 +463,7 @@ export default function PricingPage() {
               borderRadius: "var(--radius-md)",
               fontWeight: 700,
               fontSize: "1rem",
+              textDecoration: "none",
             }}
           >
             Get Started →
@@ -311,9 +479,26 @@ export default function PricingPage() {
               borderRadius: "var(--radius-md)",
               fontWeight: 600,
               fontSize: "0.95rem",
+              textDecoration: "none",
             }}
           >
             Get a Demo
+          </Link>
+          <Link
+            href="/roi-calculator"
+            style={{
+              display: "inline-block",
+              padding: "0.875rem 1.5rem",
+              background: "white",
+              color: "var(--text-body)",
+              border: "1px solid var(--border)",
+              borderRadius: "var(--radius-md)",
+              fontWeight: 500,
+              fontSize: "0.95rem",
+              textDecoration: "none",
+            }}
+          >
+            Calculate My ROI
           </Link>
         </div>
       </section>
