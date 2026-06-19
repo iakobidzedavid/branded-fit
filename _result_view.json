@@ -1,0 +1,52 @@
+{
+  "view_type": "report",
+  "headline": "7 production-ready email templates for Brand Drop Pilot outreach campaign with embedded validation questions",
+  "primary_stat": {
+    "label": "Templates Created",
+    "value": 7
+  },
+  "highlights": [
+    "Template 1: Direct Value Proposition (CEO-to-CEO, high-energy)",
+    "Template 2: Proof-Through-Demo (data-driven, 90-second ask)",
+    "Template 3: Social Proof + FOMO (competitor angle)",
+    "Template 4: Founder-to-Founder (relationship-first)",
+    "Template 5: Low-Barrier Discovery Call (scheduling-focused)",
+    "Template 6: Post-Demo Follow-Up (48-hour reminder)",
+    "Template 7: Objection Handler (concern resolution)",
+    "Each embeds validation questions for compressed feedback loop",
+    "Includes personalization guidelines, tone calibration, and multi-touch sequence",
+    "Appendix with response handling, success metrics, and UTM tracking setup"
+  ],
+  "links": [
+    {
+      "label": "View Full Templates",
+      "url": "file://documents/outreach_email_templates.md"
+    }
+  ],
+  "next_actions": [
+    {
+      "label": "Send Outreach Campaign",
+      "task_template": "Execute 10 prospect outreach using templates (3-day sequence)",
+      "args": {
+        "template_variants": 7,
+        "target_prospects": 10,
+        "success_criteria": "3+ responses, 1+ discovery call booked"
+      }
+    },
+    {
+      "label": "Track Campaign Performance",
+      "task_template": "Log email opens, demo clicks, validation ratings in CRM/dashboard",
+      "args": {
+        "metrics": ["open_rate", "click_through", "demo_engagement", "response_rate"]
+      }
+    },
+    {
+      "label": "Analyze Results & Pivot",
+      "task_template": "By June 11, assess template performance and make go/pivot/no-go decision",
+      "args": {
+        "decision_date": "2026-06-11",
+        "criteria": "3+ responses minimum for GO decision"
+      }
+    }
+  ]
+}
