@@ -44,12 +44,26 @@ const comparisonRows = [
 export default function Home() {
   return (
     <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif", maxWidth: 860, margin: "0 auto" }}>
-      <h1 style={{ fontSize: "2rem", fontWeight: 700, color: "#111827", marginBottom: "0.5rem" }}>
+      <h1 style={{ fontSize: "2.5rem", fontWeight: 800, color: "#111827", marginBottom: "0.75rem", lineHeight: 1.15 }}>
         Branded Fit
       </h1>
-      <p style={{ color: "#6b7280", marginBottom: "2rem" }}>
-        Branded apparel that works as hard as your team.
+      <p style={{ fontSize: "1.2rem", fontWeight: 500, color: "#374151", marginBottom: "1.5rem" }}>
+        On-brand swag, live in 8 minutes.
       </p>
+      <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2.5rem", display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+        <li style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", color: "#374151", fontSize: "0.95rem" }}>
+          <span style={{ color: "#16a34a", fontWeight: 700, marginTop: 1 }}>{CHECK}</span>
+          <span><strong>8-minute setup</strong> — enter your domain and get a live, orderable storefront</span>
+        </li>
+        <li style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", color: "#374151", fontSize: "0.95rem" }}>
+          <span style={{ color: "#16a34a", fontWeight: 700, marginTop: 1 }}>{CHECK}</span>
+          <span><strong>AI-curated 120-SKU catalog</strong> — matched to your brand identity, zero manual browsing</span>
+        </li>
+        <li style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", color: "#374151", fontSize: "0.95rem" }}>
+          <span style={{ color: "#16a34a", fontWeight: 700, marginTop: 1 }}>{CHECK}</span>
+          <span><strong>85% employee redemption</strong> — our Brand&#8594;Product Fit AI learns what your team actually wears</span>
+        </li>
+      </ul>
 
       <nav style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "4rem" }}>
         <Link
