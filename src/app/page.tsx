@@ -1,6 +1,7 @@
 import Link from "next/link";
 import DomainHero from "@/components/DomainHero";
 import DemoRequestForm from "@/components/DemoRequestForm";
+import WaitlistForm from "@/components/WaitlistForm";
 
 const CHECK = "✓";
 const CROSS = "✗";
@@ -156,6 +157,69 @@ export default function Home() {
             Prefer a guided walkthrough? Request a live demo below →
           </a>
         </div>
+      </section>
+
+      {/* Join the waitlist */}
+      <section
+        id="waitlist"
+        style={{
+          padding: "3rem",
+          background: "var(--primary-light)",
+          borderRadius: "var(--radius-lg)",
+          marginBottom: "3rem",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "3rem",
+          alignItems: "center",
+        }}
+      >
+        <div>
+          <div
+            style={{
+              display: "inline-block",
+              padding: "0.3rem 0.875rem",
+              background: "var(--primary)",
+              color: "white",
+              borderRadius: 20,
+              fontSize: "0.75rem",
+              fontWeight: 700,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              marginBottom: "1rem",
+            }}
+          >
+            Early access
+          </div>
+          <h2
+            style={{
+              fontSize: "clamp(1.4rem, 2.5vw, 1.875rem)",
+              fontWeight: 800,
+              color: "var(--text-primary)",
+              marginBottom: "0.75rem",
+              lineHeight: 1.2,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Get early access to Branded Fit
+          </h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", lineHeight: 1.65 }}>
+            We&apos;re onboarding companies in batches to ensure a great experience.
+            Join the waitlist and we&apos;ll reach out when your spot is ready.
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginTop: "1rem" }}>
+            {[
+              "First access to the AI catalog builder",
+              "Locked-in early-adopter pricing",
+              "Direct line to the founding team",
+            ].map((item) => (
+              <div key={item} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span style={{ color: "var(--accent)", fontWeight: 700, fontSize: "0.9rem" }}>✓</span>
+                <span style={{ color: "var(--text-body)", fontSize: "0.875rem" }}>{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <WaitlistForm />
       </section>
 
       {/* How the AI gets smarter */}

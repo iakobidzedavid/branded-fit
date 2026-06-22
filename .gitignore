@@ -1,4 +1,8 @@
 
+# Environment — keep secrets out of git; set in Vercel/CI env vars
+.env.local
+.env*.local
+
 # Goal-loop agent temp context (auto-excluded)
 .context/
 
