@@ -109,7 +109,7 @@ export default function Home() {
           {[
             "8-minute setup — enter your domain and get a live, orderable storefront",
             "AI-curated 120-SKU catalog — matched to your brand identity, zero manual browsing",
-            "85% employee redemption — our Brand→Product Fit AI learns what your team actually wears",
+            "85% redemption vs. 38% industry avg — 77% of employees prefer self-selection (SwagDrop 2026, n=2,500)",
           ].map((item) => (
             <li
               key={item}
@@ -122,7 +122,27 @@ export default function Home() {
         </ul>
 
         <DomainHero />
-        <div style={{ marginTop: "1.5rem" }}>
+        <div style={{ marginTop: "1rem", display: "flex", alignItems: "center", gap: "1.5rem", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+            {["No IT approval needed", "No procurement cycle", "Generate free — pay to publish"].map((badge) => (
+              <span
+                key={badge}
+                style={{
+                  fontSize: "0.75rem",
+                  color: "var(--text-muted)",
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
+                  borderRadius: 20,
+                  padding: "0.2rem 0.65rem",
+                  fontWeight: 500,
+                }}
+              >
+                {badge}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div style={{ marginTop: "1rem" }}>
           <a
             href="#request-demo"
             style={{
@@ -133,7 +153,7 @@ export default function Home() {
               textUnderlineOffset: 3,
             }}
           >
-            Prefer a guided demo? Request one below →
+            Prefer a guided walkthrough? Request a live demo below →
           </a>
         </div>
       </section>
@@ -249,9 +269,9 @@ export default function Home() {
           }}
         >
           {[
-            { stat: "52%", label: "Industry avg redemption", sub: "SwagDrop 2026 — 2,500 workers surveyed" },
-            { stat: "85%", label: "Branded Fit target rate", sub: "Tracked via per-employee redemption links" },
-            { stat: "+30 pts", label: "Model-driven lift", sub: "A/B validation in progress with pilot cohort" },
+            { stat: "38%", label: "Regular use — company-chosen swag", sub: "SwagDrop 2026 — 2,500 US/Canada workers surveyed, May 2026" },
+            { stat: "77%", label: "Prefer self-selection storefront", sub: "vs. company-chosen items — SwagDrop 2026, n=2,500" },
+            { stat: "85%", label: "Branded Fit target redemption rate", sub: "Tracked via per-employee storefront links" },
           ].map((item) => (
             <div key={item.stat} style={{ flex: "1 1 140px" }}>
               <div style={{ fontSize: "1.75rem", fontWeight: 800, color: "var(--primary)", lineHeight: 1 }}>
