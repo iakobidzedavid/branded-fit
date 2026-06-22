@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { appendFileSync } from "fs";
-import { join } from "path";
+import { createClient } from "@supabase/supabase-js";
 
-type DemoRequestEntry = {
-  name: string;
-  email: string;
-  company: string;
-  source: string;
-  submittedAt: string;
-};
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+}
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -34,29 +32,29 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Company is required" }, { status: 422 });
   }
 
-  const entry: DemoRequestEntry = {
-    name: name.trim(),
-    email: email.trim().toLowerCase(),
-    company: company.trim(),
-    source: typeof source === "string" && source.trim() ? source.trim() : "homepage",
-    submittedAt: new Date().toISOString(),
-  };
+  const emailStr = email.trim().toLowerCase();
+  const domainMatch = emailStr.match(/@(.+)$/);
+  const emailDomain = domainMatch ? domainMatch[1] : "";
 
-  // Persist submission as newline-delimited JSON; /tmp is writable on Vercel per-instance.
-  try {
-    const logPath = join(
-      process.env.DEMO_LOG_PATH ?? "/tmp",
-      "demo-requests.ndjson"
-    );
-    appendFileSync(logPath, JSON.stringify(entry) + "\n", "utf8");
-  } catch {
-    console.error("demo-request: failed to persist entry", entry);
+  const { data, error } = await getSupabase()
+    .from("demo_requests")
+    .insert({
+      name: name.trim(),
+      email: emailStr,
+      company: company.trim(),
+      domain: emailDomain,
+      source: typeof source === "string" && source.trim() ? source.trim() : "homepage",
+    })
+    .select("id, created_at")
+    .single();
+
+  if (error) {
+    console.error("demo-request insert error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  console.log("demo-request received:", JSON.stringify(entry));
-
   return NextResponse.json(
-    { success: true, message: "Demo request received" },
+    { success: true, id: data.id, message: "Demo request received" },
     { status: 201 }
   );
 }

@@ -171,6 +171,8 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
   const [emailError, setEmailError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [capturedName, setCapturedName] = useState("");
+  const [shareUrl, setShareUrl] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const cleanDomain = domain.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
   const companyName = cleanDomain ? getCompanyName(cleanDomain) : "";
@@ -221,6 +223,30 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
     }
     setEmailError("");
     setSubmitting(true);
+
+    // Create a shareable storefront preview in Supabase
+    try {
+      const previewRes = await fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          domain: cleanDomain,
+          company_name: companyName,
+          palette_index: hashDomain(cleanDomain) % BRAND_PALETTES.length,
+          email: email.trim().toLowerCase(),
+        }),
+      });
+      if (previewRes.ok) {
+        const previewData = await previewRes.json() as { preview?: { id: string } };
+        if (previewData.preview?.id) {
+          setShareUrl(`${window.location.origin}/preview/${previewData.preview.id}`);
+        }
+      }
+    } catch {
+      // non-fatal — proceed without shareable link
+    }
+
+    // Notify founder via demo request
     try {
       await fetch("/api/demo", {
         method: "POST",
@@ -235,6 +261,7 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
     } catch {
       // non-fatal
     }
+
     setCapturedName(email.split("@")[0]);
     setStage("captured");
     setSubmitting(false);
@@ -756,7 +783,7 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
 
   // ── CAPTURED ──
   return (
-    <main style={{ maxWidth: 520, margin: "0 auto", padding: "6rem 1.5rem", textAlign: "center" }}>
+    <main style={{ maxWidth: 560, margin: "0 auto", padding: "5rem 1.5rem", textAlign: "center" }}>
       <div
         style={{
           width: 64,
@@ -777,10 +804,83 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
         You&apos;re on the list, {capturedName}!
       </h2>
       <p style={{ color: "var(--text-muted)", fontSize: "0.975rem", lineHeight: 1.65, marginBottom: "2rem" }}>
-        We&apos;ll send you a personalized{" "}
-        <strong style={{ color: palette.primary }}>{companyName}</strong> storefront link — and
-        show you how to get it live on Shopify in under 10 minutes.
+        We&apos;ll show you how to get{" "}
+        <strong style={{ color: palette.primary }}>{companyName}&apos;s</strong> storefront live on
+        Shopify in under 10 minutes.
       </p>
+
+      {/* Shareable link card */}
+      {shareUrl && (
+        <div
+          style={{
+            padding: "1.5rem",
+            background: palette.bg,
+            border: `1.5px solid ${palette.primary}40`,
+            borderRadius: "var(--radius-lg)",
+            marginBottom: "1.5rem",
+            textAlign: "left",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "0.78rem",
+              fontWeight: 700,
+              color: palette.primary,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              marginBottom: "0.5rem",
+            }}
+          >
+            ✦ Your shareable preview link
+          </div>
+          <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "0.875rem", lineHeight: 1.5 }}>
+            Share this with your People Leader or VP People — they can see the full storefront and book a call directly.
+          </p>
+          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+            <input
+              readOnly
+              value={shareUrl}
+              style={{
+                flex: 1,
+                padding: "0.6rem 0.875rem",
+                fontSize: "0.8rem",
+                border: "1px solid var(--border)",
+                borderRadius: "var(--radius-md)",
+                background: "white",
+                color: "var(--text-body)",
+                fontFamily: "monospace",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+              onFocus={(e) => e.target.select()}
+            />
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                });
+              }}
+              style={{
+                padding: "0.6rem 1rem",
+                background: copied ? "var(--accent)" : palette.primary,
+                color: "white",
+                border: "none",
+                borderRadius: "var(--radius-md)",
+                fontWeight: 600,
+                fontSize: "0.8rem",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                transition: "background 0.2s",
+                flexShrink: 0,
+              }}
+            >
+              {copied ? "✓ Copied!" : "Copy link"}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div
         style={{
           padding: "1.25rem",
@@ -796,7 +896,7 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
         </div>
         {[
           "We record a 90-second personalized Loom for your domain",
-          "You receive a shareable preview link within 24 hours",
+          shareUrl ? "Share the preview link above with your People Leader" : "You receive a shareable preview link within 24 hours",
           "A 20-minute storefront walkthrough — no pressure, just your brand",
         ].map((item, i) => (
           <div key={i} style={{ display: "flex", gap: "0.625rem", alignItems: "flex-start", marginBottom: "0.5rem" }}>
@@ -805,20 +905,38 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
           </div>
         ))}
       </div>
-      <Link
-        href="/"
-        style={{
-          display: "inline-block",
-          padding: "0.75rem 1.5rem",
-          background: "var(--primary-light)",
-          color: "var(--primary)",
-          borderRadius: "var(--radius-md)",
-          fontWeight: 600,
-          fontSize: "0.9rem",
-        }}
-      >
-        ← Back to home
-      </Link>
+
+      <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap" }}>
+        <Link
+          href="/demo"
+          style={{
+            display: "inline-block",
+            padding: "0.75rem 1.5rem",
+            background: "var(--primary)",
+            color: "white",
+            borderRadius: "var(--radius-md)",
+            fontWeight: 700,
+            fontSize: "0.9rem",
+          }}
+        >
+          Book a 15-min call →
+        </Link>
+        <Link
+          href="/"
+          style={{
+            display: "inline-block",
+            padding: "0.75rem 1.5rem",
+            background: "var(--surface)",
+            color: "var(--text-muted)",
+            border: "1px solid var(--border)",
+            borderRadius: "var(--radius-md)",
+            fontWeight: 500,
+            fontSize: "0.9rem",
+          }}
+        >
+          ← Back to home
+        </Link>
+      </div>
     </main>
   );
 }
