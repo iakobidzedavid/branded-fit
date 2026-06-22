@@ -123,7 +123,7 @@ export default function Home() {
 
         <DomainHero />
         <div style={{ marginTop: "1.5rem" }}>
-          <Link
+          <a
             href="#request-demo"
             style={{
               fontSize: "0.875rem",
@@ -134,7 +134,7 @@ export default function Home() {
             }}
           >
             Prefer a guided demo? Request one below →
-          </Link>
+          </a>
         </div>
       </section>
 
