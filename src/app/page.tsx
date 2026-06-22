@@ -1,5 +1,6 @@
 import Link from "next/link";
 import DomainHero from "@/components/DomainHero";
+import DemoRequestForm from "@/components/DemoRequestForm";
 
 const CHECK = "✓";
 const CROSS = "✗";
@@ -123,7 +124,7 @@ export default function Home() {
         <DomainHero />
         <div style={{ marginTop: "1.5rem" }}>
           <Link
-            href="/demo"
+            href="#request-demo"
             style={{
               fontSize: "0.875rem",
               color: "var(--text-muted)",
@@ -132,7 +133,7 @@ export default function Home() {
               textUnderlineOffset: 3,
             }}
           >
-            Prefer a guided demo? Book one here →
+            Prefer a guided demo? Request one below →
           </Link>
         </div>
       </section>
@@ -319,6 +320,66 @@ export default function Home() {
         <p style={{ marginTop: "1.5rem", color: "var(--text-subtle)", fontSize: "0.8rem" }}>
           Fulfillment speed and redemption rate based on market research (June 2026). SwagUp pricing from SaaSWorthy/ColdIQ April 2026. Branded Fit at $199/mo.
         </p>
+      </section>
+
+      {/* Request a Demo */}
+      <section
+        id="request-demo"
+        style={{
+          margin: "2rem 0",
+          padding: "3rem",
+          background: "var(--primary)",
+          borderRadius: "var(--radius-lg)",
+        }}
+      >
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "center" }}>
+          <div>
+            <div
+              style={{
+                display: "inline-block",
+                padding: "0.3rem 0.875rem",
+                background: "rgba(255,255,255,0.15)",
+                color: "white",
+                borderRadius: 20,
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                marginBottom: "1rem",
+              }}
+            >
+              Live demo
+            </div>
+            <h2
+              style={{
+                fontSize: "clamp(1.4rem, 2.5vw, 1.875rem)",
+                fontWeight: 800,
+                color: "white",
+                marginBottom: "0.75rem",
+                lineHeight: 1.2,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              See Branded Fit build your storefront live
+            </h2>
+            <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "0.95rem", lineHeight: 1.65, marginBottom: "1.5rem" }}>
+              We&apos;ll walk through the full 8-minute flow using your company&apos;s domain — live brand extraction, AI catalog curation, and a working Shopify storefront before we hang up.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              {[
+                "Live domain → storefront walkthrough",
+                "Your real brand colors & products",
+                "Q&A with the founding team",
+              ].map((item) => (
+                <div key={item} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <span style={{ color: "#86efac", fontWeight: 700, fontSize: "0.9rem" }}>✓</span>
+                  <span style={{ color: "rgba(255,255,255,0.85)", fontSize: "0.875rem" }}>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <DemoRequestForm />
+        </div>
       </section>
 
       {/* Try It CTA */}
