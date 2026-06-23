@@ -408,6 +408,8 @@ export default function Home() {
 
       {/* Testimonials */}
       <section
+        id="early-access-feedback"
+        aria-label="Early Access Feedback"
         style={{
           paddingTop: "4rem",
           paddingBottom: "4rem",
@@ -429,7 +431,7 @@ export default function Home() {
               marginBottom: "1.25rem",
             }}
           >
-            Early access feedback
+            Early Access Feedback
           </div>
           <h2
             style={{
@@ -457,7 +459,7 @@ export default function Home() {
         >
           {[
             {
-              quote: "We went from &ldquo;we should do company swag&rdquo; to a live, orderable Shopify store in under 10 minutes. I&apos;ve been putting this task off for months — now I can&apos;t believe I waited.",
+              quote: "We went from “we should do company swag” to a live, orderable Shopify store in under 10 minutes. I’ve been putting this task off for months — now I can’t believe I waited.",
               role: "Head of People Operations",
               company: "Series B SaaS startup · 160 employees",
             },
@@ -472,8 +474,9 @@ export default function Home() {
               company: "Growth-stage B2B startup · 230 employees",
             },
           ].map((t, i) => (
-            <div
+            <article
               key={i}
+              aria-label={`Testimonial from ${t.role}`}
               style={{
                 background: "var(--surface)",
                 border: "1px solid var(--border)",
@@ -486,6 +489,7 @@ export default function Home() {
               }}
             >
               <div
+                aria-hidden="true"
                 style={{
                   fontSize: "2rem",
                   lineHeight: 1,
@@ -496,17 +500,20 @@ export default function Home() {
               >
                 &ldquo;
               </div>
-              <p
+              <blockquote
                 style={{
                   color: "var(--text-body)",
                   fontSize: "0.9375rem",
                   lineHeight: 1.7,
                   margin: 0,
+                  padding: 0,
                   flexGrow: 1,
+                  border: "none",
                 }}
-                dangerouslySetInnerHTML={{ __html: t.quote }}
-              />
-              <div
+              >
+                {t.quote}
+              </blockquote>
+              <footer
                 style={{
                   borderTop: "1px solid var(--border)",
                   paddingTop: "1rem",
@@ -518,8 +525,8 @@ export default function Home() {
                 <div style={{ color: "var(--text-subtle)", fontSize: "0.8rem", marginTop: "0.2rem" }}>
                   {t.company}
                 </div>
-              </div>
-            </div>
+              </footer>
+            </article>
           ))}
         </div>
       </section>
