@@ -190,12 +190,12 @@ export default function AdminAssessmentsPage() {
         </div>
       </div>
 
-      {/* TAM Signal Box */}
-      {impliedTAM && impliedTAM > 0 && (
-        <div style={{ ...cardStyle, background: "var(--primary-light)", border: "1px solid var(--primary)", marginBottom: "2rem" }}>
-          <div style={{ fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: "var(--primary)", marginBottom: "0.5rem" }}>
-            TAM Signal (DE Step 4)
-          </div>
+      {/* TAM Signal Box — always visible */}
+      <div style={{ ...cardStyle, background: "var(--primary-light)", border: "1px solid var(--primary)", marginBottom: "2rem" }}>
+        <div style={{ fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: "var(--primary)", marginBottom: "0.5rem" }}>
+          TAM Signal (DE Step 4)
+        </div>
+        {impliedTAM && impliedTAM > 0 ? (
           <div style={{ display: "flex", gap: "2rem", flexWrap: "wrap", alignItems: "baseline" }}>
             <div>
               <div style={{ fontSize: "2rem", fontWeight: 800, color: "var(--primary)", letterSpacing: "-0.03em" }}>
@@ -210,8 +210,25 @@ export default function AdminAssessmentsPage() {
               TAM gate ≥ $20M {impliedTAM >= 20_000_000 ? "✅ cleared" : "⚠ not yet cleared"}.
             </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div style={{ display: "flex", gap: "2rem", flexWrap: "wrap", alignItems: "baseline" }}>
+            <div>
+              <div style={{ fontSize: "2rem", fontWeight: 800, color: "var(--primary)", letterSpacing: "-0.03em", opacity: 0.4 }}>
+                —
+              </div>
+              <div style={{ fontSize: "0.8rem", color: "var(--primary)", opacity: 0.7 }}>
+                Implied beachhead TAM ({BEACHHEAD_FIRMS.toLocaleString()} firms × avg swag budget)
+              </div>
+            </div>
+            <div style={{ fontSize: "0.8rem", color: "var(--primary)", opacity: 0.7, maxWidth: 360 }}>
+              No budget data yet. Share{" "}
+              <a href="/assessment" style={{ color: "var(--primary)", fontWeight: 700 }}>/assessment</a>{" "}
+              to collect real prospect budgets — the TAM will auto-compute as submissions arrive.
+              Reference: {BEACHHEAD_FIRMS.toLocaleString()} beachhead firms × $15K avg = $27.4M implied TAM.
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Submissions Table */}
       {loading && assessments.length === 0 ? (
@@ -288,33 +305,36 @@ export default function AdminAssessmentsPage() {
         </div>
       )}
 
-      {/* Budget distribution */}
-      {withBudget.length > 0 && (
-        <div style={{ ...cardStyle, marginTop: "1.5rem" }}>
-          <div style={{ fontWeight: 700, marginBottom: "1rem", fontSize: "0.875rem" }}>Budget Distribution (reported by prospects)</div>
-          {[
-            { label: "< $5K", min: 0, max: 5000 },
-            { label: "$5K – $15K", min: 5000, max: 15000 },
-            { label: "$15K – $30K", min: 15000, max: 30000 },
-            { label: "$30K – $60K", min: 30000, max: 60000 },
-            { label: "> $60K", min: 60000, max: Infinity },
-          ].map(({ label, min, max }) => {
-            const count = withBudget.filter((a) => (a.annual_budget ?? 0) >= min && (a.annual_budget ?? 0) < max).length;
-            const pct = withBudget.length > 0 ? (count / withBudget.length) * 100 : 0;
-            return (
-              <div key={label} style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
-                <div style={{ width: 100, fontSize: "0.8rem", color: "var(--text-muted)", flexShrink: 0 }}>{label}</div>
-                <div style={{ flex: 1, background: "var(--surface)", borderRadius: 4, height: 12, overflow: "hidden" }}>
-                  <div style={{ height: "100%", background: "var(--primary)", width: `${pct}%`, transition: "width 0.3s" }} />
-                </div>
-                <div style={{ width: 40, textAlign: "right", fontSize: "0.8rem", fontWeight: 600, color: "var(--text-heading)" }}>
-                  {count}
-                </div>
+      {/* Budget distribution — always visible */}
+      <div style={{ ...cardStyle, marginTop: "1.5rem" }}>
+        <div style={{ fontWeight: 700, marginBottom: "1rem", fontSize: "0.875rem" }}>Budget Distribution (reported by prospects)</div>
+        {[
+          { label: "< $5K", min: 0, max: 5000 },
+          { label: "$5K – $15K", min: 5000, max: 15000 },
+          { label: "$15K – $30K", min: 15000, max: 30000 },
+          { label: "$30K – $60K", min: 30000, max: 60000 },
+          { label: "> $60K", min: 60000, max: Infinity },
+        ].map(({ label, min, max }) => {
+          const count = withBudget.filter((a) => (a.annual_budget ?? 0) >= min && (a.annual_budget ?? 0) < max).length;
+          const pct = withBudget.length > 0 ? (count / withBudget.length) * 100 : 0;
+          return (
+            <div key={label} style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
+              <div style={{ width: 100, fontSize: "0.8rem", color: "var(--text-muted)", flexShrink: 0 }}>{label}</div>
+              <div style={{ flex: 1, background: "var(--surface)", borderRadius: 4, height: 12, overflow: "hidden" }}>
+                <div style={{ height: "100%", background: "var(--primary)", width: `${pct}%`, transition: "width 0.3s" }} />
               </div>
-            );
-          })}
-        </div>
-      )}
+              <div style={{ width: 40, textAlign: "right", fontSize: "0.8rem", fontWeight: 600, color: "var(--text-heading)" }}>
+                {count}
+              </div>
+            </div>
+          );
+        })}
+        {withBudget.length === 0 && (
+          <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
+            No budget entries yet — bars will fill as prospects complete the assessment.
+          </p>
+        )}
+      </div>
 
       <div style={{ marginTop: "1.5rem", fontSize: "0.75rem", color: "var(--text-muted)" }}>
         Source: <Link href="/assessment" style={{ color: "var(--primary)" }}>brandedfitco.com/assessment</Link> · Persisted in Supabase swag_assessments table

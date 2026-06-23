@@ -749,7 +749,7 @@ export default function AssessmentPage() {
             {score < 36
               ? "Your swag program has significant room for efficiency gains — especially on waste and setup time."
               : score < 56
-              ? "You&apos;re investing in swag, but redemption gaps and setup overhead are eroding your ROI."
+              ? "You're investing in swag, but redemption gaps and setup overhead are eroding your ROI."
               : "You have a working swag program, but AI curation and self-select storefronts could push redemption well above industry average."}
           </p>
         </div>
