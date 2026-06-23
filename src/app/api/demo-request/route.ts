@@ -1,12 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-
-function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-}
+import { getServerSupabase } from "@/lib/supabase-server";
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -36,7 +29,8 @@ export async function POST(req: NextRequest) {
   const domainMatch = emailStr.match(/@(.+)$/);
   const emailDomain = domainMatch ? domainMatch[1] : "";
 
-  const { data, error } = await getSupabase()
+  const supabase = getServerSupabase();
+  const { data, error } = await supabase
     .from("demo_requests")
     .insert({
       name: name.trim(),

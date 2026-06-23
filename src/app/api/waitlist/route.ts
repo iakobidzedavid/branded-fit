@@ -1,12 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-
-function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-}
+import { getServerSupabase } from "@/lib/supabase-server";
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -29,7 +22,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Valid email is required" }, { status: 422 });
   }
 
-  const { data, error } = await getSupabase()
+  const supabase = getServerSupabase();
+  const { data, error } = await supabase
     .from("waitlist_signups")
     .insert({ name: name.trim(), email: email.trim().toLowerCase() })
     .select("id, name, email, created_at")
@@ -44,7 +38,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  const { data, error } = await getSupabase()
+  const supabase = getServerSupabase();
+  const { data, error } = await supabase
     .from("waitlist_signups")
     .select("id, name, email, created_at")
     .order("created_at", { ascending: false })

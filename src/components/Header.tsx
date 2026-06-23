@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 const navLinks = [
   { href: "/try", label: "Try It" },
@@ -7,10 +10,11 @@ const navLinks = [
   { href: "/compare", label: "Compare" },
   { href: "/roi-calculator", label: "ROI Calculator" },
   { href: "/for-your-boss", label: "For Your Boss" },
-  { href: "/true-cost", label: "True Cost" },
 ];
 
 export default function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <header
       style={{
@@ -47,12 +51,13 @@ export default function Header() {
           Branded Fit
         </Link>
 
+        {/* Desktop nav */}
         <nav
+          className="desktop-nav"
           style={{
             display: "flex",
             alignItems: "center",
             gap: "0.125rem",
-            flexWrap: "wrap",
           }}
         >
           {navLinks.map((link) => (
@@ -60,11 +65,12 @@ export default function Header() {
               key={link.href}
               href={link.href}
               style={{
-                padding: "0.5rem 0.875rem",
+                padding: "0.5rem 0.75rem",
                 fontSize: "0.875rem",
                 fontWeight: 500,
                 color: "var(--text-muted)",
                 borderRadius: "var(--radius-md)",
+                whiteSpace: "nowrap",
               }}
             >
               {link.label}
@@ -73,7 +79,7 @@ export default function Header() {
           <Link
             href="/demo"
             style={{
-              marginLeft: "0.625rem",
+              marginLeft: "0.5rem",
               padding: "0.5rem 1rem",
               fontSize: "0.875rem",
               fontWeight: 700,
@@ -86,7 +92,100 @@ export default function Header() {
             Get a Demo →
           </Link>
         </nav>
+
+        {/* Mobile hamburger */}
+        <button
+          className="mobile-menu-btn"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          style={{
+            display: "none",
+            background: "none",
+            border: "none",
+            padding: "0.5rem",
+            cursor: "pointer",
+            color: "var(--text-primary)",
+            flexShrink: 0,
+          }}
+        >
+          {menuOpen ? (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="3" y1="7" x2="21" y2="7" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="17" x2="21" y2="17" />
+            </svg>
+          )}
+        </button>
       </div>
+
+      {/* Mobile dropdown */}
+      {menuOpen && (
+        <div
+          className="mobile-menu"
+          style={{
+            display: "none",
+            position: "absolute",
+            top: 64,
+            left: 0,
+            right: 0,
+            background: "white",
+            borderBottom: "1px solid var(--border)",
+            boxShadow: "var(--shadow-md)",
+            padding: "1rem 1.5rem 1.5rem",
+            flexDirection: "column",
+            gap: "0.25rem",
+          }}
+        >
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              style={{
+                display: "block",
+                padding: "0.75rem 0.875rem",
+                fontSize: "0.95rem",
+                fontWeight: 500,
+                color: "var(--text-body)",
+                borderRadius: "var(--radius-md)",
+                borderBottom: "1px solid var(--border)",
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <Link
+            href="/demo"
+            onClick={() => setMenuOpen(false)}
+            style={{
+              display: "block",
+              marginTop: "0.75rem",
+              padding: "0.875rem 1rem",
+              fontSize: "0.95rem",
+              fontWeight: 700,
+              color: "white",
+              background: "var(--primary)",
+              borderRadius: "var(--radius-md)",
+              textAlign: "center",
+            }}
+          >
+            Get a Demo →
+          </Link>
+        </div>
+      )}
+
+      <style>{`
+        @media (max-width: 768px) {
+          .desktop-nav { display: none !important; }
+          .mobile-menu-btn { display: block !important; }
+          .mobile-menu { display: flex !important; }
+        }
+      `}</style>
     </header>
   );
 }

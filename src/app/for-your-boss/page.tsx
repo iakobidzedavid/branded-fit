@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import BossEmailGenerator from "@/components/BossEmailGenerator";
 
 export const metadata: Metadata = {
   title: "Branded Fit — For People Leaders: The Case for Branded Fit",
@@ -537,6 +538,25 @@ export default function ForYourBossPage() {
             vs. the next closest platform.
           </div>
         </div>
+      </section>
+
+      {/* Email generator */}
+      <section style={{ marginBottom: "5rem" }}>
+        <h2
+          style={{
+            fontSize: "1.375rem",
+            fontWeight: 700,
+            letterSpacing: "-0.02em",
+            marginBottom: "0.5rem",
+            color: "var(--text-primary)",
+          }}
+        >
+          Need to send an email to your People Leader?
+        </h2>
+        <p style={{ fontSize: "0.9375rem", color: "var(--text-muted)", marginBottom: "0" }}>
+          Fill in a few details and we&apos;ll draft a ready-to-send email for you — personalized to your company and team size.
+        </p>
+        <BossEmailGenerator />
       </section>
 
       {/* CTA */}

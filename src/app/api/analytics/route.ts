@@ -1,12 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-
-function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-}
+import { getServerSupabase } from "@/lib/supabase-server";
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -22,7 +15,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "event_name is required" }, { status: 422 });
   }
 
-  const { data, error } = await getSupabase()
+  const supabase = getServerSupabase();
+  const { data, error } = await supabase
     .from("analytics_events")
     .insert({
       event_name: event_name.trim(),
@@ -45,9 +39,10 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const limit = Math.min(Number(searchParams.get("limit") ?? "200"), 1000);
   const eventFilter = searchParams.get("event");
-  const since = searchParams.get("since"); // ISO date string
+  const since = searchParams.get("since");
 
-  let query = getSupabase()
+  const supabase = getServerSupabase();
+  let query = supabase
     .from("analytics_events")
     .select("id, event_name, domain, session_id, properties, created_at")
     .order("created_at", { ascending: false })

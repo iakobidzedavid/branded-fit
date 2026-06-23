@@ -1,7 +1,7 @@
-import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { getServerSupabase } from "@/lib/supabase-server";
 
 // ── Brand palette (deterministic by domain hash — matches /try page logic) ──
 const BRAND_PALETTES = [
@@ -43,10 +43,7 @@ function getCategoryEmoji(category: string) {
 }
 
 async function getPreview(id: string) {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase = getServerSupabase();
   const { data } = await supabase
     .from("storefront_previews")
     .select("id, domain, company_name, palette_index, created_at")

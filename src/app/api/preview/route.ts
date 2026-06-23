@@ -1,12 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-
-function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-}
+import { getServerSupabase } from "@/lib/supabase-server";
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -22,7 +15,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "domain is required" }, { status: 422 });
   }
 
-  const { data, error } = await getSupabase()
+  const supabase = getServerSupabase();
+  const { data, error } = await supabase
     .from("storefront_previews")
     .insert({
       domain: domain.trim().toLowerCase(),
@@ -49,7 +43,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "id is required" }, { status: 400 });
   }
 
-  const { data, error } = await getSupabase()
+  const supabase = getServerSupabase();
+  const { data, error } = await supabase
     .from("storefront_previews")
     .select("id, domain, company_name, palette_index, created_at")
     .eq("id", id)
