@@ -181,8 +181,8 @@ export default function UnitEconomicsPage() {
     <main style={{ maxWidth: "var(--max-width)", margin: "0 auto", padding: "0 1.5rem 5rem" }}>
 
       {/* Hero */}
-      <div style={{ padding: "4rem 0 2.5rem", maxWidth: 760 }}>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1.25rem", alignItems: "center" }}>
+      <div style={{ padding: "3rem 0 1.5rem", maxWidth: 760 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1rem", alignItems: "center" }}>
           <span
             style={{
               display: "inline-block",
@@ -202,16 +202,16 @@ export default function UnitEconomicsPage() {
         </div>
         <h1
           style={{
-            fontSize: "clamp(2rem, 4vw, 2.75rem)",
+            fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
             fontWeight: 800,
             letterSpacing: "-0.03em",
             lineHeight: 1.1,
-            marginBottom: "1rem",
+            marginBottom: "0.75rem",
           }}
         >
           Branded Fit LTV:COCA Analysis
         </h1>
-        <p style={{ color: "var(--text-muted)", fontSize: "1.05rem", lineHeight: 1.65, maxWidth: 640 }}>
+        <p style={{ color: "var(--text-muted)", fontSize: "1rem", lineHeight: 1.6, maxWidth: 640 }}>
           Stress-test our unit economics. Adjust churn, COCA, and discount rate — the gate requires
           LTV ≥ 3× COCA. Our base case clears at <strong style={{ color: "var(--accent-text)" }}>5.0×</strong>.
         </p>
@@ -220,7 +220,7 @@ export default function UnitEconomicsPage() {
       {/* Summary cards */}
       <div
         className="summary-grid"
-        style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "3rem" }}
+        style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.875rem", marginBottom: "2rem" }}
       >
         {[
           { label: "5-yr LTV (Core, base)", value: "$8,940", sub: "Subscription + Printify rebate", highlight: true },
@@ -231,44 +231,279 @@ export default function UnitEconomicsPage() {
           <div
             key={card.label}
             style={{
-              padding: "1.5rem",
+              padding: "1.25rem",
               background: card.accent ? "var(--accent-bg)" : card.highlight ? "var(--primary-light)" : "white",
               border: `1px solid ${card.accent ? "var(--accent-border)" : card.highlight ? "#c7d2fe" : "var(--border)"}`,
               borderRadius: "var(--radius-lg)",
               boxShadow: "var(--shadow-sm)",
             }}
           >
-            <div style={{ fontSize: "0.72rem", fontWeight: 700, color: card.accent ? "var(--accent-text)" : card.highlight ? "var(--primary)" : "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "0.5rem" }}>
+            <div style={{ fontSize: "0.72rem", fontWeight: 700, color: card.accent ? "var(--accent-text)" : card.highlight ? "var(--primary)" : "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "0.4rem" }}>
               {card.label}
             </div>
-            <div style={{ fontSize: "1.75rem", fontWeight: 800, color: card.accent ? "#166534" : card.highlight ? "var(--primary)" : "var(--text-primary)", lineHeight: 1, marginBottom: "0.35rem" }}>
+            <div style={{ fontSize: "1.6rem", fontWeight: 800, color: card.accent ? "#166534" : card.highlight ? "var(--primary)" : "var(--text-primary)", lineHeight: 1, marginBottom: "0.3rem" }}>
               {card.value}
             </div>
-            <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{card.sub}</div>
+            <div style={{ fontSize: "0.73rem", color: "var(--text-muted)" }}>{card.sub}</div>
           </div>
         ))}
       </div>
 
-      {/* Main content — two columns */}
-      <div className="ue-main-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", marginBottom: "3rem" }}>
+      {/* 3-Scenario Gate Table — prominent above the fold */}
+      <div id="scenario-table" style={{ marginBottom: "2rem" }}>
+        <h2 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "0.875rem", color: "var(--text-primary)" }}>
+          3-Scenario Gate Verification — Core Tier
+        </h2>
+        <div
+          style={{
+            background: "white",
+            border: "1px solid var(--border)",
+            borderRadius: "var(--radius-lg)",
+            overflow: "hidden",
+            boxShadow: "var(--shadow-sm)",
+          }}
+        >
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ background: "var(--surface)", borderBottom: "2px solid var(--border)" }}>
+                {["Scenario", "Churn", "Discount Rate", "COCA", "LTV (Core, 5yr)", "LTV:COCA", "Gate ≥3×"].map((h) => (
+                  <th
+                    key={h}
+                    style={{
+                      padding: "0.75rem 1rem",
+                      textAlign: "left",
+                      fontSize: "0.72rem",
+                      fontWeight: 700,
+                      color: "var(--text-muted)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.04em",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {SCENARIOS.map((s, i) => {
+                const r = s.label === "Pessimistic" ? 0 : TIERS[0].rebate;
+                const ltv5 = calcLTV(TIERS[0].price, r, s.churnRate, s.discountRate);
+                const ratio5 = calcRatio(ltv5, s.coca);
+                const isBase = s.label === "Base Case";
+                const pass = ratio5 >= 3;
+                return (
+                  <tr
+                    key={s.label}
+                    style={{
+                      borderBottom: i < SCENARIOS.length - 1 ? "1px solid var(--border)" : "none",
+                      background: isBase ? "var(--primary-light)" : "white",
+                    }}
+                  >
+                    <td style={{ padding: "0.875rem 1rem" }}>
+                      <div style={{ fontWeight: 700, color: isBase ? "var(--primary)" : "var(--text-primary)", fontSize: "0.875rem" }}>
+                        {s.label}
+                      </div>
+                      <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "0.15rem" }}>
+                        {s.description}
+                      </div>
+                    </td>
+                    <td style={{ padding: "0.875rem 1rem", fontWeight: 600, color: "var(--text-body)", fontSize: "0.875rem" }}>
+                      {fmtPct(s.churnRate)}
+                    </td>
+                    <td style={{ padding: "0.875rem 1rem", fontWeight: 600, color: "var(--text-body)", fontSize: "0.875rem" }}>
+                      {fmtPct(s.discountRate)}
+                    </td>
+                    <td style={{ padding: "0.875rem 1rem", fontWeight: 600, color: "var(--text-body)", fontSize: "0.875rem" }}>
+                      {fmt$(s.coca)}
+                    </td>
+                    <td style={{ padding: "0.875rem 1rem", fontWeight: 700, color: isBase ? "var(--primary)" : "var(--text-primary)", fontSize: "0.925rem" }}>
+                      {fmt$(ltv5)}
+                    </td>
+                    <td style={{ padding: "0.875rem 1rem" }}>
+                      <span style={{ fontSize: "1.1rem", fontWeight: 800, color: pass ? "#166534" : "#991b1b" }}>
+                        {ratio5.toFixed(2)}×
+                      </span>
+                    </td>
+                    <td style={{ padding: "0.875rem 1rem" }}>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          padding: "0.2rem 0.55rem",
+                          borderRadius: 20,
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          background: pass ? "#f0fdf4" : "#fef2f2",
+                          color: pass ? "#166534" : "#991b1b",
+                          border: `1px solid ${pass ? "#bbf7d0" : "#fecaca"}`,
+                        }}
+                      >
+                        {pass ? "✓ Cleared" : "✗ Below"}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <p style={{ marginTop: "0.6rem", fontSize: "0.75rem", color: "var(--text-subtle)" }}>
+          All scenarios use 5-year DCF (mid-year discounting). Pessimistic excludes Printify rebate entirely.
+          Base case uses 20% annual churn consistent with 2026 SMB SaaS median (OpenView/ChurnZero benchmarks).
+        </p>
+      </div>
+
+      {/* Per-Tier LTV comparison — visible above interactive section */}
+      <div id="tier-comparison" style={{ marginBottom: "2.5rem" }}>
+        <h2 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "0.875rem", color: "var(--text-primary)" }}>
+          Per-Tier LTV at Base-Case Assumptions
+        </h2>
+        <div
+          className="tier-grid"
+          style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}
+        >
+          {TIERS.map((t) => {
+            const tLtv = calcLTV(t.price, t.rebate, 0.20, 0.10);
+            const tRatio = tLtv / 1780;
+            return (
+              <div
+                key={t.key}
+                style={{
+                  background: "white",
+                  border: t.key === "core" ? "2px solid var(--primary)" : "1px solid var(--border)",
+                  borderRadius: "var(--radius-lg)",
+                  padding: "1.25rem",
+                  boxShadow: "var(--shadow-sm)",
+                }}
+              >
+                <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.4rem" }}>
+                  {t.label} {t.key === "core" && "— beachhead"}
+                </div>
+                <div style={{ fontSize: "1.6rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.2rem" }}>
+                  {fmt$(tLtv)}
+                </div>
+                <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "0.875rem" }}>5-year discounted LTV</div>
+                {[
+                  { label: "Annual price", value: fmt$(t.price) },
+                  { label: "Printify rebate/yr", value: fmt$(t.rebate) },
+                  { label: "ARPU", value: fmt$(t.price + t.rebate) },
+                  { label: "COCA", value: fmt$(1780) },
+                  { label: "LTV:COCA", value: `${tRatio.toFixed(2)}×` },
+                ].map((row) => (
+                  <div
+                    key={row.label}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      padding: "0.3rem 0",
+                      borderBottom: "1px solid var(--border)",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    <span style={{ color: "var(--text-muted)" }}>{row.label}</span>
+                    <span style={{ fontWeight: 700, color: row.label === "LTV:COCA" ? "#166534" : "var(--text-primary)" }}>
+                      {row.value}
+                    </span>
+                  </div>
+                ))}
+                <div style={{ marginTop: "0.875rem" }}>
+                  <GateChip ratio={tRatio} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Interactive section heading */}
+      <div style={{ marginBottom: "1rem" }}>
+        <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "var(--text-primary)" }}>
+          Interactive Stress-Test
+        </h2>
+        <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", marginTop: "0.3rem" }}>
+          Adjust assumptions and save your scenario to our database.
+        </p>
+      </div>
+
+      {/* Main content — two columns: calculator + methodology */}
+      <div className="ue-main-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "3rem" }}>
 
         {/* Left: calculator */}
         <div>
-          <h2 style={{ fontSize: "1.15rem", fontWeight: 800, marginBottom: "1.5rem", color: "var(--text-primary)" }}>
-            Interactive Stress-Test
-          </h2>
-
           <div
             style={{
               background: "white",
               border: "1px solid var(--border)",
               borderRadius: "var(--radius-lg)",
-              padding: "2rem",
+              padding: "1.75rem",
               boxShadow: "var(--shadow-sm)",
             }}
           >
+            {/* Live result — shown FIRST so the ratio + save button are immediately visible */}
+            <div
+              style={{
+                background: ratio >= 3 ? "var(--accent-bg)" : "#fef2f2",
+                border: `2px solid ${ratio >= 3 ? "var(--accent-border)" : "#fecaca"}`,
+                borderRadius: "var(--radius-lg)",
+                padding: "1.25rem",
+                marginBottom: "1.5rem",
+                display: "flex",
+                alignItems: "center",
+                gap: "1.25rem",
+                flexWrap: "wrap",
+              }}
+            >
+              <div style={{ flex: 1, minWidth: 120 }}>
+                <div style={{ fontSize: "0.7rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.3rem" }}>
+                  5-Year Discounted LTV
+                </div>
+                <div style={{ fontSize: "2rem", fontWeight: 800, color: "var(--text-primary)", lineHeight: 1, marginBottom: "0.15rem" }}>
+                  {fmt$(ltv)}
+                </div>
+                <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>
+                  {fmt$(tier.price)}/yr + {fmt$(rebate)} rebate · {fmtPct(churnRate)} churn · {fmt$(coca)} COCA
+                </div>
+                <GateChip ratio={ratio} />
+              </div>
+              <div style={{ textAlign: "center", flexShrink: 0 }}>
+                <div style={{ fontSize: "2.75rem", fontWeight: 900, color: ratio >= 3 ? "#166534" : "#991b1b", lineHeight: 1, marginBottom: "0.5rem" }}>
+                  {ratio.toFixed(2)}×
+                </div>
+                {/* Save button — in result block, immediately visible */}
+                <button
+                  id="save-scenario-btn"
+                  onClick={handleSave}
+                  disabled={saveState === "saving"}
+                  style={{
+                    padding: "0.5rem 1rem",
+                    background: saveState === "saved" ? "#166534" : "var(--primary)",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "var(--radius-md)",
+                    fontWeight: 600,
+                    fontSize: "0.8rem",
+                    cursor: saveState === "saving" ? "wait" : "pointer",
+                    transition: "background 0.2s",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {saveState === "saving" ? "Saving…" : saveState === "saved" ? "✓ Saved" : saveState === "error" ? "Retry" : "Save to DB"}
+                </button>
+                {saveState === "saved" && savedId && (
+                  <div style={{ marginTop: "0.3rem", fontSize: "0.65rem", color: "#166534" }}>
+                    ID: {savedId.slice(0, 8)}…
+                  </div>
+                )}
+                {saveState === "error" && saveError && (
+                  <div style={{ marginTop: "0.3rem", fontSize: "0.65rem", color: "var(--danger)", maxWidth: 120 }}>
+                    {saveError}
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Tier selector */}
-            <div style={{ marginBottom: "1.5rem" }}>
+            <div style={{ marginBottom: "1.25rem" }}>
               <label style={labelStyle}>Plan Tier</label>
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 {TIERS.map((t) => (
@@ -277,19 +512,19 @@ export default function UnitEconomicsPage() {
                     onClick={() => setTierKey(t.key)}
                     style={{
                       flex: 1,
-                      padding: "0.5rem 0.75rem",
+                      padding: "0.45rem 0.5rem",
                       border: `2px solid ${tierKey === t.key ? "var(--primary)" : "var(--border)"}`,
                       borderRadius: "var(--radius-md)",
                       background: tierKey === t.key ? "var(--primary-light)" : "white",
                       color: tierKey === t.key ? "var(--primary)" : "var(--text-muted)",
                       fontWeight: 700,
-                      fontSize: "0.85rem",
+                      fontSize: "0.82rem",
                       cursor: "pointer",
                       transition: "all 0.15s",
                     }}
                   >
                     {t.label}
-                    <div style={{ fontSize: "0.7rem", fontWeight: 500, marginTop: "0.1rem" }}>
+                    <div style={{ fontSize: "0.68rem", fontWeight: 500, marginTop: "0.1rem" }}>
                       {fmt$(t.price)}/yr
                     </div>
                   </button>
@@ -298,10 +533,10 @@ export default function UnitEconomicsPage() {
             </div>
 
             {/* Churn rate slider */}
-            <div style={{ marginBottom: "1.25rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.4rem" }}>
+            <div style={{ marginBottom: "1.1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.35rem" }}>
                 <label style={labelStyle}>Annual Churn Rate</label>
-                <span style={{ fontWeight: 700, color: "var(--primary)", fontSize: "0.95rem" }}>{fmtPct(churnRate)}</span>
+                <span style={{ fontWeight: 700, color: "var(--primary)", fontSize: "0.9rem" }}>{fmtPct(churnRate)}</span>
               </div>
               <input
                 type="range"
@@ -312,7 +547,7 @@ export default function UnitEconomicsPage() {
                 onChange={(e) => setChurnRate(parseFloat(e.target.value))}
                 style={{ width: "100%", accentColor: "var(--primary)" }}
               />
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", color: "var(--text-subtle)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem", color: "var(--text-subtle)" }}>
                 <span>5% (enterprise)</span>
                 <span>20% (SMB median)</span>
                 <span>50% (high)</span>
@@ -320,10 +555,10 @@ export default function UnitEconomicsPage() {
             </div>
 
             {/* COCA slider */}
-            <div style={{ marginBottom: "1.25rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.4rem" }}>
+            <div style={{ marginBottom: "1.1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.35rem" }}>
                 <label style={labelStyle}>COCA (Customer Acquisition Cost)</label>
-                <span style={{ fontWeight: 700, color: "var(--primary)", fontSize: "0.95rem" }}>{fmt$(coca)}</span>
+                <span style={{ fontWeight: 700, color: "var(--primary)", fontSize: "0.9rem" }}>{fmt$(coca)}</span>
               </div>
               <input
                 type="range"
@@ -334,7 +569,7 @@ export default function UnitEconomicsPage() {
                 onChange={(e) => setCoca(Number(e.target.value))}
                 style={{ width: "100%", accentColor: "var(--primary)" }}
               />
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", color: "var(--text-subtle)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem", color: "var(--text-subtle)" }}>
                 <span>$500</span>
                 <span>$1,780 target</span>
                 <span>$4,000</span>
@@ -342,10 +577,10 @@ export default function UnitEconomicsPage() {
             </div>
 
             {/* Discount rate */}
-            <div style={{ marginBottom: "1.25rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.4rem" }}>
+            <div style={{ marginBottom: "1.1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.35rem" }}>
                 <label style={labelStyle}>Discount Rate (WACC)</label>
-                <span style={{ fontWeight: 700, color: "var(--primary)", fontSize: "0.95rem" }}>{fmtPct(discountRate)}</span>
+                <span style={{ fontWeight: 700, color: "var(--primary)", fontSize: "0.9rem" }}>{fmtPct(discountRate)}</span>
               </div>
               <input
                 type="range"
@@ -356,7 +591,7 @@ export default function UnitEconomicsPage() {
                 onChange={(e) => setDiscountRate(parseFloat(e.target.value))}
                 style={{ width: "100%", accentColor: "var(--primary)" }}
               />
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", color: "var(--text-subtle)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.68rem", color: "var(--text-subtle)" }}>
                 <span>6%</span>
                 <span>10% (base)</span>
                 <span>20%</span>
@@ -369,18 +604,17 @@ export default function UnitEconomicsPage() {
                 display: "flex",
                 alignItems: "center",
                 gap: "0.75rem",
-                padding: "0.875rem 1rem",
+                padding: "0.75rem 0.875rem",
                 background: "var(--surface)",
                 borderRadius: "var(--radius-md)",
-                marginBottom: "1.75rem",
                 cursor: "pointer",
               }}
               onClick={() => setIncludeRebate(!includeRebate)}
             >
               <div
                 style={{
-                  width: 40,
-                  height: 22,
+                  width: 38,
+                  height: 21,
                   borderRadius: 11,
                   background: includeRebate ? "var(--primary)" : "var(--border)",
                   position: "relative",
@@ -392,9 +626,9 @@ export default function UnitEconomicsPage() {
                   style={{
                     position: "absolute",
                     top: 3,
-                    left: includeRebate ? 21 : 3,
-                    width: 16,
-                    height: 16,
+                    left: includeRebate ? 19 : 3,
+                    width: 15,
+                    height: 15,
                     borderRadius: "50%",
                     background: "white",
                     transition: "left 0.2s",
@@ -403,87 +637,20 @@ export default function UnitEconomicsPage() {
                 />
               </div>
               <div>
-                <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text-primary)" }}>
+                <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)" }}>
                   Include Printify rebate margin ({fmt$(tier.rebate)}/yr)
                 </div>
-                <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                <div style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
                   ~3.6% on monthly GMV via Printify Merchant Program
                 </div>
               </div>
-            </div>
-
-            {/* Result */}
-            <div
-              style={{
-                background: ratio >= 3 ? "var(--accent-bg)" : "#fef2f2",
-                border: `2px solid ${ratio >= 3 ? "var(--accent-border)" : "#fecaca"}`,
-                borderRadius: "var(--radius-lg)",
-                padding: "1.5rem",
-                textAlign: "center",
-              }}
-            >
-              <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
-                5-Year Discounted LTV
-              </div>
-              <div style={{ fontSize: "2.5rem", fontWeight: 800, color: "var(--text-primary)", lineHeight: 1, marginBottom: "0.25rem" }}>
-                {fmt$(ltv)}
-              </div>
-              <div style={{ fontSize: "1rem", color: "var(--text-muted)", marginBottom: "1rem" }}>
-                LTV:COCA ratio
-              </div>
-              <div
-                style={{
-                  fontSize: "3rem",
-                  fontWeight: 900,
-                  color: ratio >= 3 ? "#166534" : "#991b1b",
-                  lineHeight: 1,
-                  marginBottom: "0.5rem",
-                }}
-              >
-                {ratio.toFixed(2)}×
-              </div>
-              <GateChip ratio={ratio} />
-
-              <div style={{ marginTop: "1.25rem", fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                {fmt$(tier.price)}/yr sub + {fmt$(rebate)} rebate · {fmtPct(churnRate)} churn · {fmtPct(discountRate)} discount · {fmt$(coca)} COCA
-              </div>
-
-              {/* Save button */}
-              <button
-                onClick={handleSave}
-                disabled={saveState === "saving"}
-                style={{
-                  marginTop: "1rem",
-                  padding: "0.625rem 1.25rem",
-                  background: saveState === "saved" ? "var(--accent)" : "var(--primary)",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "var(--radius-md)",
-                  fontWeight: 600,
-                  fontSize: "0.85rem",
-                  cursor: saveState === "saving" ? "wait" : "pointer",
-                  transition: "background 0.2s",
-                }}
-              >
-                {saveState === "saving" ? "Saving…" : saveState === "saved" ? "✓ Saved scenario" : saveState === "error" ? "Retry" : "Save this scenario"}
-              </button>
-              {saveState === "saved" && savedId && (
-                <div style={{ marginTop: "0.4rem", fontSize: "0.7rem", color: "var(--accent-text)" }}>
-                  Saved · ID: {savedId.slice(0, 8)}…
-                </div>
-              )}
-              {saveState === "error" && saveError && (
-                <div style={{ marginTop: "0.4rem", fontSize: "0.7rem", color: "var(--danger)" }}>
-                  {saveError}
-                </div>
-              )}
             </div>
           </div>
         </div>
 
         {/* Right: methodology + benchmarks */}
         <div>
-          <h2 style={{ fontSize: "1.15rem", fontWeight: 800, marginBottom: "1.5rem", color: "var(--text-primary)" }}>
+          <h2 style={{ fontSize: "1.05rem", fontWeight: 800, marginBottom: "1.25rem", color: "var(--text-primary)" }}>
             Methodology &amp; Benchmarks
           </h2>
 
@@ -493,23 +660,23 @@ export default function UnitEconomicsPage() {
               background: "white",
               border: "1px solid var(--border)",
               borderRadius: "var(--radius-lg)",
-              padding: "1.5rem",
+              padding: "1.25rem",
               boxShadow: "var(--shadow-sm)",
-              marginBottom: "1.25rem",
+              marginBottom: "1rem",
             }}
           >
-            <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "0.875rem" }}>
+            <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "0.75rem" }}>
               LTV Formula (5-year DCF, mid-year convention)
             </div>
             <div
               style={{
                 fontFamily: "monospace",
-                fontSize: "0.82rem",
+                fontSize: "0.8rem",
                 background: "var(--surface)",
                 borderRadius: "var(--radius-md)",
-                padding: "1rem",
+                padding: "0.875rem",
                 color: "var(--text-body)",
-                lineHeight: 1.7,
+                lineHeight: 1.65,
                 overflowX: "auto",
               }}
             >
@@ -528,12 +695,12 @@ export default function UnitEconomicsPage() {
               background: "white",
               border: "1px solid var(--border)",
               borderRadius: "var(--radius-lg)",
-              padding: "1.5rem",
+              padding: "1.25rem",
               boxShadow: "var(--shadow-sm)",
-              marginBottom: "1.25rem",
+              marginBottom: "1rem",
             }}
           >
-            <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "0.875rem" }}>
+            <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "0.75rem" }}>
               Benchmark Sources (2026)
             </div>
             {[
@@ -550,15 +717,15 @@ export default function UnitEconomicsPage() {
                   gridTemplateColumns: "1fr auto",
                   gap: "0.5rem",
                   alignItems: "start",
-                  padding: "0.625rem 0",
+                  padding: "0.5rem 0",
                   borderBottom: "1px solid var(--border)",
                 }}
               >
                 <div>
-                  <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)", marginBottom: "0.15rem" }}>{b.metric}</div>
-                  <div style={{ fontSize: "0.72rem", color: "var(--text-subtle)" }}>{b.source}</div>
+                  <div style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--text-primary)", marginBottom: "0.1rem" }}>{b.metric}</div>
+                  <div style={{ fontSize: "0.7rem", color: "var(--text-subtle)" }}>{b.source}</div>
                 </div>
-                <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--primary)", textAlign: "right", whiteSpace: "nowrap" }}>
+                <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--primary)", textAlign: "right", whiteSpace: "nowrap" }}>
                   {b.value}
                 </div>
               </div>
@@ -571,11 +738,11 @@ export default function UnitEconomicsPage() {
               background: "white",
               border: "1px solid var(--border)",
               borderRadius: "var(--radius-lg)",
-              padding: "1.5rem",
+              padding: "1.25rem",
               boxShadow: "var(--shadow-sm)",
             }}
           >
-            <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "0.875rem" }}>
+            <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "0.75rem" }}>
               ARPU Components — Core Tier
             </div>
             {[
@@ -590,7 +757,7 @@ export default function UnitEconomicsPage() {
                   gridTemplateColumns: "1fr auto auto",
                   gap: "0.5rem",
                   alignItems: "center",
-                  padding: "0.625rem 0",
+                  padding: "0.5rem 0",
                   borderBottom: i < 2 ? "1px solid var(--border)" : "none",
                   background: i === 2 ? "var(--primary-light)" : "transparent",
                   borderRadius: i === 2 ? "var(--radius-sm)" : 0,
@@ -601,13 +768,13 @@ export default function UnitEconomicsPage() {
                 }}
               >
                 <div>
-                  <div style={{ fontSize: "0.85rem", fontWeight: i === 2 ? 700 : 500, color: i === 2 ? "var(--primary)" : "var(--text-primary)" }}>
+                  <div style={{ fontSize: "0.82rem", fontWeight: i === 2 ? 700 : 500, color: i === 2 ? "var(--primary)" : "var(--text-primary)" }}>
                     {row.item}
                   </div>
-                  <div style={{ fontSize: "0.7rem", color: "var(--text-subtle)" }}>{row.note}</div>
+                  <div style={{ fontSize: "0.68rem", color: "var(--text-subtle)" }}>{row.note}</div>
                 </div>
-                <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", textAlign: "right" }}>{row.pct}</div>
-                <div style={{ fontSize: "0.9rem", fontWeight: 700, color: i === 2 ? "var(--primary)" : "var(--text-primary)", textAlign: "right" }}>
+                <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", textAlign: "right" }}>{row.pct}</div>
+                <div style={{ fontSize: "0.875rem", fontWeight: 700, color: i === 2 ? "var(--primary)" : "var(--text-primary)", textAlign: "right" }}>
                   {row.value}
                 </div>
               </div>
@@ -616,10 +783,10 @@ export default function UnitEconomicsPage() {
         </div>
       </div>
 
-      {/* Scenario table */}
+      {/* Dynamic scenario table (reflects current tier selection from calculator) */}
       <div style={{ marginBottom: "3rem" }}>
-        <h2 style={{ fontSize: "1.15rem", fontWeight: 800, marginBottom: "1rem", color: "var(--text-primary)" }}>
-          3-Scenario Gate Verification — {tier.label} Tier
+        <h2 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "0.875rem", color: "var(--text-primary)" }}>
+          Live Scenario Table — {tier.label} Tier
         </h2>
         <div
           style={{
@@ -637,9 +804,9 @@ export default function UnitEconomicsPage() {
                   <th
                     key={h}
                     style={{
-                      padding: "0.875rem 1.25rem",
+                      padding: "0.75rem 1rem",
                       textAlign: "left",
-                      fontSize: "0.75rem",
+                      fontSize: "0.72rem",
                       fontWeight: 700,
                       color: "var(--text-muted)",
                       textTransform: "uppercase",
@@ -664,38 +831,38 @@ export default function UnitEconomicsPage() {
                       background: isBase ? "var(--primary-light)" : "white",
                     }}
                   >
-                    <td style={{ padding: "1rem 1.25rem" }}>
-                      <div style={{ fontWeight: 700, color: isBase ? "var(--primary)" : "var(--text-primary)", fontSize: "0.9rem" }}>
+                    <td style={{ padding: "0.875rem 1rem" }}>
+                      <div style={{ fontWeight: 700, color: isBase ? "var(--primary)" : "var(--text-primary)", fontSize: "0.875rem" }}>
                         {row.label}
                       </div>
-                      <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "0.2rem" }}>
+                      <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "0.15rem" }}>
                         {row.description}
                       </div>
                     </td>
-                    <td style={{ padding: "1rem 1.25rem", fontWeight: 600, color: "var(--text-body)", fontSize: "0.9rem" }}>
+                    <td style={{ padding: "0.875rem 1rem", fontWeight: 600, color: "var(--text-body)", fontSize: "0.875rem" }}>
                       {fmtPct(row.churnRate)}
                     </td>
-                    <td style={{ padding: "1rem 1.25rem", fontWeight: 600, color: "var(--text-body)", fontSize: "0.9rem" }}>
+                    <td style={{ padding: "0.875rem 1rem", fontWeight: 600, color: "var(--text-body)", fontSize: "0.875rem" }}>
                       {fmtPct(row.discountRate)}
                     </td>
-                    <td style={{ padding: "1rem 1.25rem", fontWeight: 600, color: "var(--text-body)", fontSize: "0.9rem" }}>
+                    <td style={{ padding: "0.875rem 1rem", fontWeight: 600, color: "var(--text-body)", fontSize: "0.875rem" }}>
                       {fmt$(row.coca)}
                     </td>
-                    <td style={{ padding: "1rem 1.25rem", fontWeight: 700, color: isBase ? "var(--primary)" : "var(--text-primary)", fontSize: "0.95rem" }}>
+                    <td style={{ padding: "0.875rem 1rem", fontWeight: 700, color: isBase ? "var(--primary)" : "var(--text-primary)", fontSize: "0.925rem" }}>
                       {fmt$(row.ltv5)}
                     </td>
-                    <td style={{ padding: "1rem 1.25rem" }}>
-                      <span style={{ fontSize: "1.2rem", fontWeight: 800, color: pass ? "#166534" : "#991b1b" }}>
+                    <td style={{ padding: "0.875rem 1rem" }}>
+                      <span style={{ fontSize: "1.1rem", fontWeight: 800, color: pass ? "#166534" : "#991b1b" }}>
                         {row.ratio.toFixed(2)}×
                       </span>
                     </td>
-                    <td style={{ padding: "1rem 1.25rem" }}>
+                    <td style={{ padding: "0.875rem 1rem" }}>
                       <span
                         style={{
                           display: "inline-block",
-                          padding: "0.2rem 0.6rem",
+                          padding: "0.2rem 0.55rem",
                           borderRadius: 20,
-                          fontSize: "0.78rem",
+                          fontSize: "0.75rem",
                           fontWeight: 700,
                           background: pass ? "#f0fdf4" : "#fef2f2",
                           color: pass ? "#166534" : "#991b1b",
@@ -711,72 +878,10 @@ export default function UnitEconomicsPage() {
             </tbody>
           </table>
         </div>
-        <p style={{ marginTop: "0.75rem", fontSize: "0.78rem", color: "var(--text-subtle)" }}>
+        <p style={{ marginTop: "0.6rem", fontSize: "0.75rem", color: "var(--text-subtle)" }}>
           All scenarios use 5-year DCF (mid-year discounting). Pessimistic excludes Printify rebate entirely.
           Base case uses 20% annual churn consistent with 2026 SMB SaaS median (OpenView/ChurnZero benchmarks).
         </p>
-      </div>
-
-      {/* Tier comparison */}
-      <div style={{ marginBottom: "3rem" }}>
-        <h2 style={{ fontSize: "1.15rem", fontWeight: 800, marginBottom: "1rem", color: "var(--text-primary)" }}>
-          Per-Tier LTV at Base-Case Assumptions
-        </h2>
-        <div
-          className="tier-grid"
-          style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}
-        >
-          {TIERS.map((t) => {
-            const tLtv = calcLTV(t.price, t.rebate, 0.20, 0.10);
-            const tRatio = tLtv / 1780;
-            return (
-              <div
-                key={t.key}
-                style={{
-                  background: "white",
-                  border: t.key === "core" ? "2px solid var(--primary)" : "1px solid var(--border)",
-                  borderRadius: "var(--radius-lg)",
-                  padding: "1.5rem",
-                  boxShadow: "var(--shadow-sm)",
-                }}
-              >
-                <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.5rem" }}>
-                  {t.label} {t.key === "core" && "— beachhead"}
-                </div>
-                <div style={{ fontSize: "1.75rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.25rem" }}>
-                  {fmt$(tLtv)}
-                </div>
-                <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: "1rem" }}>5-year discounted LTV</div>
-                {[
-                  { label: "Annual price", value: fmt$(t.price) },
-                  { label: "Printify rebate/yr", value: fmt$(t.rebate) },
-                  { label: "ARPU", value: fmt$(t.price + t.rebate) },
-                  { label: "COCA", value: fmt$(1780) },
-                  { label: "LTV:COCA", value: `${tRatio.toFixed(2)}×` },
-                ].map((row) => (
-                  <div
-                    key={row.label}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      padding: "0.35rem 0",
-                      borderBottom: "1px solid var(--border)",
-                      fontSize: "0.82rem",
-                    }}
-                  >
-                    <span style={{ color: "var(--text-muted)" }}>{row.label}</span>
-                    <span style={{ fontWeight: 700, color: row.label === "LTV:COCA" ? "#166534" : "var(--text-primary)" }}>
-                      {row.value}
-                    </span>
-                  </div>
-                ))}
-                <div style={{ marginTop: "1rem" }}>
-                  <GateChip ratio={tRatio} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
       </div>
 
       {/* Footer CTA */}
@@ -785,19 +890,19 @@ export default function UnitEconomicsPage() {
           background: "var(--primary-light)",
           border: "1px solid #c7d2fe",
           borderRadius: "var(--radius-lg)",
-          padding: "2.5rem",
+          padding: "2rem",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
           flexWrap: "wrap",
-          gap: "1.5rem",
+          gap: "1.25rem",
         }}
       >
         <div>
-          <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.4rem" }}>
+          <div style={{ fontSize: "1.15rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.35rem" }}>
             Ready to validate these unit economics with a live pilot?
           </div>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", maxWidth: 500 }}>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", maxWidth: 480 }}>
             Get a branded Shopify storefront live in under 10 minutes. Real customers.
             Real retention data. Real LTV.
           </p>
@@ -807,12 +912,12 @@ export default function UnitEconomicsPage() {
             href="/pilot"
             style={{
               display: "inline-block",
-              padding: "0.875rem 1.75rem",
+              padding: "0.8rem 1.5rem",
               background: "var(--primary)",
               color: "white",
               borderRadius: "var(--radius-md)",
               fontWeight: 700,
-              fontSize: "0.975rem",
+              fontSize: "0.925rem",
             }}
           >
             Start Pilot →
@@ -821,13 +926,13 @@ export default function UnitEconomicsPage() {
             href="/roi-report"
             style={{
               display: "inline-block",
-              padding: "0.875rem 1.5rem",
+              padding: "0.8rem 1.375rem",
               background: "white",
               color: "var(--primary)",
               border: "1px solid #c7d2fe",
               borderRadius: "var(--radius-md)",
               fontWeight: 600,
-              fontSize: "0.9rem",
+              fontSize: "0.875rem",
             }}
           >
             Customer ROI Report →
@@ -852,8 +957,8 @@ export default function UnitEconomicsPage() {
 // ── Style helper ──────────────────────────────────────────────────────────────
 const labelStyle: React.CSSProperties = {
   display: "block",
-  fontSize: "0.875rem",
+  fontSize: "0.85rem",
   fontWeight: 600,
   color: "var(--text-body)",
-  marginBottom: "0.35rem",
+  marginBottom: "0.3rem",
 };
