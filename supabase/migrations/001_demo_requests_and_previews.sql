@@ -1,4 +1,4 @@
--- Run this in your Supabase SQL Editor to create the required tables.
+-- demo_requests and storefront_previews tables
 
 -- 1. demo_requests — captures demo/discovery call requests from all forms
 CREATE TABLE IF NOT EXISTS public.demo_requests (
@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS public.demo_requests (
 
 ALTER TABLE public.demo_requests ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "anon_insert_demo_requests" ON public.demo_requests;
 CREATE POLICY "anon_insert_demo_requests"
   ON public.demo_requests FOR INSERT
   TO anon, authenticated
@@ -30,11 +31,13 @@ CREATE TABLE IF NOT EXISTS public.storefront_previews (
 
 ALTER TABLE public.storefront_previews ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "anon_insert_storefront_previews" ON public.storefront_previews;
 CREATE POLICY "anon_insert_storefront_previews"
   ON public.storefront_previews FOR INSERT
   TO anon, authenticated
   WITH CHECK (true);
 
+DROP POLICY IF EXISTS "anon_select_storefront_previews" ON public.storefront_previews;
 CREATE POLICY "anon_select_storefront_previews"
   ON public.storefront_previews FOR SELECT
   TO anon, authenticated

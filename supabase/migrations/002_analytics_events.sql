@@ -26,9 +26,4 @@ CREATE POLICY "anon_select_analytics_events"
   TO anon, authenticated
   USING (true);
 
--- also fix waitlist_signups missing SELECT policy (needed for the GET /api/waitlist endpoint)
-DROP POLICY IF EXISTS "anon_select_waitlist_signups" ON public.waitlist_signups;
-CREATE POLICY "anon_select_waitlist_signups"
-  ON public.waitlist_signups FOR SELECT
-  TO anon, authenticated
-  USING (true);
+-- waitlist_signups table and policies are defined in 003_waitlist_signups.sql
