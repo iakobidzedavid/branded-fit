@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 // ── Scoring helpers ──────────────────────────────────────────────────────────
@@ -240,7 +240,7 @@ export default function AssessmentPage() {
   const [teamSize, setTeamSize] = useState("");
 
   // Step 2
-  const [budget, setBudget] = useState("");
+  const [budget, setBudget] = useState("15000");
   const [cycles, setCycles] = useState("4");
 
   // Step 3
@@ -258,6 +258,26 @@ export default function AssessmentPage() {
   const score = approach && pain ? calcScore(approach, pain) : 0;
   const metrics = calcMetrics(approach || "manual", budgetNum || 15000, cyclesNum);
   const sc = scoreColor(score);
+
+  // Animated score counter
+  const [displayScore, setDisplayScore] = useState(0);
+  useEffect(() => {
+    if (stage !== "results" && stage !== "captured") return;
+    setDisplayScore(0);
+    const duration = 1200;
+    const steps = 60;
+    const interval = duration / steps;
+    let step = 0;
+    const timer = setInterval(() => {
+      step++;
+      const progress = step / steps;
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplayScore(Math.round(eased * score));
+      if (step >= steps) clearInterval(timer);
+    }, interval);
+    return () => clearInterval(timer);
+  }, [stage, score]);
 
   async function handleSubmitResults() {
     setSubmitting(true);
@@ -708,7 +728,7 @@ export default function AssessmentPage() {
               marginBottom: "0.5rem",
             }}
           >
-            {score}
+            {displayScore}
             <span style={{ fontSize: "clamp(1.5rem, 4vw, 2rem)", opacity: 0.6 }}>/100</span>
           </div>
           <div
