@@ -159,6 +159,131 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Testimonials */}
+      <section
+        id="early-access-feedback"
+        aria-label="Early Access Feedback"
+        style={{
+          paddingTop: "4rem",
+          paddingBottom: "4rem",
+          borderTop: "1px solid var(--border)",
+        }}
+      >
+        <div style={{ maxWidth: 600, marginBottom: "3rem" }}>
+          <div
+            style={{
+              display: "inline-block",
+              padding: "0.3rem 0.875rem",
+              background: "var(--primary-light)",
+              color: "var(--primary)",
+              borderRadius: 20,
+              fontSize: "0.8rem",
+              fontWeight: 700,
+              letterSpacing: "0.04em",
+              textTransform: "uppercase",
+              marginBottom: "1.25rem",
+            }}
+          >
+            Early Access Feedback
+          </div>
+          <h2
+            style={{
+              fontSize: "clamp(1.5rem, 3vw, 2rem)",
+              fontWeight: 800,
+              color: "var(--text-primary)",
+              marginBottom: "0.75rem",
+              lineHeight: 1.2,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Built for forward-thinking<br />People Ops teams
+          </h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "1rem", lineHeight: 1.65 }}>
+            Here&apos;s what early access participants said after their first storefront went live.
+          </p>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "1.5rem",
+          }}
+        >
+          {[
+            {
+              quote: "We went from “we should do company swag” to a live, orderable Shopify store in under 10 minutes. I’ve been putting this task off for months — now I can’t believe I waited.",
+              role: "Head of People Operations",
+              company: "Series B SaaS startup \xb7 160 employees",
+            },
+            {
+              quote: "The AI catalog nailed our brand. It pulled our color palette and suggested hoodies and tote bags that actually looked like us. No back-and-forth with a design vendor, no minimum order fuss.",
+              role: "People Ops Manager",
+              company: "Venture-backed fintech \xb7 85 employees",
+            },
+            {
+              quote: "Redemption at our last swag drop was 38%. After switching to a self-selection storefront through Branded Fit, our team actually gets excited about the quarterly refresh. Huge shift.",
+              role: "VP of People",
+              company: "Growth-stage B2B startup \xb7 230 employees",
+            },
+          ].map((t, i) => (
+            <article
+              key={i}
+              aria-label={`Testimonial from ${t.role}`}
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+                borderRadius: "var(--radius-lg)",
+                padding: "1.75rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "1.25rem",
+                boxShadow: "var(--shadow-sm)",
+              }}
+            >
+              <div
+                aria-hidden="true"
+                style={{
+                  fontSize: "2rem",
+                  lineHeight: 1,
+                  color: "var(--primary)",
+                  fontWeight: 800,
+                  marginBottom: "-0.5rem",
+                }}
+              >
+                &ldquo;
+              </div>
+              <blockquote
+                style={{
+                  color: "var(--text-body)",
+                  fontSize: "0.9375rem",
+                  lineHeight: 1.7,
+                  margin: 0,
+                  padding: 0,
+                  flexGrow: 1,
+                  border: "none",
+                }}
+              >
+                {t.quote}
+              </blockquote>
+              <footer
+                style={{
+                  borderTop: "1px solid var(--border)",
+                  paddingTop: "1rem",
+                }}
+              >
+                <div style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "0.875rem" }}>
+                  {t.role}
+                </div>
+                <div style={{ color: "var(--text-subtle)", fontSize: "0.8rem", marginTop: "0.2rem" }}>
+                  {t.company}
+                </div>
+              </footer>
+            </article>
+          ))}
+        </div>
+      </section>
+
       {/* Join the waitlist */}
       <section
         id="waitlist"
@@ -404,131 +529,6 @@ export default function Home() {
         <p style={{ marginTop: "1.5rem", color: "var(--text-subtle)", fontSize: "0.8rem" }}>
           Fulfillment speed and redemption rate based on market research (June 2026). SwagUp pricing from SaaSWorthy/ColdIQ April 2026. Branded Fit at $199/mo.
         </p>
-      </section>
-
-      {/* Testimonials */}
-      <section
-        id="early-access-feedback"
-        aria-label="Early Access Feedback"
-        style={{
-          paddingTop: "4rem",
-          paddingBottom: "4rem",
-          borderTop: "1px solid var(--border)",
-        }}
-      >
-        <div style={{ maxWidth: 600, marginBottom: "3rem" }}>
-          <div
-            style={{
-              display: "inline-block",
-              padding: "0.3rem 0.875rem",
-              background: "var(--primary-light)",
-              color: "var(--primary)",
-              borderRadius: 20,
-              fontSize: "0.8rem",
-              fontWeight: 700,
-              letterSpacing: "0.04em",
-              textTransform: "uppercase",
-              marginBottom: "1.25rem",
-            }}
-          >
-            Early Access Feedback
-          </div>
-          <h2
-            style={{
-              fontSize: "clamp(1.5rem, 3vw, 2rem)",
-              fontWeight: 800,
-              color: "var(--text-primary)",
-              marginBottom: "0.75rem",
-              lineHeight: 1.2,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            Built for forward-thinking<br />People Ops teams
-          </h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "1rem", lineHeight: 1.65 }}>
-            Here&apos;s what early access participants said after their first storefront went live.
-          </p>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "1.5rem",
-          }}
-        >
-          {[
-            {
-              quote: "We went from “we should do company swag” to a live, orderable Shopify store in under 10 minutes. I’ve been putting this task off for months — now I can’t believe I waited.",
-              role: "Head of People Operations",
-              company: "Series B SaaS startup · 160 employees",
-            },
-            {
-              quote: "The AI catalog nailed our brand. It pulled our color palette and suggested hoodies and tote bags that actually looked like us. No back-and-forth with a design vendor, no minimum order fuss.",
-              role: "People Ops Manager",
-              company: "Venture-backed fintech · 85 employees",
-            },
-            {
-              quote: "Redemption at our last swag drop was 38%. After switching to a self-selection storefront through Branded Fit, our team actually gets excited about the quarterly refresh. Huge shift.",
-              role: "VP of People",
-              company: "Growth-stage B2B startup · 230 employees",
-            },
-          ].map((t, i) => (
-            <article
-              key={i}
-              aria-label={`Testimonial from ${t.role}`}
-              style={{
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-lg)",
-                padding: "1.75rem",
-                display: "flex",
-                flexDirection: "column",
-                gap: "1.25rem",
-                boxShadow: "var(--shadow-sm)",
-              }}
-            >
-              <div
-                aria-hidden="true"
-                style={{
-                  fontSize: "2rem",
-                  lineHeight: 1,
-                  color: "var(--primary)",
-                  fontWeight: 800,
-                  marginBottom: "-0.5rem",
-                }}
-              >
-                &ldquo;
-              </div>
-              <blockquote
-                style={{
-                  color: "var(--text-body)",
-                  fontSize: "0.9375rem",
-                  lineHeight: 1.7,
-                  margin: 0,
-                  padding: 0,
-                  flexGrow: 1,
-                  border: "none",
-                }}
-              >
-                {t.quote}
-              </blockquote>
-              <footer
-                style={{
-                  borderTop: "1px solid var(--border)",
-                  paddingTop: "1rem",
-                }}
-              >
-                <div style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "0.875rem" }}>
-                  {t.role}
-                </div>
-                <div style={{ color: "var(--text-subtle)", fontSize: "0.8rem", marginTop: "0.2rem" }}>
-                  {t.company}
-                </div>
-              </footer>
-            </article>
-          ))}
-        </div>
       </section>
 
       {/* Request a Demo */}
