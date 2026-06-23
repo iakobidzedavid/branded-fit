@@ -140,10 +140,26 @@ export default function PilotPage() {
         >
           Pilot request confirmed!
         </h1>
-        <p style={{ color: "var(--text-muted)", fontSize: "1rem", lineHeight: 1.65, marginBottom: "2.5rem", maxWidth: 480, margin: "0 auto 2.5rem" }}>
+        <p style={{ color: "var(--text-muted)", fontSize: "1rem", lineHeight: 1.65, maxWidth: 480, margin: "0 auto 1rem" }}>
           We&apos;ve received your request for{" "}
           <strong style={{ color: "var(--primary)" }}>{company}</strong>.
-          Expect to hear from us within 24 hours — your storefront will be live in 48.
+        </p>
+        <p
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.4rem",
+            padding: "0.45rem 1rem",
+            background: "var(--accent-bg)",
+            border: "1px solid var(--accent-border)",
+            borderRadius: 20,
+            fontSize: "0.875rem",
+            color: "var(--accent-text)",
+            fontWeight: 500,
+            marginBottom: "2.5rem",
+          }}
+        >
+          ✉ Confirmation email sent to <strong>{email}</strong>
         </p>
 
         <div
@@ -218,9 +234,10 @@ export default function PilotPage() {
             What happens next
           </div>
           {[
-            { step: "24 hrs", text: "We send you a one-page AI brand profile for your domain" },
+            { step: "Now", text: `Confirmation email sent to ${email} — check your inbox` },
+            { step: "24 hrs", text: "We email you a one-page AI brand profile for your domain" },
             { step: "48 hrs", text: "Your branded Shopify storefront is live — 8–12 curated products" },
-            { step: "Day 3", text: "We email you a full walkthrough of your live store — catalog, redemption link, and first order guide" },
+            { step: "Day 3", text: "Email walkthrough of your live store — catalog, redemption link, and first order guide" },
             { step: "Day 14", text: "First redemption report — see how your team responded" },
           ].map((item) => (
             <div key={item.step} style={{ display: "flex", gap: "0.875rem", alignItems: "flex-start", marginBottom: "0.625rem" }}>

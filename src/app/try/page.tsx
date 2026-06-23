@@ -869,7 +869,7 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
             ✦ Your shareable preview link
           </div>
           <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "0.875rem", lineHeight: 1.5 }}>
-            Share this with your People Leader or VP People — they can see the full storefront and book a call directly.
+            Share this with your People Leader or VP People — they can see the full storefront and request an email walkthrough directly.
           </p>
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
             <input
