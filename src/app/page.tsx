@@ -2,6 +2,33 @@ import Link from "next/link";
 import DomainHero from "@/components/DomainHero";
 import DemoRequestForm from "@/components/DemoRequestForm";
 import WaitlistForm from "@/components/WaitlistForm";
+import UnitEconomicsCalc from "@/components/UnitEconomicsCalc";
+
+// LTV DCF helper (mid-year convention) — used for static gate table and tier comparison
+function calcLTV(price: number, rebate: number, churn: number, discount: number, years = 5): number {
+  let ltv = 0;
+  const arpu = price + rebate;
+  for (let n = 1; n <= years; n++) {
+    ltv += (arpu * Math.pow(1 - churn, n - 1)) / Math.pow(1 + discount, n - 0.5);
+  }
+  return ltv;
+}
+
+function fmt$(n: number): string {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+}
+
+const SCENARIOS_STATIC = [
+  { label: "Pessimistic", description: "30% churn, 12% discount, no rebate", churn: 0.30, discount: 0.12, coca: 2400, rebate: 0 },
+  { label: "Base Case",   description: "20% churn — SMB SaaS median (2026)", churn: 0.20, discount: 0.10, coca: 1780, rebate: 540 },
+  { label: "Optimistic",  description: "12% churn (PLG-assisted), lower COCA", churn: 0.12, discount: 0.10, coca: 1200, rebate: 540 },
+];
+
+const TIERS_STATIC = [
+  { key: "core",   label: "Core",   price: 2400, rebate: 540 },
+  { key: "growth", label: "Growth", price: 4800, rebate: 960 },
+  { key: "scale",  label: "Scale",  price: 9600, rebate: 1800 },
+];
 
 const CHECK = "✓";
 const CROSS = "✗";
@@ -282,6 +309,140 @@ export default function Home() {
             </article>
           ))}
         </div>
+      </section>
+
+      {/* Section 3 — 3-Scenario Gate Verification (DE Step 17) */}
+      <section
+        id="gate-verification"
+        aria-label="3-Scenario Gate Verification"
+        style={{ paddingTop: "4rem", paddingBottom: "2rem", borderTop: "1px solid var(--border)" }}
+      >
+        <div style={{ marginBottom: "1.25rem", display: "flex", flexWrap: "wrap", gap: "0.75rem", alignItems: "center" }}>
+          <span style={{
+            display: "inline-block", padding: "0.3rem 0.875rem",
+            background: "var(--primary-light)", color: "var(--primary)",
+            borderRadius: 20, fontSize: "0.78rem", fontWeight: 700,
+            letterSpacing: "0.04em", textTransform: "uppercase",
+          }}>
+            DE Step 17 · Unit Economics
+          </span>
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: "0.3rem",
+            padding: "0.2rem 0.6rem", borderRadius: 20, fontSize: "0.75rem", fontWeight: 700,
+            background: "#f0fdf4", color: "#166534", border: "1px solid #bbf7d0",
+          }}>
+            ✓ Gate cleared: 4.60× ≥ 3×
+          </span>
+        </div>
+        <h2 style={{ fontSize: "clamp(1.25rem, 2.5vw, 1.75rem)", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.5rem", letterSpacing: "-0.02em" }}>
+          3-Scenario Gate Verification — Core Tier
+        </h2>
+        <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", marginBottom: "1.5rem", maxWidth: 600 }}>
+          LTV ≥ 3× COCA is the Disciplined Entrepreneurship Step 17 gate. Our base case clears at <strong style={{ color: "var(--accent-text)" }}>4.6×</strong>; even the stress-test pessimistic scenario is within reach.
+        </p>
+        <div style={{ background: "white", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "auto", boxShadow: "var(--shadow-sm)" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 560 }}>
+            <thead>
+              <tr style={{ background: "var(--surface)", borderBottom: "2px solid var(--border)" }}>
+                {["Scenario", "Churn", "COCA", "LTV (Core, 5yr)", "LTV:COCA", "Gate ≥3×"].map((h) => (
+                  <th key={h} style={{ padding: "0.75rem 1rem", textAlign: "left", fontSize: "0.72rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em", whiteSpace: "nowrap" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {SCENARIOS_STATIC.map((s, i) => {
+                const ltv5 = calcLTV(2400, s.rebate, s.churn, s.discount);
+                const ratio5 = s.coca > 0 ? ltv5 / s.coca : 0;
+                const pass = ratio5 >= 3;
+                const isBase = s.label === "Base Case";
+                return (
+                  <tr key={s.label} style={{ borderBottom: i < 2 ? "1px solid var(--border)" : "none", background: isBase ? "var(--primary-light)" : "white" }}>
+                    <td style={{ padding: "0.875rem 1rem" }}>
+                      <div style={{ fontWeight: 700, color: isBase ? "var(--primary)" : "var(--text-primary)", fontSize: "0.875rem" }}>{s.label}</div>
+                      <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "0.1rem" }}>{s.description}</div>
+                    </td>
+                    <td style={{ padding: "0.875rem 1rem", fontWeight: 600, fontSize: "0.875rem" }}>{Math.round(s.churn * 100)}%</td>
+                    <td style={{ padding: "0.875rem 1rem", fontWeight: 600, fontSize: "0.875rem" }}>{fmt$(s.coca)}</td>
+                    <td style={{ padding: "0.875rem 1rem", fontWeight: 700, color: isBase ? "var(--primary)" : "var(--text-primary)", fontSize: "0.925rem" }}>{fmt$(ltv5)}</td>
+                    <td style={{ padding: "0.875rem 1rem" }}>
+                      <span style={{ fontSize: "1.1rem", fontWeight: 800, color: pass ? "#166534" : "#991b1b" }}>{ratio5.toFixed(2)}×</span>
+                    </td>
+                    <td style={{ padding: "0.875rem 1rem" }}>
+                      <span style={{ display: "inline-block", padding: "0.2rem 0.55rem", borderRadius: 20, fontSize: "0.75rem", fontWeight: 700, background: pass ? "#f0fdf4" : "#fef2f2", color: pass ? "#166534" : "#991b1b", border: `1px solid ${pass ? "#bbf7d0" : "#fecaca"}` }}>
+                        {pass ? "✓ Cleared" : "✗ Below"}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <p style={{ marginTop: "0.6rem", fontSize: "0.75rem", color: "var(--text-subtle)" }}>
+          5-year DCF, mid-year discounting. Core tier: $2,400/yr subscription + $540/yr Printify rebate = $2,940 ARPU. Pessimistic excludes rebate.
+        </p>
+      </section>
+
+      {/* Section 4 — Per-Tier LTV Comparison */}
+      <section
+        id="tier-comparison"
+        aria-label="Per-Tier LTV Comparison"
+        style={{ paddingBottom: "3rem" }}
+      >
+        <h2 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "0.5rem", color: "var(--text-primary)" }}>
+          Per-Tier LTV at Base-Case Assumptions
+        </h2>
+        <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", marginBottom: "1.25rem" }}>20% churn · 10% discount · $1,780 COCA</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
+          {TIERS_STATIC.map((t) => {
+            const tLtv = calcLTV(t.price, t.rebate, 0.20, 0.10);
+            const tRatio = tLtv / 1780;
+            const pass = tRatio >= 3;
+            return (
+              <div key={t.key} style={{ background: "white", border: t.key === "core" ? "2px solid var(--primary)" : "1px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "1.25rem", boxShadow: "var(--shadow-sm)" }}>
+                <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.4rem" }}>
+                  {t.label}{t.key === "core" ? " — beachhead" : ""}
+                </div>
+                <div style={{ fontSize: "1.6rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.2rem" }}>{fmt$(tLtv)}</div>
+                <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "0.875rem" }}>5-year discounted LTV</div>
+                {[
+                  { label: "Annual price", value: fmt$(t.price) },
+                  { label: "Printify rebate/yr", value: fmt$(t.rebate) },
+                  { label: "LTV:COCA", value: `${tRatio.toFixed(2)}×` },
+                ].map((row) => (
+                  <div key={row.label} style={{ display: "flex", justifyContent: "space-between", padding: "0.3rem 0", borderBottom: "1px solid var(--border)", fontSize: "0.8rem" }}>
+                    <span style={{ color: "var(--text-muted)" }}>{row.label}</span>
+                    <span style={{ fontWeight: 700, color: row.label === "LTV:COCA" ? "#166534" : "var(--text-primary)" }}>{row.value}</span>
+                  </div>
+                ))}
+                <div style={{ marginTop: "0.875rem" }}>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "0.3rem", padding: "0.2rem 0.6rem", borderRadius: 20, fontSize: "0.75rem", fontWeight: 700, background: pass ? "#f0fdf4" : "#fef2f2", color: pass ? "#166534" : "#991b1b", border: `1px solid ${pass ? "#bbf7d0" : "#fecaca"}` }}>
+                    {pass ? "✓" : "✗"} Gate {pass ? "cleared" : "not met"}: {tRatio.toFixed(2)}× {pass ? "≥" : "<"} 3×
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Section 5 — Interactive LTV Stress-Test Calculator */}
+      <section
+        id="ltv-calculator"
+        aria-label="Interactive LTV Calculator"
+        style={{ paddingBottom: "4rem", borderTop: "1px solid var(--border)", paddingTop: "3rem" }}
+      >
+        <h2 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "0.4rem", color: "var(--text-primary)" }}>
+          Interactive Stress-Test
+        </h2>
+        <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", marginBottom: "1.5rem" }}>
+          Adjust churn, COCA, and discount rate. The result (LTV, ratio, gate chip) and Save-to-DB button update live.
+        </p>
+        <UnitEconomicsCalc />
+        <p style={{ marginTop: "1rem", fontSize: "0.8rem", color: "var(--text-subtle)" }}>
+          Full methodology, benchmarks, and per-tier analysis on the{" "}
+          <Link href="/unit-economics" style={{ color: "var(--primary)", fontWeight: 600 }}>Unit Economics page →</Link>
+        </p>
       </section>
 
       {/* Join the waitlist */}
