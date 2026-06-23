@@ -36,6 +36,7 @@ function cleanDomainStr(raw: string) {
 }
 
 type Stage = "form" | "success";
+type ApiEmailStatus = { sent: boolean; provider?: string | null; user_confirmation_id?: string; reason?: string };
 
 const APPROACH_OPTIONS = [
   { value: "", label: "Select one…" },
@@ -58,6 +59,7 @@ export default function PilotPage() {
   const [approach, setApproach] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [emailStatus, setEmailStatus] = useState<ApiEmailStatus | null>(null);
 
   // Use actual entered budget if > 0, otherwise show defaults so the panel is always live
   const budgetNum = Number(budget) || 0;
@@ -102,6 +104,8 @@ export default function PilotPage() {
         const d = await res.json() as { error?: string };
         throw new Error(d.error || "Server error — please try again");
       }
+      const d = await res.json() as { email?: ApiEmailStatus };
+      setEmailStatus(d.email ?? null);
       setStage("success");
     } catch (err) {
       setErrors({ submit: (err as Error).message });
@@ -112,6 +116,7 @@ export default function PilotPage() {
 
   if (stage === "success") {
     const actualRoi = calcROI(budgetNum > 0 ? budgetNum : DEFAULT_BUDGET, cyclesNum);
+    const emailSent = emailStatus?.sent === true;
     return (
       <main style={{ maxWidth: 640, margin: "0 auto", padding: "5rem 1.5rem 6rem", textAlign: "center" }}>
         <div
@@ -159,7 +164,10 @@ export default function PilotPage() {
             marginBottom: "2.5rem",
           }}
         >
-          ✉ Confirmation email sent to <strong>{email}</strong>
+          {emailSent
+            ? <>✉ Confirmation email sent to <strong>{email}</strong></>
+            : <>✉ We&apos;ll email <strong>{email}</strong> within 24 hours</>
+          }
         </p>
 
         <div
@@ -234,7 +242,7 @@ export default function PilotPage() {
             What happens next
           </div>
           {[
-            { step: "Now", text: `Confirmation email sent to ${email} — check your inbox` },
+            { step: "Now", text: emailSent ? `Confirmation email sent to ${email} — check your inbox` : `Request received for ${email} — we'll be in touch within 24 hours` },
             { step: "24 hrs", text: "We email you a one-page AI brand profile for your domain" },
             { step: "48 hrs", text: "Your branded Shopify storefront is live — 8–12 curated products" },
             { step: "Day 3", text: "Email walkthrough of your live store — catalog, redemption link, and first order guide" },

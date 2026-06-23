@@ -354,7 +354,7 @@ export default async function PreviewPage({
           </p>
           <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
             <Link
-              href="/demo"
+              href="/pilot"
               style={{
                 display: "inline-block",
                 padding: "0.875rem 1.75rem",
@@ -365,7 +365,7 @@ export default async function PreviewPage({
                 fontSize: "0.95rem",
               }}
             >
-              Book a 15-min call →
+              Request a Walkthrough →
             </Link>
             <Link
               href="/try"
