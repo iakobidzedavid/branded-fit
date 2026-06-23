@@ -10,6 +10,10 @@ const HOURLY_RATE = 85;
 const BEFORE_WASTE = 0.525;
 const AFTER_WASTE = 0.22;
 
+// Default example values so ROI panel is always populated on load
+const DEFAULT_BUDGET = 15000;
+const DEFAULT_CYCLES = 4;
+
 function fmt$(n: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -31,11 +35,6 @@ function cleanDomainStr(raw: string) {
   return raw.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
 }
 
-function companyFromDomain(domain: string) {
-  const d = cleanDomainStr(domain).split(".")[0];
-  return d ? d.charAt(0).toUpperCase() + d.slice(1) : "";
-}
-
 type Stage = "form" | "success";
 
 const APPROACH_OPTIONS = [
@@ -51,20 +50,21 @@ export default function PilotPage() {
   const [stage, setStage] = useState<Stage>("form");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
   const [domain, setDomain] = useState("");
   const [teamSize, setTeamSize] = useState<string>("");
   const [budget, setBudget] = useState<string>("");
-  const [cycles, setCycles] = useState<string>("4");
+  const [cycles, setCycles] = useState<string>(String(DEFAULT_CYCLES));
   const [approach, setApproach] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
+  // Use actual entered budget if > 0, otherwise show defaults so the panel is always live
   const budgetNum = Number(budget) || 0;
-  const cyclesNum = Number(cycles) || 4;
-  const roi = calcROI(budgetNum, cyclesNum);
-  const hasROI = budgetNum > 0;
-
-  const companyName = companyFromDomain(domain);
+  const cyclesNum = Number(cycles) || DEFAULT_CYCLES;
+  const roiInputBudget = budgetNum > 0 ? budgetNum : DEFAULT_BUDGET;
+  const roi = calcROI(roiInputBudget, cyclesNum);
+  const isUsingDefaults = budgetNum === 0;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -73,6 +73,7 @@ export default function PilotPage() {
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       errs.email = "Enter a valid work email";
     }
+    if (!company.trim()) errs.company = "Required";
     if (!domain.trim()) errs.domain = "Required";
     if (!teamSize || Number(teamSize) < 1) errs.teamSize = "Required";
     if (!budget || Number(budget) < 0) errs.budget = "Required";
@@ -87,7 +88,7 @@ export default function PilotPage() {
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim().toLowerCase(),
-          company: companyName || domain.trim(),
+          company: company.trim(),
           domain: cleanDomainStr(domain),
           team_size: Number(teamSize),
           annual_swag_budget: Number(budget),
@@ -110,6 +111,7 @@ export default function PilotPage() {
   }
 
   if (stage === "success") {
+    const actualRoi = calcROI(budgetNum > 0 ? budgetNum : DEFAULT_BUDGET, cyclesNum);
     return (
       <main style={{ maxWidth: 640, margin: "0 auto", padding: "5rem 1.5rem 6rem", textAlign: "center" }}>
         <div
@@ -140,69 +142,67 @@ export default function PilotPage() {
         </h1>
         <p style={{ color: "var(--text-muted)", fontSize: "1rem", lineHeight: 1.65, marginBottom: "2.5rem", maxWidth: 480, margin: "0 auto 2.5rem" }}>
           We&apos;ve received your request for{" "}
-          {companyName ? <strong style={{ color: "var(--primary)" }}>{companyName}</strong> : "your company"}.
+          <strong style={{ color: "var(--primary)" }}>{company}</strong>.
           Expect to hear from us within 24 hours — your storefront will be live in 48.
         </p>
 
-        {hasROI && (
+        <div
+          style={{
+            padding: "1.5rem",
+            background: "var(--accent-bg)",
+            border: "1px solid var(--accent-border)",
+            borderRadius: "var(--radius-lg)",
+            marginBottom: "2rem",
+            textAlign: "left",
+          }}
+        >
           <div
             style={{
-              padding: "1.5rem",
-              background: "var(--accent-bg)",
-              border: "1px solid var(--accent-border)",
-              borderRadius: "var(--radius-lg)",
-              marginBottom: "2rem",
-              textAlign: "left",
+              fontSize: "0.75rem",
+              fontWeight: 700,
+              color: "var(--accent-text)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              marginBottom: "1rem",
             }}
           >
-            <div
-              style={{
-                fontSize: "0.75rem",
-                fontWeight: 700,
-                color: "var(--accent-text)",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                marginBottom: "1rem",
-              }}
-            >
-              ✓ Your estimated annual return
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-              {[
-                { label: "Time savings", value: fmt$(roi.timeSavings) },
-                { label: "Waste recovery", value: fmt$(roi.wasteSavings) },
-                { label: "Total annual value", value: fmt$(roi.total) },
-                {
-                  label: "ROI multiple",
-                  value: `${roi.multiple.toFixed(1)}×`,
-                  highlight: true,
-                },
-              ].map((item) => (
-                <div key={item.label}>
-                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.15rem" }}>
-                    {item.label}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: item.highlight ? "1.5rem" : "1.1rem",
-                      fontWeight: 800,
-                      color: item.highlight ? "var(--accent)" : "var(--text-primary)",
-                    }}
-                  >
-                    {item.value}
-                  </div>
-                </div>
-              ))}
-            </div>
-            {roi.paybackWeeks !== null && (
-              <p style={{ marginTop: "0.875rem", fontSize: "0.8rem", color: "var(--accent-text)", fontWeight: 500 }}>
-                Payback period: {roi.paybackWeeks < 4
-                  ? `${Math.round(roi.paybackWeeks)} weeks`
-                  : `${(roi.paybackWeeks / 4.33).toFixed(1)} months`}
-              </p>
-            )}
+            ✓ Your estimated annual return
           </div>
-        )}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            {[
+              { label: "Time savings", value: fmt$(actualRoi.timeSavings) },
+              { label: "Waste recovery", value: fmt$(actualRoi.wasteSavings) },
+              { label: "Total annual value", value: fmt$(actualRoi.total) },
+              {
+                label: "ROI multiple",
+                value: `${actualRoi.multiple.toFixed(1)}×`,
+                highlight: true,
+              },
+            ].map((item) => (
+              <div key={item.label}>
+                <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.15rem" }}>
+                  {item.label}
+                </div>
+                <div
+                  style={{
+                    fontSize: item.highlight ? "1.5rem" : "1.1rem",
+                    fontWeight: 800,
+                    color: item.highlight ? "var(--accent)" : "var(--text-primary)",
+                  }}
+                >
+                  {item.value}
+                </div>
+              </div>
+            ))}
+          </div>
+          {actualRoi.paybackWeeks !== null && (
+            <p style={{ marginTop: "0.875rem", fontSize: "0.8rem", color: "var(--accent-text)", fontWeight: 500 }}>
+              Payback period: {actualRoi.paybackWeeks < 4
+                ? `${Math.round(actualRoi.paybackWeeks)} weeks`
+                : `${(actualRoi.paybackWeeks / 4.33).toFixed(1)} months`}
+            </p>
+          )}
+        </div>
 
         <div
           style={{
@@ -329,6 +329,7 @@ export default function PilotPage() {
         {/* Form column */}
         <div>
           <form onSubmit={handleSubmit} noValidate>
+            {/* Contact info card */}
             <div
               style={{
                 background: "white",
@@ -344,11 +345,7 @@ export default function PilotPage() {
               </h2>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }} className="two-col">
-                <FormField
-                  label="Your name"
-                  error={errors.name}
-                  required
-                >
+                <FormField label="Your name" error={errors.name} required>
                   <input
                     type="text"
                     placeholder="Maya Chen"
@@ -357,11 +354,7 @@ export default function PilotPage() {
                     style={inputStyle(!!errors.name)}
                   />
                 </FormField>
-                <FormField
-                  label="Work email"
-                  error={errors.email}
-                  required
-                >
+                <FormField label="Work email" error={errors.email} required>
                   <input
                     type="email"
                     placeholder="maya@yourcompany.com"
@@ -372,22 +365,35 @@ export default function PilotPage() {
                 </FormField>
               </div>
 
-              <FormField
-                label="Company domain"
-                hint="e.g. notion.so or linear.app"
-                error={errors.domain}
-                required
-              >
+              <FormField label="Company name" error={errors.company} required>
                 <input
                   type="text"
-                  placeholder="yourcompany.com"
-                  value={domain}
-                  onChange={(e) => { setDomain(e.target.value); setErrors((p) => ({ ...p, domain: "" })); }}
-                  style={inputStyle(!!errors.domain)}
+                  placeholder="Acme Inc"
+                  value={company}
+                  onChange={(e) => { setCompany(e.target.value); setErrors((p) => ({ ...p, company: "" })); }}
+                  style={inputStyle(!!errors.company)}
                 />
               </FormField>
+
+              <div style={{ marginTop: "1rem" }}>
+                <FormField
+                  label="Company domain"
+                  hint="e.g. notion.so or linear.app — used to generate your brand profile"
+                  error={errors.domain}
+                  required
+                >
+                  <input
+                    type="text"
+                    placeholder="yourcompany.com"
+                    value={domain}
+                    onChange={(e) => { setDomain(e.target.value); setErrors((p) => ({ ...p, domain: "" })); }}
+                    style={inputStyle(!!errors.domain)}
+                  />
+                </FormField>
+              </div>
             </div>
 
+            {/* Swag program card */}
             <div
               style={{
                 background: "white",
@@ -420,7 +426,7 @@ export default function PilotPage() {
                 </FormField>
                 <FormField
                   label="Annual swag budget ($)"
-                  hint="Total yearly spend on branded merch"
+                  hint="Updates the ROI estimate on the right"
                   error={errors.budget}
                   required
                 >
@@ -508,7 +514,7 @@ export default function PilotPage() {
           </form>
         </div>
 
-        {/* ROI panel column */}
+        {/* Right column: what's included + live ROI panel */}
         <div style={{ position: "sticky", top: 88 }}>
           {/* What you get */}
           <div
@@ -569,11 +575,11 @@ export default function PilotPage() {
             </div>
           </div>
 
-          {/* Live ROI panel */}
+          {/* Live ROI panel — always shows, uses real values or defaults */}
           <div
             style={{
-              background: hasROI ? "var(--accent-bg)" : "var(--surface)",
-              border: `1px solid ${hasROI ? "var(--accent-border)" : "var(--border)"}`,
+              background: "var(--accent-bg)",
+              border: "1px solid var(--accent-border)",
               borderRadius: "var(--radius-lg)",
               padding: "1.5rem",
               transition: "all 0.3s",
@@ -583,42 +589,43 @@ export default function PilotPage() {
               style={{
                 fontSize: "0.75rem",
                 fontWeight: 700,
-                color: hasROI ? "var(--accent-text)" : "var(--text-muted)",
+                color: "var(--accent-text)",
                 textTransform: "uppercase",
                 letterSpacing: "0.05em",
-                marginBottom: hasROI ? "1rem" : "0.5rem",
+                marginBottom: "1rem",
               }}
             >
-              {hasROI ? "✦ Your estimated ROI" : "Live ROI estimate"}
+              ✦ {isUsingDefaults ? "Estimated ROI (example)" : "Your live ROI estimate"}
             </div>
 
-            {!hasROI ? (
-              <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: 1.6 }}>
-                Enter your swag budget above and we&apos;ll calculate your estimated annual return in real time.
-              </p>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
-                <ROIRow label="Time savings" value={fmt$(roi.timeSavings)} />
-                <ROIRow label="Waste recovery" value={fmt$(roi.wasteSavings)} />
-                <div style={{ borderTop: "1px solid var(--accent-border)", paddingTop: "0.875rem" }}>
-                  <ROIRow label="Annual value" value={fmt$(roi.total)} highlight />
-                  <div style={{ marginTop: "0.5rem" }}>
-                    <ROIRow label="ROI multiple" value={`${roi.multiple.toFixed(1)}×`} highlight />
-                  </div>
-                  {roi.paybackWeeks !== null && (
-                    <p style={{ marginTop: "0.625rem", fontSize: "0.75rem", color: "var(--accent-text)", fontWeight: 500 }}>
-                      Payback in{" "}
-                      {roi.paybackWeeks < 4
-                        ? `${Math.round(roi.paybackWeeks)} weeks`
-                        : `${(roi.paybackWeeks / 4.33).toFixed(1)} months`}
-                    </p>
-                  )}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+              <ROIRow label="Time savings" value={fmt$(roi.timeSavings)} />
+              <ROIRow label="Waste recovery" value={fmt$(roi.wasteSavings)} />
+              <div style={{ borderTop: "1px solid var(--accent-border)", paddingTop: "0.875rem" }}>
+                <ROIRow label="Annual value" value={fmt$(roi.total)} highlight />
+                <div style={{ marginTop: "0.5rem" }}>
+                  <ROIRow label="ROI multiple" value={`${roi.multiple.toFixed(1)}×`} highlight />
                 </div>
+                {roi.paybackWeeks !== null && (
+                  <p style={{ marginTop: "0.625rem", fontSize: "0.75rem", color: "var(--accent-text)", fontWeight: 500 }}>
+                    Payback in{" "}
+                    {roi.paybackWeeks < 4
+                      ? `${Math.round(roi.paybackWeeks)} weeks`
+                      : `${(roi.paybackWeeks / 4.33).toFixed(1)} months`}
+                  </p>
+                )}
+              </div>
+              {isUsingDefaults && (
+                <p style={{ fontSize: "0.72rem", color: "var(--text-subtle)", lineHeight: 1.5, borderTop: "1px solid var(--accent-border)", paddingTop: "0.75rem" }}>
+                  Based on $15k/yr budget, 4 cycles. Enter your budget above to see your numbers.
+                </p>
+              )}
+              {!isUsingDefaults && (
                 <p style={{ fontSize: "0.7rem", color: "var(--text-subtle)", lineHeight: 1.5, borderTop: "1px solid var(--accent-border)", paddingTop: "0.75rem" }}>
                   Based on 11 hrs/cycle → 1 hr/cycle + 52.5% → 22% waste rate (SwagDrop 2026, n=2,500).
                 </p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
