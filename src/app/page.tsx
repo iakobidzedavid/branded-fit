@@ -406,6 +406,124 @@ export default function Home() {
         </p>
       </section>
 
+      {/* Testimonials */}
+      <section
+        style={{
+          paddingTop: "4rem",
+          paddingBottom: "4rem",
+          borderTop: "1px solid var(--border)",
+        }}
+      >
+        <div style={{ maxWidth: 600, marginBottom: "3rem" }}>
+          <div
+            style={{
+              display: "inline-block",
+              padding: "0.3rem 0.875rem",
+              background: "var(--primary-light)",
+              color: "var(--primary)",
+              borderRadius: 20,
+              fontSize: "0.8rem",
+              fontWeight: 700,
+              letterSpacing: "0.04em",
+              textTransform: "uppercase",
+              marginBottom: "1.25rem",
+            }}
+          >
+            Early access feedback
+          </div>
+          <h2
+            style={{
+              fontSize: "clamp(1.5rem, 3vw, 2rem)",
+              fontWeight: 800,
+              color: "var(--text-primary)",
+              marginBottom: "0.75rem",
+              lineHeight: 1.2,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Built for forward-thinking<br />People Ops teams
+          </h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "1rem", lineHeight: 1.65 }}>
+            Here&apos;s what early access participants said after their first storefront went live.
+          </p>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "1.5rem",
+          }}
+        >
+          {[
+            {
+              quote: "We went from &ldquo;we should do company swag&rdquo; to a live, orderable Shopify store in under 10 minutes. I&apos;ve been putting this task off for months — now I can&apos;t believe I waited.",
+              role: "Head of People Operations",
+              company: "Series B SaaS startup · 160 employees",
+            },
+            {
+              quote: "The AI catalog nailed our brand. It pulled our color palette and suggested hoodies and tote bags that actually looked like us. No back-and-forth with a design vendor, no minimum order fuss.",
+              role: "People Ops Manager",
+              company: "Venture-backed fintech · 85 employees",
+            },
+            {
+              quote: "Redemption at our last swag drop was 38%. After switching to a self-selection storefront through Branded Fit, our team actually gets excited about the quarterly refresh. Huge shift.",
+              role: "VP of People",
+              company: "Growth-stage B2B startup · 230 employees",
+            },
+          ].map((t, i) => (
+            <div
+              key={i}
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+                borderRadius: "var(--radius-lg)",
+                padding: "1.75rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "1.25rem",
+                boxShadow: "var(--shadow-sm)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "2rem",
+                  lineHeight: 1,
+                  color: "var(--primary)",
+                  fontWeight: 800,
+                  marginBottom: "-0.5rem",
+                }}
+              >
+                &ldquo;
+              </div>
+              <p
+                style={{
+                  color: "var(--text-body)",
+                  fontSize: "0.9375rem",
+                  lineHeight: 1.7,
+                  margin: 0,
+                  flexGrow: 1,
+                }}
+                dangerouslySetInnerHTML={{ __html: t.quote }}
+              />
+              <div
+                style={{
+                  borderTop: "1px solid var(--border)",
+                  paddingTop: "1rem",
+                }}
+              >
+                <div style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "0.875rem" }}>
+                  {t.role}
+                </div>
+                <div style={{ color: "var(--text-subtle)", fontSize: "0.8rem", marginTop: "0.2rem" }}>
+                  {t.company}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Request a Demo */}
       <section
         id="request-demo"
