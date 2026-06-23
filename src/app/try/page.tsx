@@ -930,9 +930,9 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
           What happens next
         </div>
         {[
-          "We record a 90-second personalized Loom for your domain",
+          "We generate a personalized brand profile for your domain",
           shareUrl ? "Share the preview link above with your People Leader" : "You receive a shareable preview link within 24 hours",
-          "A 20-minute storefront walkthrough — no pressure, just your brand",
+          "We email you a full storefront walkthrough with your real brand applied",
         ].map((item, i) => (
           <div key={i} style={{ display: "flex", gap: "0.625rem", alignItems: "flex-start", marginBottom: "0.5rem" }}>
             <span style={{ color: "var(--accent)", fontWeight: 700, flexShrink: 0, fontSize: "0.875rem" }}>✓</span>
@@ -943,7 +943,7 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
 
       <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap" }}>
         <Link
-          href="/demo"
+          href="/pilot"
           style={{
             display: "inline-block",
             padding: "0.75rem 1.5rem",
@@ -954,7 +954,7 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
             fontSize: "0.9rem",
           }}
         >
-          Book a 15-min call →
+          Start My Pilot →
         </Link>
         <Link
           href="/"

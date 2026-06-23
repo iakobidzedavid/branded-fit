@@ -220,7 +220,7 @@ export default function PilotPage() {
           {[
             { step: "24 hrs", text: "We send you a one-page AI brand profile for your domain" },
             { step: "48 hrs", text: "Your branded Shopify storefront is live — 8–12 curated products" },
-            { step: "Day 3", text: "30-minute founder walkthrough call — see your store in action" },
+            { step: "Day 3", text: "We email you a full walkthrough of your live store — catalog, redemption link, and first order guide" },
             { step: "Day 14", text: "First redemption report — see how your team responded" },
           ].map((item) => (
             <div key={item.step} style={{ display: "flex", gap: "0.875rem", alignItems: "flex-start", marginBottom: "0.625rem" }}>
@@ -542,7 +542,7 @@ export default function PilotPage() {
               "AI brand profile from your domain",
               "8–12 curated products in your colors",
               "Live Shopify storefront in 48 hrs",
-              "30-min founder onboarding call",
+              "Personalized onboarding email walkthrough",
               "Day-30 redemption report",
               "Zero merchandise markup — ever",
             ].map((item) => (

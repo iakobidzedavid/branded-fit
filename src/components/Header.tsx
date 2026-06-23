@@ -5,10 +5,10 @@ import { useState } from "react";
 
 const navLinks = [
   { href: "/try", label: "Try It" },
+  { href: "/roi-report", label: "ROI Report" },
   { href: "/assessment", label: "Health Check" },
   { href: "/how-it-works", label: "How It Works" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/roi-calculator", label: "ROI Calculator" },
   { href: "/for-your-boss", label: "For Your Boss" },
 ];
 
