@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
@@ -178,6 +178,27 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
   const companyName = cleanDomain ? getCompanyName(cleanDomain) : "";
   const palette = cleanDomain ? getBrandPalette(cleanDomain) : BRAND_PALETTES[0];
 
+  // Analytics: session id + domain ref (always current, used in fire-and-forget events)
+  const sessionIdRef = useRef<string>('');
+  if (!sessionIdRef.current && typeof window !== 'undefined') {
+    sessionIdRef.current = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  }
+  const cleanDomainRef = useRef(cleanDomain);
+  cleanDomainRef.current = cleanDomain; // sync on every render — no stale closures
+
+  const fireEvent = useCallback((name: string, props: Record<string, unknown> = {}) => {
+    fetch('/api/analytics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_name: name,
+        domain: cleanDomainRef.current || undefined,
+        session_id: sessionIdRef.current || undefined,
+        properties: props,
+      }),
+    }).catch(() => {});
+  }, []);
+
   // run generation animation
   useEffect(() => {
     if (stage !== "generating") return;
@@ -188,6 +209,7 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
       for (let i = 0; i < GENERATION_STEPS.length; i++) {
         if (cancelled) return;
         setStepIndex(i);
+        if (i === 0) fireEvent('brand_extraction_started');
         const { duration } = GENERATION_STEPS[i];
         const start = Date.now();
         while (Date.now() - start < duration) {
@@ -197,14 +219,25 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
         }
         setStepProgress(100);
         await new Promise((r) => setTimeout(r, 180));
+        if (i === 0) fireEvent('brand_extraction_completed');
       }
-      if (!cancelled) setStage("preview");
+      if (!cancelled) {
+        setStage("preview");
+        fireEvent('storefront_generation_completed');
+      }
     }
 
     runSteps();
     return () => {
       cancelled = true;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stage]);
+
+  // Fire storefront_viewed when preview first renders
+  useEffect(() => {
+    if (stage === 'preview') fireEvent('storefront_viewed');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stage]);
 
   function handleGenerate(e: React.FormEvent) {
@@ -213,6 +246,7 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
     setStage("generating");
     setStepIndex(0);
     setStepProgress(0);
+    fireEvent('domain_submitted');
   }
 
   async function handleEmailCapture(e: React.FormEvent) {
@@ -264,6 +298,7 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
 
     setCapturedName(email.split("@")[0]);
     setStage("captured");
+    fireEvent('storefront_published');
     setSubmitting(false);
   }
 
