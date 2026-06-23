@@ -7,7 +7,6 @@ const navLinks = [
   { href: "/try", label: "Try It" },
   { href: "/how-it-works", label: "How It Works" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/compare", label: "Compare" },
   { href: "/roi-calculator", label: "ROI Calculator" },
   { href: "/for-your-boss", label: "For Your Boss" },
 ];
@@ -77,7 +76,7 @@ export default function Header() {
             </Link>
           ))}
           <Link
-            href="/demo"
+            href="/pilot"
             style={{
               marginLeft: "0.5rem",
               padding: "0.5rem 1rem",
@@ -89,7 +88,7 @@ export default function Header() {
               whiteSpace: "nowrap",
             }}
           >
-            Get a Demo →
+            Start Pilot →
           </Link>
         </nav>
 
@@ -160,7 +159,7 @@ export default function Header() {
             </Link>
           ))}
           <Link
-            href="/demo"
+            href="/pilot"
             onClick={() => setMenuOpen(false)}
             style={{
               display: "block",
@@ -174,7 +173,7 @@ export default function Header() {
               textAlign: "center",
             }}
           >
-            Get a Demo →
+            Start Pilot →
           </Link>
         </div>
       )}

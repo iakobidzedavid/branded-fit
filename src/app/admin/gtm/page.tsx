@@ -11,6 +11,7 @@ type GtmResponse = {
   sentiment: string;
   qualification_status: string;
   discovery_call_scheduled: boolean;
+  top_objection?: string | null;
   created_at: string;
   gtm_prospects?: { prospect_name: string; company_name: string; email: string; title: string };
   gtm_outreach?: { sent_date: string; email_subject: string; wave_name: string };
