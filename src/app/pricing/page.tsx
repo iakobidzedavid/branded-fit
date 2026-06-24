@@ -430,64 +430,43 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* Bottom CTA */}
+      {/* Bottom CTA — inline visible form (no modal required) */}
       <section
         style={{
           background: "var(--primary-light)",
           borderRadius: "var(--radius-lg)",
           padding: "3rem",
-          textAlign: "center",
         }}
       >
-        <h2 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.75rem" }}>
-          Ready to launch your swag program?
-        </h2>
-        <p
-          style={{
-            color: "#4b5563",
-            fontSize: "0.95rem",
-            marginBottom: "1.75rem",
-            maxWidth: 460,
-            margin: "0 auto 1.75rem",
-            lineHeight: 1.65,
-          }}
-        >
-          Get started with a personalized walkthrough — we'll email you everything you need to know.
-        </p>
-        <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
-          <button
-            onClick={() => setSelectedTier("Get Started")}
+        <div style={{ maxWidth: 480, margin: "0 auto" }}>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.75rem", textAlign: "center" }}>
+            Ready to launch your swag program?
+          </h2>
+          <p
             style={{
-              display: "inline-block",
-              padding: "0.875rem 2rem",
-              background: "var(--primary)",
-              color: "white",
-              border: "none",
-              borderRadius: "var(--radius-md)",
-              fontWeight: 700,
-              fontSize: "1rem",
-              cursor: "pointer",
-              textDecoration: "none",
-            }}
-          >
-            Get Started →
-          </button>
-          <Link
-            href="/roi-calculator"
-            style={{
-              display: "inline-block",
-              padding: "0.875rem 1.5rem",
-              background: "white",
-              color: "var(--text-body)",
-              border: "1px solid var(--border)",
-              borderRadius: "var(--radius-md)",
-              fontWeight: 500,
+              color: "#4b5563",
               fontSize: "0.95rem",
-              textDecoration: "none",
+              marginBottom: "1.75rem",
+              textAlign: "center",
+              lineHeight: 1.65,
             }}
           >
-            Calculate My ROI
-          </Link>
+            Share your details and we&apos;ll email you personalized pricing and a product walkthrough within 24 hours.
+          </p>
+          <PricingEmailForm tier="Pricing" />
+          <p style={{ textAlign: "center", marginTop: "1rem" }}>
+            <Link
+              href="/roi-calculator"
+              style={{
+                fontSize: "0.875rem",
+                color: "var(--primary)",
+                fontWeight: 600,
+                textDecoration: "none",
+              }}
+            >
+              Calculate My ROI first →
+            </Link>
+          </p>
         </div>
       </section>
 

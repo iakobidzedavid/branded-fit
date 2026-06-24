@@ -11,6 +11,7 @@ interface PricingEmailFormProps {
 export default function PricingEmailForm({ tier = "Pricing" }: PricingEmailFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
   const [state, setState] = useState<State>("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -20,10 +21,10 @@ export default function PricingEmailForm({ tier = "Pricing" }: PricingEmailFormP
     setErrorMsg("");
 
     try {
-      const res = await fetch("/api/waitlist", {
+      const res = await fetch("/api/demo-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify({ name, email, company, source: `pricing-${tier.toLowerCase()}` }),
       });
       const json = await res.json();
       if (!res.ok) {
@@ -61,14 +62,14 @@ export default function PricingEmailForm({ tier = "Pricing" }: PricingEmailFormP
           Got it!
         </h3>
         <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>
-          We&apos;ll email you in the next 24 hours with pricing details and a personalized demo walkthrough for the {tier} tier.
+          We&apos;ll email you within 24 hours with pricing details and a personalized demo walkthrough for the {tier} tier.
         </p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} noValidate>
       <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
         <input
           type="text"
@@ -84,6 +85,15 @@ export default function PricingEmailForm({ tier = "Pricing" }: PricingEmailFormP
           placeholder="Work email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
+          disabled={state === "loading"}
+          style={inputStyle}
+        />
+        <input
+          type="text"
+          placeholder="Company name"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
           required
           disabled={state === "loading"}
           style={inputStyle}
