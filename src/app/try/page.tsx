@@ -103,6 +103,7 @@ function TryPage() {
   const [previewId, setPreviewId] = useState<string | null>(null);
   // Client-side fallback ID — used when /api/preview fails so the Copy Link button is always shown
   const clientPreviewIdRef = useRef<string | null>(null);
+  const [emailSent, setEmailSent] = useState<string | null>(null); // gmail message_id if sent
   const [copied, setCopied] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -145,8 +146,14 @@ function TryPage() {
         }),
       });
       if (!demoRes.ok) {
-        // Log the error but continue — the user should still reach the success card
         console.warn("demo-request API error (non-blocking):", await demoRes.text().catch(() => demoRes.status));
+      } else {
+        try {
+          const demoData = await demoRes.json() as { email?: { sent?: boolean; message_id?: string } };
+          if (demoData?.email?.sent && demoData.email.message_id) {
+            setEmailSent(demoData.email.message_id);
+          }
+        } catch { /* non-blocking */ }
       }
 
       // 2. Create a real persisted storefront preview in Supabase
@@ -208,8 +215,8 @@ function TryPage() {
   }
 
   function handleCopyLink() {
-    if (!previewId) return;
-    const url = `${window.location.origin}/preview/${previewId}`;
+    if (!resolvedPreviewId) return;
+    const url = `${window.location.origin}${previewUrl}`;
 
     // Modern Clipboard API — may be denied by the browser in certain contexts
     if (navigator.clipboard?.writeText) {
@@ -378,7 +385,10 @@ function TryPage() {
   // Use the real persisted preview ID if available, otherwise fall back to client-side ID
   // so the Copy Link button is always visible in the success state.
   const resolvedPreviewId = previewId ?? clientPreviewIdRef.current;
-  const previewUrl = resolvedPreviewId ? `/preview/${resolvedPreviewId}` : null;
+  // Include company/domain as query params so the preview page can render without a DB record
+  const previewUrl = resolvedPreviewId
+    ? `/preview/${resolvedPreviewId}?c=${encodeURIComponent(company.trim())}&d=${encodeURIComponent(effectiveDomain)}&pi=${getPaletteIndex(effectiveDomain)}`
+    : null;
 
   return (
     <main style={{ maxWidth: "var(--max-width)", margin: "0 auto", padding: "0 1.5rem 5rem" }}>
@@ -389,8 +399,17 @@ function TryPage() {
           Your storefront is ready, {firstName}!
         </h2>
         <p style={{ color: "var(--text-muted)", fontSize: "0.975rem", lineHeight: 1.65 }}>
-          We&apos;ll send a personalized walkthrough for{" "}
-          <strong style={{ color: palette.primary }}>{company}</strong> within 24 hours.
+          {emailSent ? (
+            <>
+              <span style={{ color: "var(--accent)", fontWeight: 700 }}>✓ Confirmation sent</span> to{" "}
+              <strong>{email.trim().toLowerCase()}</strong> — check your inbox.
+            </>
+          ) : (
+            <>
+              We&apos;ll send a personalized walkthrough for{" "}
+              <strong style={{ color: palette.primary }}>{company}</strong> within 24 hours.
+            </>
+          )}
         </p>
       </div>
 

@@ -29,28 +29,10 @@ export async function POST(req: NextRequest) {
   const emailStr = email.trim().toLowerCase();
   const domainMatch = emailStr.match(/@(.+)$/);
   const emailDomain = domainMatch ? domainMatch[1] : "";
-
-  const supabase = getServerSupabase();
-  const { data, error } = await supabase
-    .from("demo_requests")
-    .insert({
-      name: name.trim(),
-      email: emailStr,
-      company: company.trim(),
-      domain: emailDomain,
-      source: typeof source === "string" && source.trim() ? source.trim() : "homepage",
-    })
-    .select("id, created_at")
-    .single();
-
-  if (error) {
-    console.error("demo-request insert error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
   const nameStr = (name as string).trim();
   const companyStr = (company as string).trim();
 
+  // Send confirmation email first — independent of Supabase so it always fires
   const userEmailBody = [
     `Hi ${nameStr},`,
     ``,
@@ -66,25 +48,50 @@ export async function POST(req: NextRequest) {
     `— Branded Fit`,
   ].join("\n");
 
-  const result = await sendViaGmail(
+  const emailResult = await sendViaGmail(
     emailStr,
     `Your Branded Fit walkthrough for ${companyStr}`,
     userEmailBody
   );
 
-  if (result.error) {
-    console.error("pica demo-request email error:", result.error);
+  if (emailResult.error) {
+    console.error("pica demo-request email error:", emailResult.error);
   } else {
-    console.log("pica demo-request sent, gmail_message_id:", result.messageId);
+    console.log("pica demo-request sent, gmail_message_id:", emailResult.messageId);
+  }
+
+  // Persist to Supabase — non-blocking: failure is logged but does not block the response
+  let recordId: string | null = null;
+  try {
+    const supabase = getServerSupabase();
+    const { data, error } = await supabase
+      .from("demo_requests")
+      .insert({
+        name: nameStr,
+        email: emailStr,
+        company: companyStr,
+        domain: emailDomain,
+        source: typeof source === "string" && source.trim() ? source.trim() : "homepage",
+      })
+      .select("id")
+      .single();
+
+    if (error) {
+      console.error("demo-request insert error (non-blocking):", error);
+    } else {
+      recordId = data?.id ?? null;
+    }
+  } catch (err) {
+    console.error("demo-request supabase error (non-blocking):", err);
   }
 
   return NextResponse.json(
     {
       success: true,
-      id: data.id,
-      email: result.messageId
-        ? { sent: true, provider: "pica_gmail", message_id: result.messageId }
-        : { sent: false, provider: "pica_gmail", reason: result.error ?? "unknown" },
+      id: recordId,
+      email: emailResult.messageId
+        ? { sent: true, provider: "pica_gmail", message_id: emailResult.messageId }
+        : { sent: false, provider: "pica_gmail", reason: emailResult.error ?? "unknown" },
     },
     { status: 201 }
   );

@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getServerSupabase } from "@/lib/supabase-server";
 
 // ── Brand palette (deterministic by domain hash — matches /try page logic) ──
 const BRAND_PALETTES = [
@@ -42,25 +40,41 @@ function getCategoryEmoji(category: string) {
   return "🎒";
 }
 
-async function getPreview(id: string) {
-  const supabase = getServerSupabase();
-  const { data } = await supabase
-    .from("storefront_previews")
-    .select("id, domain, company_name, palette_index, created_at")
-    .eq("id", id)
-    .single();
-  return data;
+interface PreviewData {
+  id: string;
+  domain: string;
+  company_name: string | null;
+  palette_index: number | null;
+}
+
+async function getPreview(id: string): Promise<PreviewData | null> {
+  try {
+    const { getServerSupabase } = await import("@/lib/supabase-server");
+    const supabase = getServerSupabase();
+    const { data } = await supabase
+      .from("storefront_previews")
+      .select("id, domain, company_name, palette_index, created_at")
+      .eq("id", id)
+      .single();
+    return data ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ c?: string; d?: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
+  const sp = await searchParams;
   const preview = await getPreview(id);
-  if (!preview) return { title: "Preview not found" };
-  const name = preview.company_name ?? preview.domain;
+  const companyName = preview?.company_name ?? sp.c ?? "Your Company";
+  const domain = preview?.domain ?? sp.d ?? "";
+  const name = companyName || domain;
   return {
     title: `${name} Branded Storefront — Branded Fit`,
     description: `See ${name}'s AI-curated on-brand merch store. Get a live, orderable storefront in 8 minutes with Branded Fit.`,
@@ -69,21 +83,26 @@ export async function generateMetadata({
 
 export default async function PreviewPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ c?: string; d?: string; pi?: string }>;
 }) {
   const { id } = await params;
+  const sp = await searchParams;
+
+  // Try DB first; fall back to URL params so the page renders even without a DB record
   const preview = await getPreview(id);
 
-  if (!preview) {
-    notFound();
-  }
-
-  const paletteIdx = preview.palette_index ?? (hashDomain(preview.domain) % BRAND_PALETTES.length);
-  const palette = BRAND_PALETTES[paletteIdx % BRAND_PALETTES.length];
-  const companyName = preview.company_name ?? (
-    preview.domain.charAt(0).toUpperCase() + preview.domain.slice(1).split(".")[0]
-  );
+  const domainRaw = preview?.domain ?? sp.d ?? id;
+  const paletteIdx =
+    preview?.palette_index ??
+    (sp.pi ? parseInt(sp.pi, 10) : hashDomain(domainRaw) % BRAND_PALETTES.length);
+  const palette = BRAND_PALETTES[Math.abs(paletteIdx) % BRAND_PALETTES.length];
+  const rawCompany = preview?.company_name ?? sp.c ?? null;
+  const companyName =
+    rawCompany ||
+    (domainRaw.charAt(0).toUpperCase() + domainRaw.slice(1).split(".")[0]);
 
   return (
     <main style={{ maxWidth: "var(--max-width)", margin: "0 auto", padding: "0 1.5rem 5rem" }}>
