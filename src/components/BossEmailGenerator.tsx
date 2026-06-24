@@ -35,15 +35,19 @@ Here's the short version of why:
 
 I already ran our numbers through their ROI calculator — we'd recover the subscription fee within the first swag cycle just from time savings and reduced waste.
 
-I think this would meaningfully improve how we run swag programs. Would you be open to a 15-minute demo this week? I can send you a preview of what our storefront would look like.
+I can forward you an email walkthrough showing exactly what our storefront would look like — no call needed, just a quick look. Let me know if you'd like me to send it over.
 
 Best,${fromLine}`;
 }
 
-export default function BossEmailGenerator() {
+export default function BossEmailGenerator({
+  defaultCompany = "",
+}: {
+  defaultCompany?: string;
+}) {
   const [yourName, setYourName] = useState("");
   const [bossName, setBossName] = useState("");
-  const [company, setCompany] = useState("");
+  const [company, setCompany] = useState(defaultCompany);
   const [teamSize, setTeamSize] = useState("");
   const [currentTool, setCurrentTool] = useState("");
   const [generated, setGenerated] = useState(false);
@@ -246,7 +250,7 @@ export default function BossEmailGenerator() {
           </pre>
           <p style={{ fontSize: "0.72rem", color: "var(--text-subtle)", lineHeight: 1.5 }}>
             Tip: personalize the subject line as{" "}
-            <em>"Swag program idea — worth 15 min?"</em>
+            <em>"Swag program idea — worth a quick look?"</em>
           </p>
         </div>
       </div>

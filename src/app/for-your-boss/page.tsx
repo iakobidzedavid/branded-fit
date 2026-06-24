@@ -54,7 +54,13 @@ const objections = [
   },
 ];
 
-export default function ForYourBossPage() {
+export default async function ForYourBossPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ domain?: string; company?: string }>;
+}) {
+  const params = await searchParams;
+  const prefilledCompany = params.company ?? "";
   return (
     <main
       style={{
@@ -128,7 +134,7 @@ export default function ForYourBossPage() {
 
         <div style={{ display: "flex", gap: "0.875rem", flexWrap: "wrap" }}>
           <Link
-            href="/demo"
+            href="/demo-request"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -140,7 +146,7 @@ export default function ForYourBossPage() {
               fontSize: "0.9375rem",
             }}
           >
-            See a 5-minute demo →
+            Request an email walkthrough →
           </Link>
           <Link
             href="/roi-calculator"
@@ -556,7 +562,7 @@ export default function ForYourBossPage() {
         <p style={{ fontSize: "0.9375rem", color: "var(--text-muted)", marginBottom: "0" }}>
           Fill in a few details and we&apos;ll draft a ready-to-send email for you — personalized to your company and team size.
         </p>
-        <BossEmailGenerator />
+        <BossEmailGenerator defaultCompany={prefilledCompany} />
       </section>
 
       {/* CTA */}
@@ -603,7 +609,7 @@ export default function ForYourBossPage() {
           }}
         >
           <Link
-            href="/demo"
+            href="/demo-request"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -615,7 +621,7 @@ export default function ForYourBossPage() {
               fontSize: "1rem",
             }}
           >
-            Book a 15-minute call →
+            Request an email walkthrough →
           </Link>
           <Link
             href="/try"

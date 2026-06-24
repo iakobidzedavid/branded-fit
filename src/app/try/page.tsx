@@ -936,6 +936,50 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
         </div>
       )}
 
+      {/* Share with boss CTA */}
+      <div
+        style={{
+          padding: "1.25rem 1.5rem",
+          background: "var(--primary-light)",
+          border: "1px solid #c7d2fe",
+          borderRadius: "var(--radius-lg)",
+          marginBottom: "1rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "1rem",
+          flexWrap: "wrap",
+        }}
+      >
+        <div>
+          <div style={{ fontWeight: 700, fontSize: "0.875rem", color: "var(--text-primary)", marginBottom: "0.2rem" }}>
+            Need internal buy-in?
+          </div>
+          <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+            Send your People Leader a quick brief — we&apos;ll pre-fill it with {companyName}&apos;s details.
+          </div>
+        </div>
+        <Link
+          href={`/for-your-boss?domain=${encodeURIComponent(cleanDomain)}&company=${encodeURIComponent(companyName)}`}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.4rem",
+            padding: "0.625rem 1.125rem",
+            background: "var(--primary)",
+            color: "white",
+            borderRadius: "var(--radius-md)",
+            fontWeight: 700,
+            fontSize: "0.875rem",
+            textDecoration: "none",
+            whiteSpace: "nowrap",
+            flexShrink: 0,
+          }}
+        >
+          Share with your boss →
+        </Link>
+      </div>
+
       <div
         style={{
           padding: "1.25rem",
