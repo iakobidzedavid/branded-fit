@@ -640,9 +640,10 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
             >
               ← Try another domain
             </button>
-            <a
-              href={`/api/download-assets?storeId=${encodeURIComponent(cleanDomain || "default")}`}
-              download
+            <button
+              onClick={() => {
+                window.location.href = `/api/download-assets?storeId=${encodeURIComponent(cleanDomain || "default")}`;
+              }}
               style={{
                 padding: "0.625rem 1rem",
                 background: palette.primary,
@@ -652,14 +653,13 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
                 fontWeight: 600,
                 fontSize: "0.85rem",
                 cursor: "pointer",
-                textDecoration: "none",
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "0.35rem",
               }}
             >
               ↓ Download Assets
-            </a>
+            </button>
           </div>
         </div>
 

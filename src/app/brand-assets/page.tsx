@@ -10,6 +10,7 @@ const T = {
   textMuted: "#8fa3b8",
   accent: "#4f46e5",
   statusShipped: "#10b981",
+  danger: "#dc2626",
 };
 
 export default function BrandAssetsPage() {
@@ -19,14 +20,44 @@ export default function BrandAssetsPage() {
   const [domain, setDomain] = useState("");
   const [downloading, setDownloading] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
+  const [messageId, setMessageId] = useState<string | null>(null);
+  const [notifyError, setNotifyError] = useState<string | null>(null);
 
-  function handleDownload(e: React.FormEvent) {
+  async function handleDownload(e: React.FormEvent) {
     e.preventDefault();
     setDownloading(true);
+    setNotifyError(null);
+
+    const cleanDomain = domain.trim()
+      .replace(/^https?:\/\//, "")
+      .replace(/^www\./, "")
+      .split("/")[0];
+
+    // 1. POST to notify endpoint — saves lead + sends confirmation email
+    try {
+      const res = await fetch("/api/brand-assets/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          company: company.trim(),
+          domain: cleanDomain || undefined,
+        }),
+      });
+      const data = await res.json() as { success?: boolean; messageId?: string; message?: string; email_error?: string };
+      if (data.messageId) setMessageId(data.messageId);
+      if (data.email_error) setNotifyError(data.email_error);
+    } catch {
+      // non-fatal — proceed with download anyway
+    }
+
+    // 2. Initiate ZIP download
     const storeId = company.trim().toLowerCase().replace(/\s+/g, "-") || "default";
     const params = new URLSearchParams({ storeId });
-    if (domain.trim()) params.set("domain", domain.trim().replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0]);
+    if (cleanDomain) params.set("domain", cleanDomain);
     window.location.href = `/api/brand-assets/download?${params.toString()}`;
+
     setTimeout(() => {
       setDownloading(false);
       setDownloaded(true);
@@ -162,6 +193,20 @@ export default function BrandAssetsPage() {
               borderRadius: 8, color: T.statusShipped, fontSize: "0.875rem",
             }}>
               ZIP download initiated — check your downloads folder for brand-assets.zip
+              {messageId && (
+                <div style={{ marginTop: "0.4rem", fontSize: "0.75rem", opacity: 0.8 }}>
+                  Confirmation email sent · Message ID: {messageId}
+                </div>
+              )}
+            </div>
+          )}
+          {notifyError && !downloaded && (
+            <div style={{
+              marginTop: "1rem", padding: "0.75rem 1rem",
+              background: `${T.danger}11`, border: `1px solid ${T.danger}44`,
+              borderRadius: 8, color: "#fca5a5", fontSize: "0.8rem",
+            }}>
+              Note: confirmation email could not be sent ({notifyError})
             </div>
           )}
 

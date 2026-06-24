@@ -744,6 +744,7 @@ export default function OrdersDashboardPage() {
   const [lastSync, setLastSync] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [seeding, setSeeding] = useState(false);
+  const [autoSeeded, setAutoSeeded] = useState(false);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [supportModalOpen, setSupportModalOpen] = useState(false);
 
@@ -773,6 +774,16 @@ export default function OrdersDashboardPage() {
   useEffect(() => {
     fetchOrders("all", "", "");
   }, [fetchOrders]);
+
+  // Auto-seed once if orders table comes back empty
+  useEffect(() => {
+    if (!loading && orders.length === 0 && !autoSeeded) {
+      setAutoSeeded(true);
+      fetch("/api/seed-demo-orders", { method: "POST" })
+        .then(() => fetchOrders("all", "", ""))
+        .catch(() => {});
+    }
+  }, [loading, orders.length, autoSeeded, fetchOrders]);
 
   // Periodic sync every 5 minutes
   useEffect(() => {
@@ -966,7 +977,7 @@ export default function OrdersDashboardPage() {
           {/* Table header */}
           <div style={{
             display: "grid",
-            gridTemplateColumns: "1.2fr 1.8fr 1.4fr 1.6fr 1fr 1fr",
+            gridTemplateColumns: "1.2fr 1.8fr 1.4fr 1.6fr 1fr 1fr 80px",
             padding: "0.625rem 1.25rem",
             background: T.surface,
             borderBottom: `2px solid ${T.border}`,
@@ -980,6 +991,7 @@ export default function OrdersDashboardPage() {
             <span>Product</span>
             <span>Date</span>
             <span>Status</span>
+            <span>Details</span>
           </div>
 
           {loading ? (
@@ -1016,7 +1028,7 @@ export default function OrdersDashboardPage() {
                 onClick={() => setSelectedOrderId(order.id)}
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "1.2fr 1.8fr 1.4fr 1.6fr 1fr 1fr",
+                  gridTemplateColumns: "1.2fr 1.8fr 1.4fr 1.6fr 1fr 1fr 80px",
                   padding: "0.875rem 1.25rem",
                   background: i % 2 === 0 ? T.bg : `${T.surface}88`,
                   borderBottom: `1px solid ${T.border}`,
@@ -1048,6 +1060,17 @@ export default function OrdersDashboardPage() {
                 }}>
                   {order.fulfillment_status}
                 </span>
+                <button
+                  data-testid={`view-order-${order.id}`}
+                  onClick={(e) => { e.stopPropagation(); setSelectedOrderId(order.id); }}
+                  style={{
+                    padding: "0.25rem 0.6rem", background: T.accent, color: T.text,
+                    border: "none", borderRadius: 6, fontSize: "0.75rem",
+                    fontWeight: 600, cursor: "pointer",
+                  }}
+                >
+                  View
+                </button>
               </div>
             ))
           )}

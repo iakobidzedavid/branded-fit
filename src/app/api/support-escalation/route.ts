@@ -46,13 +46,14 @@ export async function POST(req: NextRequest) {
     `Submitted at:  ${data.created_at}`,
   ].join("\n");
 
-  await sendViaGmail(
+  const teamNotify = await sendViaGmail(
     SUPPORT_EMAIL,
     `[BrandedFit Support] Escalation: ${domainStr}`,
     supportBody
   );
 
   // Confirm to user if email provided
+  let userNotify: { messageId: string | null; error: string | null } = { messageId: null, error: null };
   if (contactEmail) {
     const confirmBody = [
       `Hi there,`,
@@ -70,15 +71,24 @@ export async function POST(req: NextRequest) {
       .filter((l) => l !== undefined)
       .join("\n");
 
-    await sendViaGmail(
+    userNotify = await sendViaGmail(
       contactEmail,
       `Branded Fit support request received (${domainStr})`,
       confirmBody
     );
   }
 
+  const messageIds = [teamNotify.messageId, userNotify.messageId].filter(Boolean);
+
   return NextResponse.json(
-    { success: true, escalation: data, message: "Support team notified. You will receive an email follow-up." },
+    {
+      success: true,
+      escalation: data,
+      message: "Support team notified. You will receive an email follow-up.",
+      email_message_ids: messageIds,
+      support_email_id: teamNotify.messageId,
+      user_email_id: userNotify.messageId,
+    },
     { status: 201 }
   );
 }

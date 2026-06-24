@@ -81,12 +81,14 @@ export async function POST(req: NextRequest) {
 
   const sent = emailResults.filter((r) => r.messageId).length;
   const failed = emailResults.filter((r) => r.error).length;
+  const messageIds = emailResults.map((r) => r.messageId).filter(Boolean);
 
   return NextResponse.json(
     {
       success: true,
       invites: data ?? [],
       email_summary: { sent, failed },
+      email_message_ids: messageIds,
       message: `${sent} invitation${sent !== 1 ? "s" : ""} sent successfully.`,
     },
     { status: 201 }
