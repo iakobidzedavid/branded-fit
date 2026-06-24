@@ -168,6 +168,25 @@ export default async function ForYourBossPage({
         </div>
       </section>
 
+      {/* Email generator — moved above the fold so it's immediately reachable */}
+      <section id="email-generator" style={{ marginBottom: "4rem" }}>
+        <h2
+          style={{
+            fontSize: "1.375rem",
+            fontWeight: 700,
+            letterSpacing: "-0.02em",
+            marginBottom: "0.5rem",
+            color: "var(--text-primary)",
+          }}
+        >
+          Send your People Leader a 60-second brief
+        </h2>
+        <p style={{ fontSize: "0.9375rem", color: "var(--text-muted)", marginBottom: "0" }}>
+          Fill in your boss&apos;s email — we&apos;ll send a personalized note directly to them.
+        </p>
+        <BossEmailGenerator defaultCompany={prefilledCompany} />
+      </section>
+
       {/* The headline numbers */}
       <section style={{ marginBottom: "5rem" }}>
         <h2
@@ -545,25 +564,6 @@ export default async function ForYourBossPage({
             vs. the next closest platform.
           </div>
         </div>
-      </section>
-
-      {/* Email generator */}
-      <section id="email-generator" style={{ marginBottom: "5rem" }}>
-        <h2
-          style={{
-            fontSize: "1.375rem",
-            fontWeight: 700,
-            letterSpacing: "-0.02em",
-            marginBottom: "0.5rem",
-            color: "var(--text-primary)",
-          }}
-        >
-          Need to send an email to your People Leader?
-        </h2>
-        <p style={{ fontSize: "0.9375rem", color: "var(--text-muted)", marginBottom: "0" }}>
-          Fill in a few details and we&apos;ll draft a ready-to-send email for you — personalized to your company and team size.
-        </p>
-        <BossEmailGenerator defaultCompany={prefilledCompany} />
       </section>
 
       {/* CTA */}

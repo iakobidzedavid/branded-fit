@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 // ── Brand color palette ──
@@ -43,6 +43,8 @@ const GENERATION_STEPS = [
 ];
 
 type Stage = "idle" | "generating" | "captured";
+
+// Note: no Suspense wrapper needed — page uses no async client hooks (useSearchParams etc.)
 
 function ProductCard({
   product,
@@ -151,7 +153,7 @@ function TryPage() {
   // ── IDLE ──
   if (stage === "idle") {
     return (
-      <main style={{ maxWidth: 640, margin: "0 auto", padding: "5rem 1.5rem 6rem" }}>
+      <main id="email-generator" style={{ maxWidth: 640, margin: "0 auto", padding: "5rem 1.5rem 6rem" }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", padding: "0.3rem 0.875rem", background: "var(--primary-light)", color: "var(--primary)", borderRadius: 20, fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: "1.5rem" }}>
           <span>✦</span> Interactive Preview
         </div>
@@ -355,10 +357,4 @@ function TryPage() {
   );
 }
 
-export default function TryPageWrapper() {
-  return (
-    <Suspense fallback={<div style={{ padding: "4rem", textAlign: "center", color: "var(--text-muted)" }}>Loading…</div>}>
-      <TryPage />
-    </Suspense>
-  );
-}
+export default TryPage;

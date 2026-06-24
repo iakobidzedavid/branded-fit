@@ -80,17 +80,19 @@ Best,${fromLine}`;
 
   if (result.error) {
     console.error("boss-email-send gmail error:", result.error);
-  } else {
-    console.log("boss-email-send sent, gmail_message_id:", result.messageId);
+    return NextResponse.json(
+      { error: `Email delivery failed: ${result.error}` },
+      { status: 500 }
+    );
   }
+
+  console.log("boss-email-send sent, gmail_message_id:", result.messageId);
 
   return NextResponse.json(
     {
       success: true,
       id: data?.id,
-      email: result.messageId
-        ? { sent: true, provider: "pica_gmail", message_id: result.messageId }
-        : { sent: false, provider: "pica_gmail", reason: result.error ?? "unknown" },
+      email: { sent: true, provider: "pica_gmail", message_id: result.messageId },
     },
     { status: 201 }
   );
