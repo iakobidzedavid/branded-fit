@@ -85,6 +85,13 @@ function TryPage() {
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [domain, setDomain] = useState(domainParam);
+
+  // Sync domain from URL param after client-side hydration (useState only
+  // captures the initial value; searchParams may not be ready on first render)
+  useEffect(() => {
+    const p = searchParams.get("domain");
+    if (p) setDomain(p);
+  }, []);  // eslint-disable-line react-hooks/exhaustive-deps
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [companyError, setCompanyError] = useState("");
@@ -189,14 +196,40 @@ function TryPage() {
     return () => { cancelled = true; };
   }, [stage]);
 
+  function markCopied() {
+    setCopied(true);
+    if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
+  }
+
   function handleCopyLink() {
     if (!previewId) return;
     const url = `${window.location.origin}/preview/${previewId}`;
-    navigator.clipboard.writeText(url).then(() => {
-      setCopied(true);
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
-    });
+
+    // Modern Clipboard API — may be denied by the browser in certain contexts
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(url).then(markCopied).catch(() => {
+        fallbackCopy(url);
+      });
+    } else {
+      fallbackCopy(url);
+    }
+  }
+
+  function fallbackCopy(text: string) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.cssText = "position:fixed;top:0;left:0;opacity:0;pointer-events:none";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      markCopied();
+    } catch {
+      // clipboard unavailable — nothing to do
+    }
+    document.body.removeChild(textarea);
   }
 
   // ── IDLE ──
