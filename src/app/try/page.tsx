@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 // ── Brand color palette ──
@@ -25,6 +26,10 @@ function getBrandPalette(s: string) {
   return BRAND_PALETTES[hashStr(s) % BRAND_PALETTES.length];
 }
 
+function getPaletteIndex(s: string): number {
+  return hashStr(s) % BRAND_PALETTES.length;
+}
+
 const PRODUCTS = [
   { name: "Premium Hoodie", category: "Apparel", printMethod: "DTG", reorderRate: 87, price: 42, sampled: true },
   { name: "Unisex Tee", category: "Apparel", printMethod: "Screen Print", reorderRate: 91, price: 28, sampled: true },
@@ -43,8 +48,6 @@ const GENERATION_STEPS = [
 ];
 
 type Stage = "idle" | "generating" | "captured";
-
-// Note: no Suspense wrapper needed — page uses no async client hooks (useSearchParams etc.)
 
 function ProductCard({
   product,
@@ -75,9 +78,13 @@ function ProductCard({
 }
 
 function TryPage() {
+  const searchParams = useSearchParams();
+  const domainParam = searchParams.get("domain") ?? "";
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
+  const [domain, setDomain] = useState(domainParam);
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [companyError, setCompanyError] = useState("");
@@ -86,8 +93,19 @@ function TryPage() {
   const [stepIndex, setStepIndex] = useState(0);
   const [stepProgress, setStepProgress] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const palette = company.trim() ? getBrandPalette(company.trim().toLowerCase()) : BRAND_PALETTES[0];
+  // Derive domain from email if not provided by query param
+  function getEffectiveDomain(): string {
+    if (domain.trim()) return domain.trim().replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
+    const match = email.trim().match(/@(.+)$/);
+    return match ? match[1] : company.trim().toLowerCase().replace(/\s+/g, "") + ".com";
+  }
+
+  const effectiveDomain = getEffectiveDomain();
+  const palette = effectiveDomain ? getBrandPalette(effectiveDomain) : (company.trim() ? getBrandPalette(company.trim().toLowerCase()) : BRAND_PALETTES[0]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -100,7 +118,8 @@ function TryPage() {
 
     setSubmitting(true);
     try {
-      const res = await fetch("/api/demo-request", {
+      // 1. Save demo request
+      const demoRes = await fetch("/api/demo-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -110,11 +129,31 @@ function TryPage() {
           source: "try-page",
         }),
       });
-      if (!res.ok) {
-        const data = await res.json() as { error?: string };
+      if (!demoRes.ok) {
+        const data = await demoRes.json() as { error?: string };
         setSubmitError(data.error ?? "Something went wrong. Please try again.");
         setSubmitting(false);
         return;
+      }
+
+      // 2. Create a real persisted storefront preview in Supabase
+      const effectiveDomainNow = getEffectiveDomain();
+      const paletteIdx = getPaletteIndex(effectiveDomainNow);
+      const previewRes = await fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          domain: effectiveDomainNow,
+          company_name: company.trim(),
+          palette_index: paletteIdx,
+          email: email.trim().toLowerCase(),
+        }),
+      });
+      if (previewRes.ok) {
+        const previewData = await previewRes.json() as { preview?: { id: string } };
+        if (previewData?.preview?.id) {
+          setPreviewId(previewData.preview.id);
+        }
       }
     } catch {
       setSubmitError("Network error. Please check your connection and try again.");
@@ -150,10 +189,20 @@ function TryPage() {
     return () => { cancelled = true; };
   }, [stage]);
 
+  function handleCopyLink() {
+    if (!previewId) return;
+    const url = `${window.location.origin}/preview/${previewId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
   // ── IDLE ──
   if (stage === "idle") {
     return (
-      <main id="email-generator" style={{ maxWidth: 640, margin: "0 auto", padding: "5rem 1.5rem 6rem" }}>
+      <main style={{ maxWidth: 640, margin: "0 auto", padding: "5rem 1.5rem 6rem" }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", padding: "0.3rem 0.875rem", background: "var(--primary-light)", color: "var(--primary)", borderRadius: 20, fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: "1.5rem" }}>
           <span>✦</span> Interactive Preview
         </div>
@@ -203,6 +252,20 @@ function TryPage() {
             {companyError && <p style={{ margin: "0.3rem 0 0", fontSize: "0.8rem", color: "var(--danger)" }}>{companyError}</p>}
           </div>
 
+          <div>
+            <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "var(--text-body)", marginBottom: "0.35rem" }}>
+              Company domain <span style={{ fontWeight: 400, color: "var(--text-muted)" }}>(optional — improves brand matching)</span>
+            </label>
+            <input
+              type="text"
+              placeholder="yourcompany.com"
+              value={domain}
+              onChange={(e) => setDomain(e.target.value)}
+              style={{ width: "100%", padding: "0.875rem 1rem", fontSize: "1rem", border: "2px solid var(--border)", borderRadius: "var(--radius-md)", outline: "none", color: "var(--text-primary)", background: "white", boxSizing: "border-box" }}
+            />
+            <p style={{ margin: "0.3rem 0 0", fontSize: "0.75rem", color: "var(--text-muted)" }}>Used to generate your shareable preview URL</p>
+          </div>
+
           {submitError && (
             <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--danger)", lineHeight: 1.4, padding: "0.75rem 1rem", background: "#fef2f2", border: "1px solid #fca5a5", borderRadius: "var(--radius-md)" }}>{submitError}</p>
           )}
@@ -220,7 +283,7 @@ function TryPage() {
           {[
             { n: "1", title: "Enter your details", desc: "Name, email, company. No credit card, no signup." },
             { n: "2", title: "AI curates your store", desc: "Brand colors + AI-matched 8–12 products." },
-            { n: "3", title: "Share preview", desc: "Shareable link in seconds — no Shopify needed." },
+            { n: "3", title: "Get a shareable link", desc: "A real URL you can share with your boss or team." },
           ].map((step) => (
             <div key={step.n} style={{ padding: "1.25rem", background: "var(--surface)", borderRadius: "var(--radius-lg)", border: "1px solid var(--border)" }}>
               <div style={{ width: 28, height: 28, borderRadius: "50%", background: "var(--primary-light)", color: "var(--primary)", fontWeight: 800, fontSize: "0.8rem", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "0.625rem" }}>{step.n}</div>
@@ -274,21 +337,73 @@ function TryPage() {
 
   // ── CAPTURED ──
   const firstName = name.trim().split(" ")[0];
+  const previewUrl = previewId ? `/preview/${previewId}` : null;
+
   return (
     <main style={{ maxWidth: "var(--max-width)", margin: "0 auto", padding: "0 1.5rem 5rem" }}>
       {/* Success header */}
       <div style={{ maxWidth: 560, margin: "3rem auto 2.5rem", textAlign: "center" }}>
         <div style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--accent-bg)", border: "2px solid var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.75rem", margin: "0 auto 1.25rem" }}>🎉</div>
         <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.625rem", letterSpacing: "-0.02em" }}>
-          You&apos;re on the list, {firstName}!
+          Your storefront is ready, {firstName}!
         </h2>
         <p style={{ color: "var(--text-muted)", fontSize: "0.975rem", lineHeight: 1.65 }}>
-          We&apos;ll send you a personalized storefront walkthrough for{" "}
+          We&apos;ll send a personalized walkthrough for{" "}
           <strong style={{ color: palette.primary }}>{company}</strong> within 24 hours.
         </p>
       </div>
 
-      {/* Share with boss banner — prominent */}
+      {/* Shareable preview URL — the core new feature */}
+      {previewUrl && (
+        <div
+          data-testid="shareable-preview-url"
+          style={{
+            maxWidth: 700,
+            margin: "0 auto 2rem",
+            padding: "1.375rem 1.5rem",
+            background: "var(--primary)",
+            borderRadius: "var(--radius-lg)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
+            <div>
+              <div style={{ display: "inline-block", padding: "0.2rem 0.65rem", background: "rgba(255,255,255,0.15)", color: "white", borderRadius: 20, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: "0.625rem" }}>
+                ✦ Your shareable preview
+              </div>
+              <div style={{ fontWeight: 700, fontSize: "1rem", color: "white", marginBottom: "0.35rem" }}>
+                {company}&apos;s branded storefront is live
+              </div>
+              <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.75)", marginBottom: "1rem" }}>
+                Share this link with your People Leader or team — anyone with the link can view your storefront preview.
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "rgba(0,0,0,0.2)", borderRadius: "var(--radius-md)", padding: "0.6rem 0.875rem", flexWrap: "wrap" }}>
+                <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.85)", fontFamily: "monospace", wordBreak: "break-all", flex: 1 }}>
+                  {typeof window !== "undefined" ? window.location.origin : "https://branded-fit.vercel.app"}
+                  {previewUrl}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: "0.75rem", marginTop: "1rem", flexWrap: "wrap" }}>
+            <Link
+              href={previewUrl}
+              data-testid="view-preview-link"
+              style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", padding: "0.7rem 1.25rem", background: "white", color: "var(--primary)", borderRadius: "var(--radius-md)", fontWeight: 700, fontSize: "0.9rem", textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              View Full Preview →
+            </Link>
+            <button
+              onClick={handleCopyLink}
+              data-testid="copy-preview-link"
+              style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", padding: "0.7rem 1.25rem", background: copied ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.12)", color: "white", border: "1.5px solid rgba(255,255,255,0.4)", borderRadius: "var(--radius-md)", fontWeight: 600, fontSize: "0.9rem", cursor: "pointer", whiteSpace: "nowrap", transition: "background 0.15s" }}
+            >
+              {copied ? "✓ Copied!" : "Copy Link"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Share with boss banner */}
       <div style={{ maxWidth: 700, margin: "0 auto 2rem", padding: "1.375rem 1.5rem", background: "var(--primary-light)", border: "2px solid var(--primary)", borderRadius: "var(--radius-lg)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
         <div>
           <div style={{ fontWeight: 700, fontSize: "0.9375rem", color: "var(--text-primary)", marginBottom: "0.2rem" }}>
@@ -299,7 +414,7 @@ function TryPage() {
           </div>
         </div>
         <Link
-          href={`/for-your-boss?company=${encodeURIComponent(company.trim())}`}
+          href={`/for-your-boss?company=${encodeURIComponent(company.trim())}${previewId ? `&previewId=${previewId}` : ""}`}
           style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", padding: "0.7rem 1.25rem", background: "var(--primary)", color: "white", borderRadius: "var(--radius-md)", fontWeight: 700, fontSize: "0.9rem", textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0 }}
         >
           Share with your boss →
@@ -357,4 +472,10 @@ function TryPage() {
   );
 }
 
-export default TryPage;
+export default function TryPageWrapper() {
+  return (
+    <Suspense fallback={<div style={{ padding: "4rem", textAlign: "center", color: "var(--text-muted)" }}>Loading…</div>}>
+      <TryPage />
+    </Suspense>
+  );
+}
