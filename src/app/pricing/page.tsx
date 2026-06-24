@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import PricingEmailForm from "@/components/PricingEmailForm";
 
 const CHECK = "✓";
 const CROSS = "✗";
@@ -9,8 +13,6 @@ const tiers = [
     price: { annual: 2400, monthly: 249 },
     tagline: "Everything you need to launch your first swag program.",
     badge: null,
-    cta: "Get a Demo",
-    ctaHref: "/demo",
     features: [
       "1 active branded storefront",
       "AI-curated 120-SKU catalog",
@@ -25,8 +27,6 @@ const tiers = [
     price: { annual: 4800, monthly: 499 },
     tagline: "For fast-growing teams managing multiple brands or sub-brands.",
     badge: "Most Popular",
-    cta: "Get a Demo",
-    ctaHref: "/demo",
     features: [
       "Up to 3 active storefronts",
       "Advanced AI catalog (300 SKUs + seasonal)",
@@ -41,8 +41,6 @@ const tiers = [
     price: { annual: 9600, monthly: 999 },
     tagline: "Enterprise-grade for HR platforms, APIs, and multi-entity orgs.",
     badge: null,
-    cta: "Contact Us",
-    ctaHref: "/demo",
     features: [
       "Unlimited active storefronts",
       "Custom AI training on your brand data",
@@ -133,6 +131,8 @@ const faqs = [
 ];
 
 export default function PricingPage() {
+  const [selectedTier, setSelectedTier] = useState<string | null>(null);
+
   return (
     <main style={{ maxWidth: "var(--max-width)", margin: "0 auto", padding: "0 1.5rem 5rem" }}>
       {/* Header */}
@@ -245,10 +245,11 @@ export default function PricingPage() {
               </div>
             </div>
 
-            <Link
-              href={tier.ctaHref}
+            <button
+              onClick={() => setSelectedTier(tier.name)}
               style={{
                 display: "block",
+                width: "100%",
                 textAlign: "center",
                 padding: "0.75rem 1rem",
                 background: tier.badge ? "var(--primary)" : "white",
@@ -258,11 +259,12 @@ export default function PricingPage() {
                 fontWeight: 700,
                 fontSize: "0.9rem",
                 marginBottom: "1.5rem",
+                cursor: "pointer",
                 textDecoration: "none",
               }}
             >
-              {tier.cta} →
-            </Link>
+              Request Pricing Details →
+            </button>
 
             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.6rem" }}>
               {tier.features.map((f) => (
@@ -450,40 +452,26 @@ export default function PricingPage() {
             lineHeight: 1.65,
           }}
         >
-          See exactly how the 48-hour email onboarding works — your storefront goes live, no calls needed.
+          Get started with a personalized walkthrough — we'll email you everything you need to know.
         </p>
         <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
-          <Link
-            href="/get-started"
+          <button
+            onClick={() => setSelectedTier("Get Started")}
             style={{
               display: "inline-block",
               padding: "0.875rem 2rem",
               background: "var(--primary)",
               color: "white",
+              border: "none",
               borderRadius: "var(--radius-md)",
               fontWeight: 700,
               fontSize: "1rem",
+              cursor: "pointer",
               textDecoration: "none",
             }}
           >
             Get Started →
-          </Link>
-          <Link
-            href="/demo"
-            style={{
-              display: "inline-block",
-              padding: "0.875rem 1.5rem",
-              background: "white",
-              color: "var(--primary)",
-              border: "2px solid var(--primary)",
-              borderRadius: "var(--radius-md)",
-              fontWeight: 600,
-              fontSize: "0.95rem",
-              textDecoration: "none",
-            }}
-          >
-            Get a Demo
-          </Link>
+          </button>
           <Link
             href="/roi-calculator"
             style={{
@@ -502,6 +490,62 @@ export default function PricingPage() {
           </Link>
         </div>
       </section>
+
+      {/* Modal overlay */}
+      {selectedTier && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0, 0, 0, 0.5)",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1rem",
+          }}
+          onClick={() => setSelectedTier(null)}
+        >
+          <div
+            style={{
+              background: "white",
+              borderRadius: "var(--radius-lg)",
+              padding: "2rem",
+              maxWidth: 400,
+              width: "100%",
+              boxShadow: "var(--shadow-md)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+              <h3 style={{ fontSize: "1.25rem", fontWeight: 700, margin: 0 }}>
+                {selectedTier === "Get Started" ? "Get Started" : `${selectedTier} Tier`}
+              </h3>
+              <button
+                onClick={() => setSelectedTier(null)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  fontSize: "1.5rem",
+                  cursor: "pointer",
+                  color: "var(--text-muted)",
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <p style={{ color: "var(--text-muted)", marginBottom: "1.5rem", fontSize: "0.9rem" }}>
+              {selectedTier === "Get Started"
+                ? "Share your details and we'll send you personalized pricing and a product demo link within 24 hours."
+                : `Tell us about your team and we'll send you tailored pricing for the ${selectedTier} tier.`}
+            </p>
+            <PricingEmailForm tier={selectedTier === "Get Started" ? "Pricing" : selectedTier} />
+          </div>
+        </div>
+      )}
     </main>
   );
 }
