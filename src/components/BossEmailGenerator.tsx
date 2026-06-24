@@ -57,6 +57,7 @@ export default function BossEmailGenerator({
   const [errorMsg, setErrorMsg] = useState("");
   const [copied, setCopied] = useState(false);
   const [bossEmailError, setBossEmailError] = useState("");
+  const [gmailMessageId, setGmailMessageId] = useState<string | null>(null);
 
   const emailText = buildEmailBody({ yourName, bossName, company, teamSize, currentTool });
   const sent = sendState === "sent";
@@ -85,10 +86,15 @@ export default function BossEmailGenerator({
           emailBody: emailText,
         }),
       });
+      const data = await res.json() as {
+        success?: boolean;
+        error?: string;
+        email?: { sent: boolean; provider?: string; message_id?: string; reason?: string };
+      };
       if (!res.ok) {
-        const data = (await res.json()) as { error?: string };
         throw new Error(data.error ?? "Send failed");
       }
+      setGmailMessageId(data.email?.message_id ?? null);
       setSendState("sent");
     } catch (err) {
       setSendState("error");
@@ -125,6 +131,11 @@ export default function BossEmailGenerator({
           <div style={{ fontWeight: 700, fontSize: "1.1rem", color: "var(--text-primary)", marginBottom: "0.375rem" }}>
             Email sent to {bossEmail}
           </div>
+          {gmailMessageId && (
+            <div style={{ display: "inline-block", margin: "0.375rem auto 0.75rem", padding: "0.25rem 0.75rem", background: "#dcfce7", border: "1px solid #86efac", borderRadius: "var(--radius-md)", fontSize: "0.75rem", color: "#166534", fontFamily: "monospace" }}>
+              Gmail message ID: {gmailMessageId}
+            </div>
+          )}
           <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", marginBottom: "1.5rem", lineHeight: 1.6 }}>
             Your People Leader will receive the email below asking permission to forward an email walkthrough.
           </p>

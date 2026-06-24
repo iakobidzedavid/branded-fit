@@ -79,6 +79,7 @@ function TryPage() {
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [companyError, setCompanyError] = useState("");
+  const [submitError, setSubmitError] = useState("");
   const [stage, setStage] = useState<Stage>("idle");
   const [stepIndex, setStepIndex] = useState(0);
   const [stepProgress, setStepProgress] = useState(0);
@@ -89,6 +90,7 @@ function TryPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     let hasError = false;
+    setSubmitError("");
     if (!name.trim()) { setNameError("Your name is required"); hasError = true; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setEmailError("Enter a valid work email"); hasError = true; }
     if (!company.trim()) { setCompanyError("Company name is required"); hasError = true; }
@@ -96,7 +98,7 @@ function TryPage() {
 
     setSubmitting(true);
     try {
-      await fetch("/api/demo-request", {
+      const res = await fetch("/api/demo-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -106,8 +108,16 @@ function TryPage() {
           source: "try-page",
         }),
       });
+      if (!res.ok) {
+        const data = await res.json() as { error?: string };
+        setSubmitError(data.error ?? "Something went wrong. Please try again.");
+        setSubmitting(false);
+        return;
+      }
     } catch {
-      // non-fatal
+      setSubmitError("Network error. Please check your connection and try again.");
+      setSubmitting(false);
+      return;
     }
     setSubmitting(false);
     setStage("generating");
@@ -190,6 +200,10 @@ function TryPage() {
             />
             {companyError && <p style={{ margin: "0.3rem 0 0", fontSize: "0.8rem", color: "var(--danger)" }}>{companyError}</p>}
           </div>
+
+          {submitError && (
+            <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--danger)", lineHeight: 1.4, padding: "0.75rem 1rem", background: "#fef2f2", border: "1px solid #fca5a5", borderRadius: "var(--radius-md)" }}>{submitError}</p>
+          )}
 
           <button
             type="submit"
