@@ -485,6 +485,7 @@ export default function OrdersDashboardPage() {
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [lastSync, setLastSync] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
+  const [seeding, setSeeding] = useState(false);
 
   const fetchOrders = useCallback(async (store: string, from: string, to: string) => {
     setLoading(true);
@@ -525,6 +526,23 @@ export default function OrdersDashboardPage() {
   function handleApplyFilters(e: React.FormEvent) {
     e.preventDefault();
     fetchOrders(selectedStore, dateFrom, dateTo);
+  }
+
+  async function handleSeedDemoData() {
+    setSeeding(true);
+    try {
+      const res = await fetch("/api/seed-demo-orders", { method: "POST" });
+      const data = await res.json() as { message?: string; error?: string; seeded?: number };
+      if (data.error) {
+        setError(data.error);
+      } else {
+        await fetchOrders("all", "", "");
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Seed failed");
+    } finally {
+      setSeeding(false);
+    }
   }
 
   function relTime(iso: string) {
@@ -686,8 +704,22 @@ export default function OrdersDashboardPage() {
             <div style={{ padding: "3rem", textAlign: "center", color: T.textMuted, background: T.bg }}>
               <div style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>📦</div>
               <div style={{ fontWeight: 600, marginBottom: "0.25rem" }}>No orders yet</div>
-              <div style={{ fontSize: "0.875rem" }}>
+              <div style={{ fontSize: "0.875rem", marginBottom: "1.25rem" }}>
                 Orders from your Shopify storefronts will appear here after the first purchase.
+              </div>
+              <button
+                onClick={handleSeedDemoData}
+                disabled={seeding}
+                style={{
+                  padding: "0.6rem 1.5rem", background: T.accent, color: T.text,
+                  border: "none", borderRadius: 8, fontWeight: 600, fontSize: "0.875rem",
+                  cursor: seeding ? "not-allowed" : "pointer", opacity: seeding ? 0.7 : 1,
+                }}
+              >
+                {seeding ? "Loading Sample Data…" : "Load Sample Orders"}
+              </button>
+              <div style={{ fontSize: "0.75rem", marginTop: "0.5rem", color: T.textMuted }}>
+                Populates 8 demo orders to explore filters, modal, and downloads
               </div>
             </div>
           ) : (
