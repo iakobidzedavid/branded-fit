@@ -52,16 +52,20 @@ export default function BrandAssetsPage() {
       // non-fatal — proceed with download anyway
     }
 
-    // 2. Initiate ZIP download
+    // 2. Show success state immediately (messageId already captured above)
+    setDownloading(false);
+    setDownloaded(true);
+
+    // 3. Initiate ZIP download via hidden anchor (preserves React state unlike window.location.href)
     const storeId = company.trim().toLowerCase().replace(/\s+/g, "-") || "default";
     const params = new URLSearchParams({ storeId });
     if (cleanDomain) params.set("domain", cleanDomain);
-    window.location.href = `/api/brand-assets/download?${params.toString()}`;
-
-    setTimeout(() => {
-      setDownloading(false);
-      setDownloaded(true);
-    }, 1500);
+    const a = document.createElement("a");
+    a.href = `/api/brand-assets/download?${params.toString()}`;
+    a.download = "brand-assets.zip";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }
 
   return (
