@@ -624,7 +624,7 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
               AI-curated 8-product store · Brand colors applied · Quality-verified catalog
             </p>
           </div>
-          <div style={{ display: "flex", gap: "0.625rem" }}>
+          <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap" }}>
             <button
               onClick={() => setStage("idle")}
               style={{
@@ -640,6 +640,26 @@ function TryPage({ initialDomain = "" }: { initialDomain?: string }) {
             >
               ← Try another domain
             </button>
+            <a
+              href={`/api/download-assets?storeId=${encodeURIComponent(cleanDomain || "default")}`}
+              download
+              style={{
+                padding: "0.625rem 1rem",
+                background: palette.primary,
+                color: "white",
+                border: "none",
+                borderRadius: "var(--radius-md)",
+                fontWeight: 600,
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.35rem",
+              }}
+            >
+              ↓ Download Assets
+            </a>
           </div>
         </div>
 

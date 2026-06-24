@@ -77,6 +77,7 @@ function OrderDetailModal({
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [liveAddress, setLiveAddress] = useState<ShippingAddress | null>(null);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [inviteEmails, setInviteEmails] = useState("");
@@ -95,6 +96,15 @@ function OrderDetailModal({
       .then((d: { order?: Order; error?: string }) => {
         if (d.error) throw new Error(d.error);
         setOrder(d.order ?? null);
+        // Fetch fresh shipping address from /api/customers/{customer_id}/addresses
+        if (d.order?.customer_id) {
+          fetch(`/api/customers/${d.order.customer_id}/addresses`)
+            .then((r) => r.json())
+            .then((addrData: { addresses?: ShippingAddress[] }) => {
+              if (addrData.addresses?.[0]) setLiveAddress(addrData.addresses[0]);
+            })
+            .catch(() => {});
+        }
       })
       .catch((e: Error) => {
         if (e.name !== "AbortError") setError(e.message);
@@ -147,12 +157,13 @@ function OrderDetailModal({
     setSupportResult(data.message ?? data.error ?? "Submitted");
   }
 
-  const addr = order?.shipping_address;
+  const addr = liveAddress ?? order?.shipping_address;
 
   return (
     <div
+      data-testid="order-detail-modal"
       style={{
-        position: "fixed", inset: 0, zIndex: 1000,
+        position: "fixed", inset: 0, zIndex: 9999,
         background: "rgba(0,0,0,0.7)", display: "flex",
         alignItems: "center", justifyContent: "center", padding: "1rem",
       }}
@@ -239,12 +250,15 @@ function OrderDetailModal({
                     <span>{order.customer_email ?? "—"}</span>
                   </div>
                 </div>
-                {/* Shipping Address */}
-                <div style={{ marginTop: "0.75rem", fontSize: "0.85rem" }}>
+                {/* Shipping Address — fetched fresh from /api/customers/{customer_id}/addresses */}
+                <div
+                  data-testid="shipping-address"
+                  style={{ marginTop: "0.75rem", fontSize: "0.85rem" }}
+                >
                   <span style={{ color: T.textMuted }}>Shipping Address: </span>
                   {addr ? (
                     <span>
-                      {[addr.street, addr.city, addr.state, addr.zip, addr.country].filter(Boolean).join(", ")}
+                      {[addr.street, addr.city, addr.state, addr.zip, addr.country].filter(Boolean).join(", ") || "Not on file"}
                     </span>
                   ) : (
                     <span style={{ color: T.textMuted }}>Not on file</span>
@@ -473,6 +487,250 @@ function OrderDetailModal({
   );
 }
 
+// ---------- Page-level Invite Team Modal ----------
+function InviteTeamModal({ onClose }: { onClose: () => void }) {
+  const [inviteEmails, setInviteEmails] = useState("");
+  const [inviteRole, setInviteRole] = useState("viewer");
+  const [result, setResult] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const emails = inviteEmails
+      .split(/[,\n]+/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((email) => ({ email, role: inviteRole }));
+    if (emails.length === 0) return;
+    setSubmitting(true);
+    const res = await fetch("/api/invite-team", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ invites: emails, store_name: "Branded Fit Storefront" }),
+    });
+    const data = await res.json() as { message?: string; error?: string };
+    setResult(data.message ?? data.error ?? "Done");
+    setSubmitting(false);
+  }
+
+  return (
+    <div
+      data-testid="invite-team-modal"
+      style={{
+        position: "fixed", inset: 0, zIndex: 9999,
+        background: "rgba(0,0,0,0.7)", display: "flex",
+        alignItems: "center", justifyContent: "center", padding: "1rem",
+      }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div style={{
+        background: T.bg, border: `1px solid ${T.border}`, borderRadius: 12,
+        width: "100%", maxWidth: 520, color: T.text,
+      }}>
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "1.25rem 1.5rem", background: T.surface,
+          borderBottom: `1px solid ${T.border}`, borderRadius: "12px 12px 0 0",
+        }}>
+          <div style={{ fontWeight: 700, fontSize: "1.1rem" }}>Invite Team Members</div>
+          <button onClick={onClose} aria-label="Close" style={{ background: "none", border: "none", color: T.textMuted, fontSize: "1.5rem", cursor: "pointer" }}>×</button>
+        </div>
+        <div style={{ padding: "1.5rem" }}>
+          {!result ? (
+            <form onSubmit={handleSubmit}>
+              <div style={{ marginBottom: "1rem" }}>
+                <label style={{ display: "block", fontSize: "0.8rem", color: T.textMuted, marginBottom: "0.3rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  Email addresses (comma or newline separated)
+                </label>
+                <textarea
+                  value={inviteEmails}
+                  onChange={(e) => setInviteEmails(e.target.value)}
+                  rows={4}
+                  placeholder="alice@example.com, bob@example.com"
+                  required
+                  style={{
+                    width: "100%", background: T.surface, border: `1px solid ${T.border}`,
+                    borderRadius: 6, color: T.text, padding: "0.625rem 0.875rem",
+                    fontSize: "0.9rem", resize: "vertical", boxSizing: "border-box",
+                  }}
+                />
+              </div>
+              <div style={{ marginBottom: "1.25rem" }}>
+                <label style={{ display: "block", fontSize: "0.8rem", color: T.textMuted, marginBottom: "0.3rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  Role
+                </label>
+                <select
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value)}
+                  style={{
+                    background: T.surface, border: `1px solid ${T.border}`,
+                    borderRadius: 6, color: T.text, padding: "0.5rem 0.875rem", fontSize: "0.875rem",
+                  }}
+                >
+                  <option value="viewer">Viewer</option>
+                  <option value="editor">Editor</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <button
+                type="submit"
+                disabled={submitting}
+                style={{
+                  padding: "0.7rem 1.5rem", background: T.accent, color: T.text,
+                  border: "none", borderRadius: 8, fontWeight: 700,
+                  fontSize: "0.95rem", cursor: submitting ? "not-allowed" : "pointer",
+                  opacity: submitting ? 0.7 : 1,
+                }}
+              >
+                {submitting ? "Sending…" : "Send Invitations"}
+              </button>
+            </form>
+          ) : (
+            <div style={{ padding: "1rem", background: "#10b98122", border: `1px solid ${T.statusShipped}44`, borderRadius: 8, color: T.statusShipped }}>
+              {result}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------- Page-level Support Escalation Modal ----------
+function SupportModal({ onClose }: { onClose: () => void }) {
+  const [domain, setDomain] = useState("");
+  const [errorDetails, setErrorDetails] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [result, setResult] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    const res = await fetch("/api/support-escalation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        domain: domain || "Orders Dashboard",
+        error_details: errorDetails,
+        contact_email: contactEmail,
+      }),
+    });
+    const data = await res.json() as { message?: string; error?: string };
+    setResult(data.message ?? data.error ?? "Submitted");
+    setSubmitting(false);
+  }
+
+  return (
+    <div
+      data-testid="support-modal"
+      style={{
+        position: "fixed", inset: 0, zIndex: 9999,
+        background: "rgba(0,0,0,0.7)", display: "flex",
+        alignItems: "center", justifyContent: "center", padding: "1rem",
+      }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div style={{
+        background: T.bg, border: `1px solid ${T.border}`, borderRadius: 12,
+        width: "100%", maxWidth: 520, color: T.text,
+      }}>
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "1.25rem 1.5rem", background: T.surface,
+          borderBottom: `1px solid ${T.border}`, borderRadius: "12px 12px 0 0",
+        }}>
+          <div style={{ fontWeight: 700, fontSize: "1.1rem" }}>Contact Support</div>
+          <button onClick={onClose} aria-label="Close" style={{ background: "none", border: "none", color: T.textMuted, fontSize: "1.5rem", cursor: "pointer" }}>×</button>
+        </div>
+        <div style={{ padding: "1.5rem" }}>
+          {!result ? (
+            <form onSubmit={handleSubmit}>
+              <div style={{ marginBottom: "1rem" }}>
+                <label style={{ display: "block", fontSize: "0.8rem", color: T.textMuted, marginBottom: "0.3rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  Store / Domain
+                </label>
+                <input
+                  type="text"
+                  value={domain}
+                  onChange={(e) => setDomain(e.target.value)}
+                  placeholder="yourstore.myshopify.com"
+                  required
+                  style={{
+                    width: "100%", background: T.surface, border: `1px solid ${T.border}`,
+                    borderRadius: 6, color: T.text, padding: "0.625rem 0.875rem",
+                    fontSize: "0.9rem", boxSizing: "border-box",
+                  }}
+                />
+              </div>
+              <div style={{ marginBottom: "1rem" }}>
+                <label style={{ display: "block", fontSize: "0.8rem", color: T.textMuted, marginBottom: "0.3rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  Describe the issue
+                </label>
+                <textarea
+                  value={errorDetails}
+                  onChange={(e) => setErrorDetails(e.target.value)}
+                  rows={3}
+                  placeholder="What went wrong?"
+                  style={{
+                    width: "100%", background: T.surface, border: `1px solid ${T.border}`,
+                    borderRadius: 6, color: T.text, padding: "0.625rem 0.875rem",
+                    fontSize: "0.9rem", resize: "vertical", boxSizing: "border-box",
+                  }}
+                />
+              </div>
+              <div style={{ marginBottom: "1.25rem" }}>
+                <label style={{ display: "block", fontSize: "0.8rem", color: T.textMuted, marginBottom: "0.3rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  Your email (for follow-up)
+                </label>
+                <input
+                  type="email"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  placeholder="you@company.com"
+                  style={{
+                    width: "100%", background: T.surface, border: `1px solid ${T.border}`,
+                    borderRadius: 6, color: T.text, padding: "0.625rem 0.875rem",
+                    fontSize: "0.9rem", boxSizing: "border-box",
+                  }}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={submitting}
+                style={{
+                  padding: "0.7rem 1.5rem", background: T.danger, color: T.text,
+                  border: "none", borderRadius: 8, fontWeight: 700,
+                  fontSize: "0.95rem", cursor: submitting ? "not-allowed" : "pointer",
+                  opacity: submitting ? 0.7 : 1,
+                }}
+              >
+                {submitting ? "Submitting…" : "Submit Support Request"}
+              </button>
+            </form>
+          ) : (
+            <div style={{ padding: "1rem", background: "#3b0a0a22", border: `1px solid ${T.danger}44`, borderRadius: 8, color: "#fca5a5" }}>
+              {result}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ---------- Main Orders Dashboard ----------
 export default function OrdersDashboardPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -486,6 +744,8 @@ export default function OrdersDashboardPage() {
   const [lastSync, setLastSync] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [seeding, setSeeding] = useState(false);
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
+  const [supportModalOpen, setSupportModalOpen] = useState(false);
 
   const fetchOrders = useCallback(async (store: string, from: string, to: string) => {
     setLoading(true);
@@ -578,7 +838,7 @@ export default function OrdersDashboardPage() {
               All orders across your storefronts with Printify fulfillment status
             </p>
           </div>
-          <div style={{ textAlign: "right" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.75rem" }}>
             <div style={{
               display: "inline-flex", alignItems: "center", gap: "0.5rem",
               padding: "0.35rem 0.875rem", background: T.bg, border: `1px solid ${T.border}`,
@@ -586,6 +846,31 @@ export default function OrdersDashboardPage() {
             }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: syncing ? T.statusInProgress : T.statusShipped, display: "inline-block" }} />
               {syncing ? "Syncing…" : lastSync ? `Synced ${relTime(lastSync)}` : "Loading…"}
+            </div>
+            {/* Page-level action buttons — always visible without opening a modal */}
+            <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
+              <button
+                data-testid="invite-team-btn"
+                onClick={() => setInviteModalOpen(true)}
+                style={{
+                  padding: "0.5rem 1rem", background: T.surface, color: T.text,
+                  border: `1px solid ${T.border}`, borderRadius: 8,
+                  fontWeight: 600, fontSize: "0.825rem", cursor: "pointer",
+                }}
+              >
+                Invite Team
+              </button>
+              <button
+                data-testid="contact-support-btn"
+                onClick={() => setSupportModalOpen(true)}
+                style={{
+                  padding: "0.5rem 1rem", background: T.surface, color: T.danger,
+                  border: `1px solid ${T.danger}44`, borderRadius: 8,
+                  fontWeight: 600, fontSize: "0.825rem", cursor: "pointer",
+                }}
+              >
+                Contact Support
+              </button>
             </div>
           </div>
         </div>
@@ -655,6 +940,7 @@ export default function OrdersDashboardPage() {
 
           <button
             type="submit"
+            data-testid="apply-filters-btn"
             style={{
               padding: "0.55rem 1.5rem", background: T.accent, color: T.text,
               border: "none", borderRadius: 6, fontWeight: 600,
@@ -726,6 +1012,7 @@ export default function OrdersDashboardPage() {
             orders.map((order, i) => (
               <div
                 key={order.id}
+                data-testid="order-row"
                 onClick={() => setSelectedOrderId(order.id)}
                 style={{
                   display: "grid",
@@ -791,6 +1078,16 @@ export default function OrdersDashboardPage() {
           orderId={selectedOrderId}
           onClose={() => setSelectedOrderId(null)}
         />
+      )}
+
+      {/* Page-level Invite Team Modal */}
+      {inviteModalOpen && (
+        <InviteTeamModal onClose={() => setInviteModalOpen(false)} />
+      )}
+
+      {/* Page-level Support Modal */}
+      {supportModalOpen && (
+        <SupportModal onClose={() => setSupportModalOpen(false)} />
       )}
     </main>
   );
