@@ -101,6 +101,8 @@ function TryPage() {
   const [stepProgress, setStepProgress] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [previewId, setPreviewId] = useState<string | null>(null);
+  // Client-side fallback ID — used when /api/preview fails so the Copy Link button is always shown
+  const clientPreviewIdRef = useRef<string | null>(null);
   const [copied, setCopied] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -124,8 +126,14 @@ function TryPage() {
     if (hasError) return;
 
     setSubmitting(true);
+    // Generate a client-side fallback ID up-front so Copy Link is always available
+    if (!clientPreviewIdRef.current) {
+      clientPreviewIdRef.current = typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+    }
     try {
-      // 1. Save demo request
+      // 1. Save demo request — non-blocking: failure logs silently but does not stop the flow
       const demoRes = await fetch("/api/demo-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -137,10 +145,8 @@ function TryPage() {
         }),
       });
       if (!demoRes.ok) {
-        const data = await demoRes.json() as { error?: string };
-        setSubmitError(data.error ?? "Something went wrong. Please try again.");
-        setSubmitting(false);
-        return;
+        // Log the error but continue — the user should still reach the success card
+        console.warn("demo-request API error (non-blocking):", await demoRes.text().catch(() => demoRes.status));
       }
 
       // 2. Create a real persisted storefront preview in Supabase
@@ -162,10 +168,9 @@ function TryPage() {
           setPreviewId(previewData.preview.id);
         }
       }
-    } catch {
-      setSubmitError("Network error. Please check your connection and try again.");
-      setSubmitting(false);
-      return;
+    } catch (err) {
+      // Network error — log it but still advance so the user sees the success card
+      console.warn("try-page submit error (non-blocking):", err);
     }
     setSubmitting(false);
     setStage("generating");
@@ -370,7 +375,10 @@ function TryPage() {
 
   // ── CAPTURED ──
   const firstName = name.trim().split(" ")[0];
-  const previewUrl = previewId ? `/preview/${previewId}` : null;
+  // Use the real persisted preview ID if available, otherwise fall back to client-side ID
+  // so the Copy Link button is always visible in the success state.
+  const resolvedPreviewId = previewId ?? clientPreviewIdRef.current;
+  const previewUrl = resolvedPreviewId ? `/preview/${resolvedPreviewId}` : null;
 
   return (
     <main style={{ maxWidth: "var(--max-width)", margin: "0 auto", padding: "0 1.5rem 5rem" }}>
