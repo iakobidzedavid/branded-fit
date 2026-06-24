@@ -40,7 +40,7 @@ export default function ContactSupportPage() {
           name: name.trim(),
           email: email.trim(),
           company: company.trim(),
-          domain: domain.trim() || company.trim(),
+          domain: domain.trim() || company.trim() || "branded-fit.vercel.app",
           error_details: errorDetails.trim(),
           contact_email: email.trim(),
         }),
@@ -203,6 +203,9 @@ export default function ContactSupportPage() {
                   placeholder="yourstore.myshopify.com"
                   style={{ width: "100%", background: T.bg, border: `1px solid ${T.border}`, borderRadius: 6, color: T.text, padding: "0.6rem 0.875rem", fontSize: "0.9rem", boxSizing: "border-box" }}
                 />
+                <div style={{ fontSize: "0.72rem", color: T.textMuted, marginTop: "0.25rem" }}>
+                  If blank, defaults to your company name
+                </div>
               </div>
 
               {/* Issue description */}

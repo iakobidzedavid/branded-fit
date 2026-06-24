@@ -184,6 +184,114 @@ export default function Home() {
             Prefer an email walkthrough? Request a personalized demo below →
           </a>
         </div>
+
+        {/* Quick-access links — key product features */}
+        <div
+          aria-label="Product Features Dashboard"
+          style={{
+            marginTop: "1.5rem",
+            display: "flex",
+            gap: "0.625rem",
+            flexWrap: "wrap",
+            alignItems: "center",
+            padding: "0.875rem 1rem",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
+            borderRadius: "var(--radius-lg)",
+          }}
+        >
+          <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginRight: "0.25rem" }}>
+            Dashboard:
+          </span>
+          <Link
+            href="/orders"
+            data-testid="nav-orders"
+            style={{
+              padding: "0.35rem 0.875rem",
+              background: "var(--primary-light)",
+              color: "var(--primary)",
+              borderRadius: 20,
+              fontSize: "0.8rem",
+              fontWeight: 600,
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Orders & Team →
+          </Link>
+          <Link
+            href="/brand-assets"
+            data-testid="nav-brand-assets"
+            style={{
+              padding: "0.35rem 0.875rem",
+              background: "var(--surface)",
+              color: "var(--text-body)",
+              border: "1px solid var(--border)",
+              borderRadius: 20,
+              fontSize: "0.8rem",
+              fontWeight: 500,
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Brand Assets →
+          </Link>
+          <Link
+            href="/contact-support"
+            data-testid="nav-contact-support"
+            style={{
+              padding: "0.35rem 0.875rem",
+              background: "var(--surface)",
+              color: "var(--text-body)",
+              border: "1px solid var(--border)",
+              borderRadius: 20,
+              fontSize: "0.8rem",
+              fontWeight: 500,
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Contact Support →
+          </Link>
+          <a
+            href="/api/brand-assets/download?storeId=demo&domain=demo"
+            download="brand-assets.zip"
+            data-testid="homepage-download-brand-assets"
+            aria-label="Download Brand Assets"
+            style={{
+              padding: "0.35rem 0.875rem",
+              background: "var(--surface)",
+              color: "var(--text-body)",
+              border: "1px solid var(--border)",
+              borderRadius: 20,
+              fontSize: "0.8rem",
+              fontWeight: 500,
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Download Brand Assets ↓
+          </a>
+          <a
+            href="/api/download-assets?storeId=demo"
+            download
+            data-testid="homepage-download-assets"
+            aria-label="Download Assets"
+            style={{
+              padding: "0.35rem 0.875rem",
+              background: "var(--surface)",
+              color: "var(--text-body)",
+              border: "1px solid var(--border)",
+              borderRadius: 20,
+              fontSize: "0.8rem",
+              fontWeight: 500,
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Download Assets ↓
+          </a>
+        </div>
       </section>
 
       {/* Section 2 — 3-Scenario Gate Verification (DE Step 17) — immediately after hero */}

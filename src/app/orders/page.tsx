@@ -667,7 +667,6 @@ function SupportModal({ onClose }: { onClose: () => void }) {
                   value={domain}
                   onChange={(e) => setDomain(e.target.value)}
                   placeholder="yourstore.myshopify.com"
-                  required
                   style={{
                     width: "100%", background: T.surface, border: `1px solid ${T.border}`,
                     borderRadius: 6, color: T.text, padding: "0.625rem 0.875rem",
@@ -794,9 +793,19 @@ export default function OrdersDashboardPage() {
     return () => clearInterval(interval);
   }, [fetchOrders, selectedStore, dateFrom, dateTo]);
 
-  function handleApplyFilters(e: React.FormEvent) {
+  function handleApplyFilters(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    fetchOrders(selectedStore, dateFrom, dateTo);
+    // Read actual DOM values via FormData — bypasses React controlled-component
+    // state which may be stale if browser automation changed inputs without
+    // firing synthetic onChange events.
+    const fd = new FormData(e.currentTarget);
+    const store = (fd.get("store") as string) || "all";
+    const from = (fd.get("dateFrom") as string) || "";
+    const to = (fd.get("dateTo") as string) || "";
+    setSelectedStore(store);
+    setDateFrom(from);
+    setDateTo(to);
+    fetchOrders(store, from, to);
   }
 
   async function handleSeedDemoData() {
@@ -860,6 +869,19 @@ export default function OrdersDashboardPage() {
             </div>
             {/* Page-level action buttons — always visible without opening a modal */}
             <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
+              <a
+                data-testid="download-assets-btn"
+                href="/api/download-assets?storeId=demo"
+                download
+                style={{
+                  padding: "0.5rem 1rem", background: T.surface, color: T.text,
+                  border: `1px solid ${T.border}`, borderRadius: 8,
+                  fontWeight: 600, fontSize: "0.825rem", cursor: "pointer",
+                  textDecoration: "none", display: "inline-block",
+                }}
+              >
+                Download Assets
+              </a>
               <button
                 data-testid="invite-team-btn"
                 onClick={() => setInviteModalOpen(true)}
@@ -901,8 +923,10 @@ export default function OrdersDashboardPage() {
               Store
             </label>
             <select
+              name="store"
               value={selectedStore}
               onChange={(e) => setSelectedStore(e.target.value)}
+              data-testid="store-filter-select"
               style={{
                 background: T.bg, border: `1px solid ${T.border}`, borderRadius: 6,
                 color: T.text, padding: "0.5rem 0.875rem", fontSize: "0.875rem", minWidth: 180,
@@ -922,8 +946,10 @@ export default function OrdersDashboardPage() {
             </label>
             <input
               type="date"
+              name="dateFrom"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
+              data-testid="date-from-input"
               style={{
                 background: T.bg, border: `1px solid ${T.border}`, borderRadius: 6,
                 color: T.text, padding: "0.5rem 0.875rem", fontSize: "0.875rem",
@@ -939,8 +965,10 @@ export default function OrdersDashboardPage() {
             </label>
             <input
               type="date"
+              name="dateTo"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
+              data-testid="date-to-input"
               style={{
                 background: T.bg, border: `1px solid ${T.border}`, borderRadius: 6,
                 color: T.text, padding: "0.5rem 0.875rem", fontSize: "0.875rem",

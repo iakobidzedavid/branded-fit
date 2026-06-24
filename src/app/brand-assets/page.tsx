@@ -92,7 +92,37 @@ export default function BrandAssetsPage() {
           </p>
         </div>
 
-        {/* Form */}
+        {/* Direct download — no form required */}
+        <div style={{
+          padding: "1.25rem 1.5rem", background: T.surface,
+          border: `1px solid ${T.border}`, borderRadius: 12, marginBottom: "1rem",
+          display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem",
+        }}>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: "0.875rem", color: T.text, marginBottom: "0.2rem" }}>
+              Quick Download — Sample Brand Assets
+            </div>
+            <div style={{ fontSize: "0.78rem", color: T.textMuted }}>
+              Logos + color palette JSON — no sign-up required
+            </div>
+          </div>
+          <a
+            href="/api/brand-assets/download?storeId=demo&domain=demo"
+            download="brand-assets.zip"
+            data-testid="download-brand-assets-btn"
+            aria-label="Download Brand Assets"
+            style={{
+              padding: "0.6rem 1.25rem", background: T.accent, color: T.text,
+              border: "none", borderRadius: 8, fontWeight: 700, fontSize: "0.875rem",
+              textDecoration: "none", display: "inline-block", cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Download Brand Assets
+          </a>
+        </div>
+
+        {/* Form — optional: fill for personalized assets + confirmation email */}
         <form
           onSubmit={handleDownload}
           style={{
