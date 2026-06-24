@@ -65,7 +65,7 @@ export default function DemoPage() {
             You&apos;re on the list
           </h1>
           <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", lineHeight: 1.65 }}>
-            Thanks, {form.name.split(" ")[0]}. We&apos;ll reach out to {form.email} shortly to schedule your demo.
+            Thanks, {form.name.split(" ")[0]}. We&apos;ll email you a personalized storefront walkthrough at {form.email} within 24 hours.
           </p>
         </div>
       ) : (

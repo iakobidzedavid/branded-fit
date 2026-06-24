@@ -32,8 +32,8 @@ const tiers = [
       "Advanced AI catalog (300 SKUs + seasonal)",
       "Zero markup on all merchandise",
       "Full analytics (cohort, NPS, reorder alerts)",
-      "Priority email + Slack support (24 hr)",
-      "Guided setup call",
+      "Priority email support (24 hr response)",
+      "Guided onboarding (email + video walkthrough)",
     ],
   },
   {
@@ -41,7 +41,7 @@ const tiers = [
     price: { annual: 9600, monthly: 999 },
     tagline: "Enterprise-grade for HR platforms, APIs, and multi-entity orgs.",
     badge: null,
-    cta: "Talk to Sales",
+    cta: "Contact Us",
     ctaHref: "/demo",
     features: [
       "Unlimited active storefronts",
@@ -450,7 +450,7 @@ export default function PricingPage() {
             lineHeight: 1.65,
           }}
         >
-          See exactly how the 48-hour concierge onboarding works — then book your kickoff call.
+          See exactly how the 48-hour email onboarding works — your storefront goes live, no calls needed.
         </p>
         <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
           <Link

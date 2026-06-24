@@ -181,7 +181,7 @@ export default function Home() {
               textUnderlineOffset: 3,
             }}
           >
-            Prefer a guided walkthrough? Request a live demo below →
+            Prefer an email walkthrough? Request a personalized demo below →
           </a>
         </div>
       </section>
@@ -320,17 +320,17 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Testimonials */}
+      {/* Early access — honest state, no fabricated testimonials */}
       <section
         id="early-access-feedback"
-        aria-label="Early Access Feedback"
+        aria-label="Early Access"
         style={{
           paddingTop: "4rem",
           paddingBottom: "4rem",
           borderTop: "1px solid var(--border)",
         }}
       >
-        <div style={{ maxWidth: 600, marginBottom: "3rem" }}>
+        <div style={{ maxWidth: 600 }}>
           <div
             style={{
               display: "inline-block",
@@ -345,7 +345,7 @@ export default function Home() {
               marginBottom: "1.25rem",
             }}
           >
-            Early Access Feedback
+            Early Access
           </div>
           <h2
             style={{
@@ -359,89 +359,24 @@ export default function Home() {
           >
             Built for forward-thinking<br />People Ops teams
           </h2>
-          <p style={{ color: "var(--text-muted)", fontSize: "1rem", lineHeight: 1.65 }}>
-            Here&apos;s what early access participants said after their first storefront went live.
+          <p style={{ color: "var(--text-muted)", fontSize: "1rem", lineHeight: 1.65, marginBottom: "1.5rem" }}>
+            We&apos;re currently onboarding pilot companies. Be among the first to launch a branded self-selection storefront — early access spots are limited.
           </p>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "1.5rem",
-          }}
-        >
-          {[
-            {
-              quote: "We went from “we should do company swag” to a live, orderable Shopify store in under 10 minutes. I’ve been putting this task off for months — now I can’t believe I waited.",
-              role: "Head of People Operations",
-              company: "Series B SaaS startup \xb7 160 employees",
-            },
-            {
-              quote: "The AI catalog nailed our brand. It pulled our color palette and suggested hoodies and tote bags that actually looked like us. No back-and-forth with a design vendor, no minimum order fuss.",
-              role: "People Ops Manager",
-              company: "Venture-backed fintech \xb7 85 employees",
-            },
-            {
-              quote: "Redemption at our last swag drop was 38%. After switching to a self-selection storefront through Branded Fit, our team actually gets excited about the quarterly refresh. Huge shift.",
-              role: "VP of People",
-              company: "Growth-stage B2B startup \xb7 230 employees",
-            },
-          ].map((t, i) => (
-            <article
-              key={i}
-              aria-label={`Testimonial from ${t.role}`}
-              style={{
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-lg)",
-                padding: "1.75rem",
-                display: "flex",
-                flexDirection: "column",
-                gap: "1.25rem",
-                boxShadow: "var(--shadow-sm)",
-              }}
-            >
-              <div
-                aria-hidden="true"
-                style={{
-                  fontSize: "2rem",
-                  lineHeight: 1,
-                  color: "var(--primary)",
-                  fontWeight: 800,
-                  marginBottom: "-0.5rem",
-                }}
-              >
-                &ldquo;
-              </div>
-              <blockquote
-                style={{
-                  color: "var(--text-body)",
-                  fontSize: "0.9375rem",
-                  lineHeight: 1.7,
-                  margin: 0,
-                  padding: 0,
-                  flexGrow: 1,
-                  border: "none",
-                }}
-              >
-                {t.quote}
-              </blockquote>
-              <footer
-                style={{
-                  borderTop: "1px solid var(--border)",
-                  paddingTop: "1rem",
-                }}
-              >
-                <div style={{ fontWeight: 700, color: "var(--text-primary)", fontSize: "0.875rem" }}>
-                  {t.role}
-                </div>
-                <div style={{ color: "var(--text-subtle)", fontSize: "0.8rem", marginTop: "0.2rem" }}>
-                  {t.company}
-                </div>
-              </footer>
-            </article>
-          ))}
+          <a
+            href="#waitlist"
+            style={{
+              display: "inline-block",
+              padding: "0.75rem 1.5rem",
+              background: "var(--primary)",
+              color: "white",
+              borderRadius: "var(--radius-md)",
+              fontWeight: 700,
+              fontSize: "0.95rem",
+              textDecoration: "none",
+            }}
+          >
+            Join the waitlist →
+          </a>
         </div>
       </section>
 
@@ -496,7 +431,7 @@ export default function Home() {
             {[
               "First access to the AI catalog builder",
               "Locked-in early-adopter pricing",
-              "Direct line to the founding team",
+              "Priority access to new features & early pricing",
             ].map((item) => (
               <div key={item} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <span style={{ color: "var(--accent)", fontWeight: 700, fontSize: "0.9rem" }}>✓</span>
@@ -546,8 +481,8 @@ export default function Home() {
             The swag platform that gets smarter<br />with every order you place
           </h2>
           <p style={{ color: "var(--text-muted)", fontSize: "1rem", lineHeight: 1.65 }}>
-            Industry average swag redemption is 52%. Our customers average 85%. That gap exists because
-            of one thing: the <strong style={{ color: "var(--text-primary)" }}>Brand→Product Fit Graph</strong> — a compounding AI model
+            Industry-average redemption for company-chosen swag runs at 38% (SwagDrop 2026, n=2,500). Branded Fit is designed to reach 85% through self-selection storefronts. The mechanism is the{" "}
+            <strong style={{ color: "var(--text-primary)" }}>Brand→Product Fit Graph</strong> — a compounding AI model
             trained on what teams at companies like yours actually use. The longer you&apos;re with Branded Fit,
             the more accurate your catalog becomes.
           </p>
@@ -718,7 +653,7 @@ export default function Home() {
                 marginBottom: "1rem",
               }}
             >
-              Live demo
+              Personalized walkthrough
             </div>
             <h2
               style={{
@@ -730,16 +665,16 @@ export default function Home() {
                 letterSpacing: "-0.02em",
               }}
             >
-              See Branded Fit build your storefront live
+              Get a step-by-step email walkthrough
             </h2>
             <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "0.95rem", lineHeight: 1.65, marginBottom: "1.5rem" }}>
-              We&apos;ll walk through the full 8-minute flow using your company&apos;s domain — live brand extraction, AI catalog curation, and a working Shopify storefront before we hang up.
+              Request a personalized walkthrough — we&apos;ll email you a step-by-step preview showing your company&apos;s domain mapped through brand extraction, AI catalog curation, and a complete Shopify storefront. No call required.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
               {[
-                "Live domain → storefront walkthrough",
-                "Your real brand colors & products",
-                "Q&A with the founding team",
+                "Your domain → storefront preview (emailed to you)",
+                "Your real brand colors & curated products",
+                "Reply with any questions — we respond by email",
               ].map((item) => (
                 <div key={item} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   <span style={{ color: "#86efac", fontWeight: 700, fontSize: "0.9rem" }}>✓</span>

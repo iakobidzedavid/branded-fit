@@ -66,7 +66,7 @@ export default function DemoRequestForm() {
           You&apos;re on the list, {form.name.split(" ")[0]}!
         </p>
         <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "0.9rem" }}>
-          We&apos;ll reach out to {form.email} to schedule your demo.
+          We&apos;ll email you a personalized storefront walkthrough at {form.email}.
         </p>
       </div>
     );
