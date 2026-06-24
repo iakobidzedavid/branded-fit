@@ -133,8 +133,8 @@ export default async function ForYourBossPage({
         </p>
 
         <div style={{ display: "flex", gap: "0.875rem", flexWrap: "wrap" }}>
-          <Link
-            href="/demo-request"
+          <a
+            href="#email-generator"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -144,10 +144,11 @@ export default async function ForYourBossPage({
               borderRadius: "var(--radius-md)",
               fontWeight: 700,
               fontSize: "0.9375rem",
+              textDecoration: "none",
             }}
           >
             Request an email walkthrough →
-          </Link>
+          </a>
           <Link
             href="/roi-calculator"
             style={{
@@ -547,7 +548,7 @@ export default async function ForYourBossPage({
       </section>
 
       {/* Email generator */}
-      <section style={{ marginBottom: "5rem" }}>
+      <section id="email-generator" style={{ marginBottom: "5rem" }}>
         <h2
           style={{
             fontSize: "1.375rem",
@@ -608,8 +609,8 @@ export default async function ForYourBossPage({
             flexWrap: "wrap",
           }}
         >
-          <Link
-            href="/demo-request"
+          <a
+            href="#email-generator"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -619,10 +620,11 @@ export default async function ForYourBossPage({
               borderRadius: "var(--radius-md)",
               fontWeight: 700,
               fontSize: "1rem",
+              textDecoration: "none",
             }}
           >
             Request an email walkthrough →
-          </Link>
+          </a>
           <Link
             href="/try"
             style={{
