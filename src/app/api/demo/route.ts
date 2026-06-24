@@ -1,112 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSupabase } from "@/lib/supabase-server";
-
-async function sendViaResend({
-  apiKey,
-  from,
-  to,
-  subject,
-  text,
-}: {
-  apiKey: string;
-  from: string;
-  to: string;
-  subject: string;
-  text: string;
-}): Promise<{ messageId: string | null; error: string | null }> {
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ from, to, subject, text }),
-    });
-    if (!res.ok) {
-      const body = await res.text();
-      return { messageId: null, error: `Resend ${res.status}: ${body.slice(0, 200)}` };
-    }
-    const data = (await res.json()) as { id?: string };
-    return { messageId: data.id ?? null, error: null };
-  } catch (err) {
-    return { messageId: null, error: String(err) };
-  }
-}
-
-async function getAppConfig(
-  supabase: ReturnType<typeof getServerSupabase>,
-  key: string
-): Promise<string | null> {
-  const { data } = await supabase
-    .from("app_config")
-    .select("value")
-    .eq("key", key)
-    .single();
-  return data?.value ?? null;
-}
-
-function buildRawEmail({
-  to,
-  from,
-  subject,
-  body,
-}: {
-  to: string;
-  from: string;
-  subject: string;
-  body: string;
-}): string {
-  const raw =
-    `From: ${from}\r\n` +
-    `To: ${to}\r\n` +
-    `Subject: ${subject}\r\n` +
-    `Content-Type: text/plain; charset=utf-8\r\n` +
-    `\r\n` +
-    body;
-  return Buffer.from(raw).toString("base64url");
-}
-
-async function sendGmailViaPica({
-  picaSecret,
-  connectionKey,
-  actionId,
-  to,
-  subject,
-  body,
-}: {
-  picaSecret: string;
-  connectionKey: string;
-  actionId: string;
-  to: string;
-  subject: string;
-  body: string;
-}): Promise<{ messageId: string | null; error: string | null }> {
-  const rawEmail = buildRawEmail({ from: "me", to, subject, body });
-  try {
-    const res = await fetch(
-      "https://api.picaos.com/v1/passthrough/gmail/v1/users/me/messages/send",
-      {
-        method: "POST",
-        headers: {
-          "x-pica-secret": picaSecret,
-          "x-pica-connection-key": connectionKey,
-          "x-pica-action-id": actionId,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ raw: rawEmail, connectionKey }),
-      }
-    );
-    if (!res.ok) {
-      const text = await res.text();
-      return { messageId: null, error: `Pica ${res.status}: ${text.slice(0, 200)}` };
-    }
-    const data = (await res.json()) as { id?: string };
-    return { messageId: data.id ?? null, error: null };
-  } catch (err) {
-    return { messageId: null, error: String(err) };
-  }
-}
+import { sendViaGmail } from "@/lib/pica-email";
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -172,55 +66,25 @@ export async function POST(req: NextRequest) {
     `— Branded Fit`,
   ].join("\n");
 
-  let messageId: string | null = null;
-  let emailProvider: string | null = null;
+  const result = await sendViaGmail(
+    emailStr,
+    `Your Branded Fit walkthrough for ${companyStr}`,
+    userEmailBody
+  );
 
-  const resendKey = process.env.RESEND_API_KEY;
-  const emailFrom = process.env.EMAIL_FROM ?? "Branded Fit <onboarding@brandedfitco.com>";
-
-  if (resendKey) {
-    emailProvider = "resend";
-    const result = await sendViaResend({
-      apiKey: resendKey,
-      from: emailFrom,
-      to: emailStr,
-      subject: `Your Branded Fit walkthrough for ${companyStr}`,
-      text: userEmailBody,
-    });
-    messageId = result.messageId;
-    if (result.error) console.error("resend demo error:", result.error);
-    else console.log("resend demo sent, id:", result.messageId);
+  if (result.error) {
+    console.error("pica demo email error:", result.error);
   } else {
-    const [picaSecret, connectionKey, actionId] = await Promise.all([
-      getAppConfig(supabase, "pica_secret"),
-      getAppConfig(supabase, "pica_gmail_connection_key"),
-      getAppConfig(supabase, "pica_gmail_action_id"),
-    ]);
-    if (picaSecret && connectionKey && actionId) {
-      emailProvider = "pica_gmail";
-      const result = await sendGmailViaPica({
-        picaSecret,
-        connectionKey,
-        actionId,
-        to: emailStr,
-        subject: `Your Branded Fit walkthrough for ${companyStr}`,
-        body: userEmailBody,
-      });
-      messageId = result.messageId;
-      if (result.error) console.error("pica demo error:", result.error);
-      else console.log("pica demo sent, gmail_message_id:", result.messageId);
-    } else {
-      console.warn("demo: no email credentials configured — email not sent");
-    }
+    console.log("pica demo sent, gmail_message_id:", result.messageId);
   }
 
   return NextResponse.json(
     {
       success: true,
       id: data.id,
-      email: messageId
-        ? { sent: true, provider: emailProvider, message_id: messageId }
-        : { sent: false, provider: emailProvider, reason: "no_email_credentials" },
+      email: result.messageId
+        ? { sent: true, provider: "pica_gmail", message_id: result.messageId }
+        : { sent: false, provider: "pica_gmail", reason: result.error ?? "unknown" },
     },
     { status: 201 }
   );

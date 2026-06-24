@@ -1,118 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSupabase } from "@/lib/supabase-server";
+import { sendViaGmail } from "@/lib/pica-email";
 
-// ── Resend (primary email provider) ──────────────────────────────────────────
-
-async function sendViaResend({
-  apiKey,
-  from,
-  to,
-  subject,
-  text,
-}: {
-  apiKey: string;
-  from: string;
-  to: string;
-  subject: string;
-  text: string;
-}): Promise<{ messageId: string | null; error: string | null }> {
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ from, to, subject, text }),
-    });
-    if (!res.ok) {
-      const body = await res.text();
-      return { messageId: null, error: `Resend ${res.status}: ${body.slice(0, 200)}` };
-    }
-    const data = (await res.json()) as { id?: string };
-    return { messageId: data.id ?? null, error: null };
-  } catch (err) {
-    return { messageId: null, error: String(err) };
-  }
-}
-
-// ── Pica Gmail (fallback — credentials stored in app_config) ─────────────────
-
-async function getAppConfig(
-  supabase: ReturnType<typeof getServerSupabase>,
-  key: string
-): Promise<string | null> {
-  const { data } = await supabase
-    .from("app_config")
-    .select("value")
-    .eq("key", key)
-    .single();
-  return data?.value ?? null;
-}
-
-function buildRawEmail({
-  to,
-  from,
-  subject,
-  body,
-}: {
-  to: string;
-  from: string;
-  subject: string;
-  body: string;
-}): string {
-  const raw =
-    `From: ${from}\r\n` +
-    `To: ${to}\r\n` +
-    `Subject: ${subject}\r\n` +
-    `Content-Type: text/plain; charset=utf-8\r\n` +
-    `\r\n` +
-    body;
-  return Buffer.from(raw).toString("base64url");
-}
-
-async function sendGmailViaPica({
-  picaSecret,
-  connectionKey,
-  actionId,
-  to,
-  subject,
-  body,
-}: {
-  picaSecret: string;
-  connectionKey: string;
-  actionId: string;
-  to: string;
-  subject: string;
-  body: string;
-}): Promise<{ messageId: string | null; error: string | null }> {
-  const rawEmail = buildRawEmail({ from: "me", to, subject, body });
-  try {
-    const res = await fetch(
-      "https://api.picaos.com/v1/passthrough/gmail/v1/users/me/messages/send",
-      {
-        method: "POST",
-        headers: {
-          "x-pica-secret": picaSecret,
-          "x-pica-connection-key": connectionKey,
-          "x-pica-action-id": actionId,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ raw: rawEmail, connectionKey }),
-      }
-    );
-    if (!res.ok) {
-      const text = await res.text();
-      return { messageId: null, error: `Pica ${res.status}: ${text.slice(0, 200)}` };
-    }
-    const data = (await res.json()) as { id?: string };
-    return { messageId: data.id ?? null, error: null };
-  } catch (err) {
-    return { messageId: null, error: String(err) };
-  }
-}
-
-// ── Route handler ─────────────────────────────────────────────────────────────
+const NOTIFICATION_EMAIL = "iakobidze94@gmail.com";
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -151,7 +41,6 @@ export async function POST(req: NextRequest) {
 
   const supabase = getServerSupabase();
 
-  // Persist pilot request to database
   const { data, error } = await supabase
     .from("pilot_requests")
     .insert({
@@ -185,7 +74,6 @@ export async function POST(req: NextRequest) {
       ? `\n  Annual ROI value: $${(roi_annual_value as number).toLocaleString()}\n  ROI multiple: ${(roi_multiple as number).toFixed(1)}×`
       : "";
 
-  // User confirmation email body
   const userEmailBody = [
     `Hi ${nameStr},`,
     ``,
@@ -203,7 +91,6 @@ export async function POST(req: NextRequest) {
     `— The Branded Fit Team`,
   ].join("\n");
 
-  // Founder notification email body
   const founderEmailBody = [
     `New pilot request received via brandedfitco.com/pilot`,
     ``,
@@ -223,85 +110,33 @@ export async function POST(req: NextRequest) {
     `Record ID: ${data.id}`,
   ].join("\n");
 
-  let userEmailMessageId: string | null = null;
-  let founderEmailMessageId: string | null = null;
-  let emailProvider: string | null = null;
-  let emailError: string | null = null;
+  // Send user confirmation and founder notification in parallel
+  const [userResult, founderResult] = await Promise.all([
+    sendViaGmail(
+      emailStr,
+      `Your Branded Fit pilot for ${companyStr} is confirmed`,
+      userEmailBody
+    ),
+    sendViaGmail(
+      NOTIFICATION_EMAIL,
+      `[BrandedFit] New pilot request: ${companyStr} (${emailStr})`,
+      founderEmailBody
+    ),
+  ]);
 
-  const resendKey = process.env.RESEND_API_KEY;
-  const emailFrom = process.env.EMAIL_FROM ?? "Branded Fit <onboarding@brandedfitco.com>";
-
-  if (resendKey) {
-    // Primary path: Resend
-    emailProvider = "resend";
-
-    // Send user confirmation
-    const userResult = await sendViaResend({
-      apiKey: resendKey,
-      from: emailFrom,
-      to: emailStr,
-      subject: `Your Branded Fit pilot for ${companyStr} is confirmed`,
-      text: userEmailBody,
-    });
-    userEmailMessageId = userResult.messageId;
-    if (userResult.error) {
-      console.error("resend user confirmation error:", userResult.error);
-      emailError = userResult.error;
-    } else {
-      console.log("resend user confirmation sent, id:", userResult.messageId);
-    }
-
-    // Send founder notification
-    const founderEmail = process.env.FOUNDER_EMAIL ?? emailFrom;
-    const founderResult = await sendViaResend({
-      apiKey: resendKey,
-      from: emailFrom,
-      to: founderEmail,
-      subject: `[BrandedFit] New pilot request: ${companyStr} (${emailStr})`,
-      text: founderEmailBody,
-    });
-    founderEmailMessageId = founderResult.messageId;
-    if (founderResult.error) {
-      console.error("resend founder notification error:", founderResult.error);
-    } else {
-      console.log("resend founder notification sent, id:", founderResult.messageId);
-    }
+  if (userResult.error) {
+    console.error("pica pilot user confirmation error:", userResult.error);
   } else {
-    // Fallback: Pica Gmail (credentials from app_config)
-    const [picaSecret, connectionKey, actionId, notificationEmail] = await Promise.all([
-      getAppConfig(supabase, "pica_secret"),
-      getAppConfig(supabase, "pica_gmail_connection_key"),
-      getAppConfig(supabase, "pica_gmail_action_id"),
-      getAppConfig(supabase, "notification_email"),
-    ]);
-
-    if (picaSecret && connectionKey && actionId && notificationEmail) {
-      emailProvider = "pica_gmail";
-
-      const founderResult = await sendGmailViaPica({
-        picaSecret,
-        connectionKey,
-        actionId,
-        to: notificationEmail,
-        subject: `[BrandedFit] New pilot request: ${companyStr} (${emailStr})`,
-        body: founderEmailBody,
-      });
-      founderEmailMessageId = founderResult.messageId;
-      if (founderResult.error) {
-        console.error("pica founder notification error:", founderResult.error);
-        emailError = founderResult.error;
-      } else {
-        console.log("pica founder notification sent, gmail_message_id:", founderResult.messageId);
-      }
-    } else {
-      console.warn(
-        "pilot-request: no email credentials configured (RESEND_API_KEY env var or pica app_config) — email not sent"
-      );
-      emailError = "no_email_credentials";
-    }
+    console.log("pica pilot user confirmation sent, gmail_message_id:", userResult.messageId);
   }
 
-  const emailSent = !!(userEmailMessageId || founderEmailMessageId);
+  if (founderResult.error) {
+    console.error("pica pilot founder notification error:", founderResult.error);
+  } else {
+    console.log("pica pilot founder notification sent, gmail_message_id:", founderResult.messageId);
+  }
+
+  const emailSent = !!(userResult.messageId || founderResult.messageId);
 
   return NextResponse.json(
     {
@@ -310,14 +145,14 @@ export async function POST(req: NextRequest) {
       email: emailSent
         ? {
             sent: true,
-            provider: emailProvider,
-            user_confirmation_id: userEmailMessageId ?? undefined,
-            founder_notification_id: founderEmailMessageId ?? undefined,
+            provider: "pica_gmail",
+            user_confirmation_id: userResult.messageId ?? undefined,
+            founder_notification_id: founderResult.messageId ?? undefined,
           }
         : {
             sent: false,
-            provider: emailProvider,
-            reason: emailError ?? "no_email_credentials",
+            provider: "pica_gmail",
+            reason: userResult.error ?? founderResult.error ?? "unknown",
           },
     },
     { status: 201 }
