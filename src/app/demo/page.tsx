@@ -135,7 +135,7 @@ export default function DemoPage() {
                 cursor: submitting ? "not-allowed" : "pointer",
               }}
             >
-              {submitting ? "Sending…" : "Request Demo →"}
+              {submitting ? "Sending…" : "Request an email walkthrough →"}
             </button>
           </form>
         </>

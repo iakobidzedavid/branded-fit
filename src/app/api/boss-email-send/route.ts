@@ -25,25 +25,6 @@ export async function POST(req: NextRequest) {
   const currentToolStr = typeof currentTool === "string" ? currentTool.trim() : "";
   const emailDomain = bossEmailStr.split("@")[1] ?? "";
 
-  // Persist to Supabase
-  const supabase = getServerSupabase();
-  const { data, error } = await supabase
-    .from("demo_requests")
-    .insert({
-      name: yourNameStr || `${companyStr} — boss email request`,
-      email: bossEmailStr,
-      company: companyStr,
-      domain: emailDomain,
-      source: "boss-email-send",
-    })
-    .select("id")
-    .single();
-
-  if (error) {
-    console.error("boss-email-send insert error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
   // Build the email to send to the boss
   const greeting = bossNameStr ? `Hi ${bossNameStr},` : "Hi,";
   const fromLine = yourNameStr ? `\n${yourNameStr}` : "";
@@ -93,10 +74,34 @@ Best,${fromLine}`;
 
   console.log("boss-email-send sent, gmail_message_id:", result.messageId);
 
+  // Persist to Supabase — non-blocking: failure does not prevent the email from being sent
+  let recordId: string | null = null;
+  try {
+    const supabase = getServerSupabase();
+    const { data, error } = await supabase
+      .from("demo_requests")
+      .insert({
+        name: yourNameStr || `${companyStr} — boss email request`,
+        email: bossEmailStr,
+        company: companyStr,
+        domain: emailDomain,
+        source: "boss-email-send",
+      })
+      .select("id")
+      .single();
+    if (error) {
+      console.error("boss-email-send insert error (non-blocking):", error);
+    } else {
+      recordId = data?.id ?? null;
+    }
+  } catch (err) {
+    console.error("boss-email-send supabase error (non-blocking):", err);
+  }
+
   return NextResponse.json(
     {
       success: true,
-      id: data?.id,
+      id: recordId,
       email: { sent: true, provider: "pica_gmail", message_id: result.messageId },
     },
     { status: 201 }

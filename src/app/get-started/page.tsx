@@ -66,7 +66,7 @@ const faqs = [
   },
   {
     q: "Can I start before my company's renewal date?",
-    a: "Yes. The $2,400/yr subscription starts on the day your storefront goes live. You can time it to align with a budget cycle — just mention it when you request your demo.",
+    a: "Yes. The $2,400/yr subscription starts on the day your storefront goes live. You can time it to align with a budget cycle — let us know when you request your demo.",
   },
 ];
 
