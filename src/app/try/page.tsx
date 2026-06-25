@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense, useRef } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 // ── Brand color palette ──
@@ -77,21 +76,18 @@ function ProductCard({
   );
 }
 
-function TryPage() {
-  const searchParams = useSearchParams();
-  const domainParam = searchParams.get("domain") ?? "";
-
+export default function TryPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
-  const [domain, setDomain] = useState(domainParam);
+  const [domain, setDomain] = useState("");
 
-  // Sync domain from URL param after client-side hydration (useState only
-  // captures the initial value; searchParams may not be ready on first render)
+  // Pre-fill domain from URL query param after hydration
   useEffect(() => {
-    const p = searchParams.get("domain");
+    const params = new URLSearchParams(window.location.search);
+    const p = params.get("domain");
     if (p) setDomain(p);
-  }, []);  // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [companyError, setCompanyError] = useState("");
@@ -532,10 +528,3 @@ function TryPage() {
   );
 }
 
-export default function TryPageWrapper() {
-  return (
-    <Suspense fallback={<div style={{ padding: "4rem", textAlign: "center", color: "var(--text-muted)" }}>Loading…</div>}>
-      <TryPage />
-    </Suspense>
-  );
-}

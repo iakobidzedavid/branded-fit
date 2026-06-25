@@ -2,6 +2,20 @@
 
 import { useEffect, useState, useCallback } from "react";
 
+async function fetchAndDownload(url: string, filename: string) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Download failed: ${res.status}`);
+  const blob = await res.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = objectUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(objectUrl);
+}
+
 // Design tokens from App Blueprint
 const T = {
   bg: "#0d1f33",
@@ -122,7 +136,7 @@ function OrderDetailModal({
 
   async function handleDownloadAssets() {
     const storeId = order?.store_name?.replace(/\s+/g, "-").toLowerCase() ?? "default";
-    window.location.href = `/api/download-assets?storeId=${encodeURIComponent(storeId)}`;
+    await fetchAndDownload(`/api/download-assets?storeId=${encodeURIComponent(storeId)}`, `branded-fit-assets-${storeId}.zip`);
   }
 
   async function handleInviteSubmit(e: React.FormEvent) {
@@ -869,19 +883,17 @@ export default function OrdersDashboardPage() {
             </div>
             {/* Page-level action buttons — always visible without opening a modal */}
             <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
-              <a
+              <button
                 data-testid="download-assets-btn"
-                href="/api/download-assets?storeId=demo"
-                download
+                onClick={() => fetchAndDownload("/api/download-assets?storeId=demo", "branded-fit-assets-demo.zip")}
                 style={{
                   padding: "0.5rem 1rem", background: T.surface, color: T.text,
                   border: `1px solid ${T.border}`, borderRadius: 8,
                   fontWeight: 600, fontSize: "0.825rem", cursor: "pointer",
-                  textDecoration: "none", display: "inline-block",
                 }}
               >
                 Download Assets
-              </a>
+              </button>
               <button
                 data-testid="invite-team-btn"
                 onClick={() => setInviteModalOpen(true)}
@@ -1107,18 +1119,16 @@ export default function OrdersDashboardPage() {
         {/* Download Brand Assets CTA at bottom */}
         {!loading && (
           <div style={{ marginTop: "1.5rem", display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>
-            <a
-              href="/api/brand-assets/download"
-              download
+            <button
+              onClick={() => fetchAndDownload("/api/brand-assets/download?storeId=demo&domain=demo", "brand-assets.zip")}
               style={{
                 padding: "0.6rem 1.25rem", background: T.surface, color: T.text,
                 border: `1px solid ${T.border}`, borderRadius: 8,
-                fontWeight: 600, fontSize: "0.875rem", textDecoration: "none",
-                display: "inline-block",
+                fontWeight: 600, fontSize: "0.875rem", cursor: "pointer",
               }}
             >
               Download Brand Assets
-            </a>
+            </button>
           </div>
         )}
       </div>

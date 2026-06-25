@@ -22,6 +22,28 @@ export default function BrandAssetsPage() {
   const [downloaded, setDownloaded] = useState(false);
   const [messageId, setMessageId] = useState<string | null>(null);
   const [notifyError, setNotifyError] = useState<string | null>(null);
+  const [quickDownloading, setQuickDownloading] = useState(false);
+
+  async function handleQuickDownload() {
+    setQuickDownloading(true);
+    try {
+      const res = await fetch("/api/brand-assets/download?storeId=demo&domain=demo");
+      if (!res.ok) throw new Error("Download failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "brand-assets.zip";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Quick download failed:", err);
+    } finally {
+      setQuickDownloading(false);
+    }
+  }
 
   async function handleDownload(e: React.FormEvent) {
     e.preventDefault();
@@ -106,20 +128,20 @@ export default function BrandAssetsPage() {
               Logos + color palette JSON — no sign-up required
             </div>
           </div>
-          <a
-            href="/api/brand-assets/download?storeId=demo&domain=demo"
-            download="brand-assets.zip"
+          <button
+            onClick={handleQuickDownload}
+            disabled={quickDownloading}
             data-testid="download-brand-assets-btn"
             aria-label="Download Brand Assets"
             style={{
-              padding: "0.6rem 1.25rem", background: T.accent, color: T.text,
+              padding: "0.6rem 1.25rem", background: quickDownloading ? `${T.accent}88` : T.accent, color: T.text,
               border: "none", borderRadius: 8, fontWeight: 700, fontSize: "0.875rem",
-              textDecoration: "none", display: "inline-block", cursor: "pointer",
+              textDecoration: "none", display: "inline-block", cursor: quickDownloading ? "not-allowed" : "pointer",
               whiteSpace: "nowrap",
             }}
           >
-            Download Brand Assets
-          </a>
+            {quickDownloading ? "Downloading…" : "Download Brand Assets"}
+          </button>
         </div>
 
         {/* Form — optional: fill for personalized assets + confirmation email */}
