@@ -98,7 +98,7 @@ const approvalFAQ = [
   },
   {
     q: "What if Finance needs a security review?",
-    a: "We're ready. We have a one-page security brief (SOC 2 attestation, data residency, GDPR compliance, cancellation terms) that answers every Finance question before they ask it. Most CC-paying customers never need this. If you do, we send it within the hour.",
+    a: "We're ready. We have a one-page security brief (data residency, privacy practices, cancellation terms) that answers every Finance question before they ask it. Most CC-paying customers never need this. If you do, email us and we'll send it within the hour.",
   },
   {
     q: "Can I start without an annual commitment?",
@@ -665,7 +665,7 @@ export default function HowItWorksPage() {
               border: "1px solid var(--border)",
             }}
           >
-            Book a 15-minute demo
+            Request an email walkthrough
           </Link>
         </div>
         <p

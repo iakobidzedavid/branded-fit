@@ -46,7 +46,7 @@ const objections = [
   },
   {
     q: "Does this require IT or procurement involvement?",
-    a: "At $200/mo, most People Ops teams approve this with a corporate card — no PO required. IT review: we have a one-page integration brief and SOC 2 attestation ready for any security review.",
+    a: "At $200/mo, most People Ops teams approve this with a corporate card — no PO required. IT review: we have a one-page integration brief and security overview (data residency, privacy practices, cancellation terms) ready for any security review — email us and we'll send it within the hour.",
   },
   {
     q: "How long does onboarding take?",

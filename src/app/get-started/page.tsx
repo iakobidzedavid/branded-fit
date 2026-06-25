@@ -29,8 +29,8 @@ const steps = [
     number: "04",
     title: "Your storefront goes live",
     description:
-      "Within 48 hours of payment, your branded Shopify storefront is live with a shareable URL. We walk you through it on a 30-minute call and set up your Printify fulfillment so orders ship directly to your team.",
-    detail: "Live within 48 hours. Walkthrough call included.",
+      "Within 48 hours of payment, your branded Shopify storefront is live with a shareable URL. We email you a full walkthrough and your Printify fulfillment is configured so orders ship directly to your team.",
+    detail: "Live within 48 hours. Email walkthrough included.",
     icon: "🚀",
   },
 ];
@@ -41,8 +41,8 @@ const includes = [
   "Live Shopify storefront in your brand colors",
   "Printify fulfillment integration (ships directly to your team)",
   "Shareable storefront URL — send to your team on Day 1",
-  "30-minute founder onboarding call",
-  "Day-7 check-in call (15 min)",
+  "Email onboarding walkthrough (sent within hours of launch)",
+  "Day-7 check-in email with your first redemption data",
   "Day-30 redemption report",
   "Email support (48-hr response SLA)",
 ];
@@ -66,7 +66,7 @@ const faqs = [
   },
   {
     q: "Can I start before my company's renewal date?",
-    a: "Yes. The $2,400/yr subscription starts on the day your storefront goes live. You can time it to align with a budget cycle — just let us know at the kickoff call.",
+    a: "Yes. The $2,400/yr subscription starts on the day your storefront goes live. You can time it to align with a budget cycle — just mention it when you request your demo.",
   },
 ];
 
@@ -115,7 +115,7 @@ export default function GetStartedPage() {
               fontSize: "1rem",
             }}
           >
-            Book a kickoff call →
+            Request a demo walkthrough →
           </Link>
           <Link
             href="/pricing"
@@ -376,7 +376,7 @@ export default function GetStartedPage() {
             lineHeight: 1.65,
           }}
         >
-          Book a 30-minute kickoff call. We&apos;ll confirm your brand profile and
+          Request a demo walkthrough — we&apos;ll confirm your brand profile by email and
           have your storefront live within 48 hours.
         </p>
         <div
@@ -399,7 +399,7 @@ export default function GetStartedPage() {
               fontSize: "1rem",
             }}
           >
-            Book a kickoff call →
+            Request a demo walkthrough →
           </Link>
           <Link
             href="/pricing"
