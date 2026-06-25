@@ -85,12 +85,12 @@ const comparisonRows = [
   },
   {
     criterion: "On-brand redemption rate",
-    brandedFit: { text: "~85% — AI-curated for your domain identity", win: true },
-    swagUp: { text: "~68% — catalog browsing, no brand-fit scoring", win: false },
-    stadium: { text: "~65% — self-select model, limited brand curation", win: false },
-    printify: { text: "~55% — generic catalog, user-uploaded designs", win: false },
-    agency: { text: "~78% — brand team involved, but still catalog-constrained", win: false },
-    reachdesk: { text: "~52% — gifting focus, not culture/brand alignment", win: false },
+    brandedFit: { text: "~85% target — AI-curated for your domain identity", win: true },
+    swagUp: { text: "Not disclosed — catalog browsing, no brand-fit scoring", win: false },
+    stadium: { text: "Not disclosed — self-select model, limited brand curation", win: false },
+    printify: { text: "~55% — DIY programs, company-chosen products (industry baseline)", win: false },
+    agency: { text: "Not disclosed — brand team involved, but catalog-constrained", win: false },
+    reachdesk: { text: "Not disclosed — gifting focus, not culture/brand alignment", win: false },
   },
   {
     criterion: "Brand setup process",
@@ -750,7 +750,7 @@ export default function ComparePage() {
           }}
         >
           Paste your domain and see your AI-generated branded storefront in 8 minutes. No
-          signup required to preview. $200/mo if you love it.
+          signup required to preview. $2,400/yr if you love it.
         </p>
         <div style={{ display: "flex", gap: "0.875rem", justifyContent: "center", flexWrap: "wrap" }}>
           <Link

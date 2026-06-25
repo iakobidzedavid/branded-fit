@@ -46,7 +46,7 @@ const objections = [
   },
   {
     q: "Does this require IT or procurement involvement?",
-    a: "At $200/mo, most People Ops teams approve this with a corporate card — no PO required. IT review: we have a one-page integration brief and security overview (data residency, privacy practices, cancellation terms) ready for any security review — email us and we'll send it within the hour.",
+    a: "At $2,400/yr, most People Ops teams approve this with a corporate card — no PO required. IT review: we have a one-page integration brief and security overview (data residency, privacy practices, cancellation terms) ready for any security review — email us and we'll send it within the hour.",
   },
   {
     q: "How long does onboarding take?",
@@ -115,8 +115,8 @@ export default async function ForYourBossPage({
           }}
         >
           Your team found a way to get&nbsp;
-          <span style={{ color: "var(--primary)" }}>44 hours/year back</span>
-          &nbsp;and&nbsp;triple swag ROI.
+          <span style={{ color: "var(--primary)" }}>11+ hours back per swag cycle</span>
+          &nbsp;and&nbsp;~6× ROI on their swag program.
         </h1>
 
         <p
@@ -476,7 +476,7 @@ export default async function ForYourBossPage({
               marginBottom: "0.25rem",
             }}
           >
-            $200/mo
+            $2,400/yr
           </div>
           <div
             style={{
@@ -499,7 +499,7 @@ export default async function ForYourBossPage({
           >
             {[
               "Cancel anytime — no annual commitment required",
-              "No procurement process needed at $200/mo",
+              "No procurement process needed at $2,400/yr",
               "Typically approved same-day with a corporate card",
             ].map((item, i) => (
               <li
@@ -650,7 +650,7 @@ export default async function ForYourBossPage({
             marginTop: "1rem",
           }}
         >
-          No procurement required · $200/mo · Cancel anytime
+          No procurement required · $2,400/yr · Cancel anytime
         </p>
       </section>
     </main>

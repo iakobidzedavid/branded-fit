@@ -58,7 +58,7 @@ const comparisonRows = [
   {
     criterion: "Employee redemption rate",
     brandedFit: { text: "85% — AI-curated for your brand identity", win: true },
-    swagUp: { text: "~68% — catalog items aren't matched to your brand", win: false },
+    swagUp: { text: "Not disclosed — catalog items aren't matched to your brand", win: false },
   },
   {
     criterion: "Annual cost (75–300 person team)",
@@ -72,7 +72,7 @@ const comparisonRows = [
   },
   {
     criterion: "No procurement required",
-    brandedFit: { text: "$200/mo — under most People Ops discretionary limits", win: true },
+    brandedFit: { text: "$2,400/yr — under most People Ops discretionary limits", win: true },
     swagUp: { text: "Pricing requires a sales call; often requires Finance sign-off", win: false },
   },
 ];
@@ -373,7 +373,7 @@ export default function SwagUpAlternativePage() {
             {
               title: "Under your sign-off limit",
               body:
-                "$200/month. Under most People Ops discretionary spending limits — no Finance conversation required.",
+                "$2,400/yr. Under most People Ops discretionary spending limits — no Finance conversation required.",
             },
             {
               title: "Reorders in 2 clicks",
@@ -439,7 +439,7 @@ export default function SwagUpAlternativePage() {
           }}
         >
           Paste your domain and see your branded storefront in 8 minutes. No signup required to
-          preview. $200/mo if you love it — no procurement conversation needed.
+          preview. $2,400/yr if you love it — no procurement conversation needed.
         </p>
         <div
           style={{

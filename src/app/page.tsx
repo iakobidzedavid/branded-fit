@@ -58,9 +58,9 @@ const comparisonRows = [
   {
     criterion: "Redemption Rate",
     detail: "% of employees who actually use their swag",
-    brandedFit: { text: "85%", win: true },
-    swagUp: { text: "68%", win: false },
-    printify: { text: "55%", win: false },
+    brandedFit: { text: "85% (target — AI self-selection)", win: true },
+    swagUp: { text: "Not disclosed", win: false },
+    printify: { text: "~55% (company-chosen programs)", win: false },
   },
   {
     criterion: "Annual Cost",
@@ -731,7 +731,7 @@ export default function Home() {
         </div>
 
         <p style={{ marginTop: "1.5rem", color: "var(--text-subtle)", fontSize: "0.8rem" }}>
-          Fulfillment speed and redemption rate based on market research (June 2026). SwagUp pricing from SaaSWorthy/ColdIQ April 2026. Branded Fit at $200/mo.
+          Fulfillment speed and setup time based on platform benchmarks (June 2026). SwagUp pricing from SaaSWorthy/ColdIQ April 2026. Branded Fit Core at $2,400/yr. Branded Fit redemption rate is a target figure; DIY program baseline per industry research.
         </p>
       </section>
 

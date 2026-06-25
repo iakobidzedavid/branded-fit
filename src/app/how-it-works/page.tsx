@@ -47,7 +47,7 @@ const stages = [
     who: "Head of People",
     duration: "1–4 days",
     description:
-      "At $200/mo, most Heads of People approve via Slack in under 24 hours — no PO, no procurement process. Your team charges the corporate card and you're live. Larger teams (150+ FTE) sometimes run a quick Finance review; we have a one-page security brief ready.",
+      "At $2,400/yr, most Heads of People approve via Slack in under 24 hours — no PO, no procurement process. Your team charges the corporate card and you're live. Larger teams (150+ FTE) sometimes run a quick Finance review; we have a one-page security brief ready.",
     action: "Head of People gives Slack approval or signs off on CC",
     approvals: "Head of People sign-off (typically async, no meeting required)",
     color: "#7c3aed",
@@ -58,7 +58,7 @@ const stages = [
     who: "Maya",
     duration: "20 minutes",
     description:
-      "You subscribe at $200/mo (no annual commitment required). Within 10 minutes, your storefront is finalized with your brand. A member of our team checks in within 4 hours to make sure everything looks right before you share with employees.",
+      "You subscribe at $2,400/yr. Within 10 minutes, your storefront is finalized with your brand. We follow up by email within 4 hours to make sure everything looks right before you share with employees.",
     action: "Complete checkout → storefront goes live",
     approvals: "None additional",
     color: "var(--accent)",
@@ -89,8 +89,8 @@ const stages = [
 
 const approvalFAQ = [
   {
-    q: "Does $200/mo need procurement approval?",
-    a: "At most Series A/B companies, $200/mo is within a People Ops team's operational budget — charged to a corporate card with a Slack message to your manager. No PO, no vendor onboarding form, no IT ticket. We made it this way on purpose.",
+    q: "Does $2,400/yr need procurement approval?",
+    a: "At most Series A/B companies, $2,400/yr is within a People Ops team's operational budget — charged to a corporate card with a Slack message to your manager. No PO, no vendor onboarding form, no IT ticket. We made it this way on purpose.",
   },
   {
     q: "What about the first launch order?",
@@ -102,14 +102,14 @@ const approvalFAQ = [
   },
   {
     q: "Can I start without an annual commitment?",
-    a: "Yes. $200/mo, cancel anytime, no annual lock-in. We're confident you'll stick around once your team sees the redemption rate — but we don't need a 12-month contract to prove it.",
+    a: "Yes. Start on an annual plan at $2,400/yr — cancel anytime, no lock-in penalty. We're confident you'll stick around once your team sees the redemption rate — but we don't need a multi-year contract to prove it.",
   },
 ];
 
 const stats = [
   { value: "8 min", label: "Domain to live storefront" },
   { value: "14 days", label: "Median time to first paid order" },
-  { value: "$200/mo", label: "Subscription — no PO required" },
+  { value: "$2,400/yr", label: "Subscription — no PO required" },
   { value: "85%+", label: "Employee redemption rate" },
 ];
 
@@ -675,7 +675,7 @@ export default function HowItWorksPage() {
             marginTop: "1rem",
           }}
         >
-          $200/mo · No annual commitment · Cancel anytime
+          $2,400/yr · Cancel anytime
         </p>
       </section>
     </main>
