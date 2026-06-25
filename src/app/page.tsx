@@ -137,7 +137,7 @@ export default function Home() {
           {[
             "8-minute setup — enter your domain and get a live, orderable storefront",
             "AI-curated 120-SKU catalog — matched to your brand identity, zero manual browsing",
-            "85% redemption vs. 38% industry avg — 77% of employees prefer self-selection (SwagDrop 2026, n=2,500)",
+            "85% target redemption rate — AI-curated self-selection lifts redemption vs. company-chosen swag (55% baseline for DIY programs)",
           ].map((item) => (
             <li
               key={item}
@@ -589,7 +589,7 @@ export default function Home() {
             The swag platform that gets smarter<br />with every order you place
           </h2>
           <p style={{ color: "var(--text-muted)", fontSize: "1rem", lineHeight: 1.65 }}>
-            Industry-average redemption for company-chosen swag runs at 38% (SwagDrop 2026, n=2,500). Branded Fit is designed to reach 85% through self-selection storefronts. The mechanism is the{" "}
+            Traditional company-chosen swag programs see low redemption — employees receive items they didn&apos;t select. DIY programs (Printify-style) average around 55%. Branded Fit is designed to reach 85% through self-selection storefronts — employees order what they actually want. The mechanism is the{" "}
             <strong style={{ color: "var(--text-primary)" }}>Brand→Product Fit Graph</strong> — a compounding AI model
             trained on what teams at companies like yours actually use. The longer you&apos;re with Branded Fit,
             the more accurate your catalog becomes.
@@ -662,8 +662,8 @@ export default function Home() {
           }}
         >
           {[
-            { stat: "38%", label: "Regular use — company-chosen swag", sub: "SwagDrop 2026 — 2,500 US/Canada workers surveyed, May 2026" },
-            { stat: "77%", label: "Prefer self-selection storefront", sub: "vs. company-chosen items — SwagDrop 2026, n=2,500" },
+            { stat: "55%", label: "Baseline redemption — DIY programs", sub: "Printify-style self-managed programs (internal comparison, June 2026)" },
+            { stat: "11+ hrs", label: "Saved per swag cycle", sub: "vs. managing swag manually — design, sourcing, inventory, logistics" },
             { stat: "85%", label: "Branded Fit target redemption rate", sub: "Tracked via per-employee storefront links" },
           ].map((item) => (
             <div key={item.stat} style={{ flex: "1 1 140px" }}>
@@ -692,7 +692,7 @@ export default function Home() {
           Why Branded Fit
         </h2>
         <p style={{ color: "var(--text-muted)", marginBottom: "2rem", fontSize: "0.95rem" }}>
-          We&apos;re the only swag platform that&apos;s both fast <em>and</em> high-redemption — alone in the winning quadrant.
+          Branded Fit combines sub-10-minute setup with AI-driven redemption optimization — speed and brand fidelity in one platform.
         </p>
 
         <div style={{ overflowX: "auto" }}>
@@ -731,7 +731,7 @@ export default function Home() {
         </div>
 
         <p style={{ marginTop: "1.5rem", color: "var(--text-subtle)", fontSize: "0.8rem" }}>
-          Fulfillment speed and redemption rate based on market research (June 2026). SwagUp pricing from SaaSWorthy/ColdIQ April 2026. Branded Fit at $199/mo.
+          Fulfillment speed and redemption rate based on market research (June 2026). SwagUp pricing from SaaSWorthy/ColdIQ April 2026. Branded Fit at $200/mo.
         </p>
       </section>
 

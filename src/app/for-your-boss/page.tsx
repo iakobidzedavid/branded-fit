@@ -38,7 +38,7 @@ const objections = [
   },
   {
     q: "Is employee data safe?",
-    a: "Employee data (names, shipping addresses) stays within your Shopify store, which you own. Branded Fit never stores personal employee data on our servers. We're SOC 2 compliant and GDPR-ready.",
+    a: "Employee data (names, shipping addresses) stays within your Shopify store, which you own. Branded Fit never stores personal employee data on our servers.",
   },
   {
     q: "What happens if we want to cancel?",
@@ -57,10 +57,11 @@ const objections = [
 export default async function ForYourBossPage({
   searchParams,
 }: {
-  searchParams: Promise<{ domain?: string; company?: string }>;
+  searchParams: Promise<{ domain?: string; company?: string; previewId?: string }>;
 }) {
   const params = await searchParams;
   const prefilledCompany = params.company ?? "";
+  const previewId = params.previewId ?? "";
   return (
     <main
       style={{
@@ -184,7 +185,7 @@ export default async function ForYourBossPage({
         <p style={{ fontSize: "0.9375rem", color: "var(--text-muted)", marginBottom: "0" }}>
           Fill in your boss&apos;s email — we&apos;ll send a personalized note directly to them.
         </p>
-        <BossEmailGenerator defaultCompany={prefilledCompany} />
+        <BossEmailGenerator defaultCompany={prefilledCompany} previewId={previewId} />
       </section>
 
       {/* The headline numbers */}

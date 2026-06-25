@@ -8,18 +8,23 @@ function buildEmailBody({
   company,
   teamSize,
   currentTool,
+  previewUrl,
 }: {
   yourName: string;
   bossName: string;
   company: string;
   teamSize: string;
   currentTool: string;
+  previewUrl?: string;
 }): string {
   const greeting = bossName ? `Hi ${bossName},` : "Hi,";
   const fromLine = yourName ? `\n${yourName}` : "";
   const teamLine = teamSize ? ` across our ${teamSize}-person team` : "";
   const toolLine = currentTool
     ? ` We're currently using ${currentTool}, but the cost, setup time, and redemption rates aren't where we need them to be.`
+    : "";
+  const previewLine = previewUrl
+    ? `\nI already generated a storefront preview for ${company || "us"} — you can see it here:\n→ ${previewUrl}\n`
     : "";
 
   return `${greeting}
@@ -30,12 +35,12 @@ Here's the short version of why:
 
 → 8-minute setup: paste our domain, get a live, branded Shopify storefront. No design team or procurement needed.
 → AI-curated catalog: it matches products to our brand identity automatically — no manual browsing.
-→ 85% employee redemption vs. the industry average of 38%. The difference is that employees self-select from a curated store instead of receiving company-chosen items.
+→ Target redemption of 85% through self-selection — employees get what they actually want, vs. 55% for company-chosen programs.
 → $2,400/yr flat, zero markup on merchandise. Comparable platforms charge $6K–$12K/yr plus 15–25% on every order.
-
+${previewLine}
 I already ran our numbers through their ROI calculator — we'd recover the subscription fee within the first swag cycle just from time savings and reduced waste.
 
-Can I forward you an email walkthrough showing exactly what our storefront would look like? No call needed, just a quick look. Let me know if you'd like me to send it over.
+${previewUrl ? "Take a look at the preview above and let me know what you think. No call needed — they respond by email." : "Can I forward you an email walkthrough showing exactly what our storefront would look like? No call needed, just a quick look. Let me know if you'd like me to send it over."}
 
 Best,${fromLine}`;
 }
@@ -44,13 +49,18 @@ type SendState = "idle" | "sending" | "sent" | "error";
 
 export default function BossEmailGenerator({
   defaultCompany = "",
+  previewId = "",
 }: {
   defaultCompany?: string;
+  previewId?: string;
 }) {
   const [yourName, setYourName] = useState("");
   const [bossName, setBossName] = useState("");
   const [bossEmail, setBossEmail] = useState("");
   const [company, setCompany] = useState(defaultCompany);
+  const previewUrl = previewId
+    ? `https://branded-fit.vercel.app/preview/${previewId}`
+    : "";
   const [teamSize, setTeamSize] = useState("");
   const [currentTool, setCurrentTool] = useState("");
   const [sendState, setSendState] = useState<SendState>("idle");
@@ -59,7 +69,7 @@ export default function BossEmailGenerator({
   const [bossEmailError, setBossEmailError] = useState("");
   const [gmailMessageId, setGmailMessageId] = useState<string | null>(null);
 
-  const emailText = buildEmailBody({ yourName, bossName, company, teamSize, currentTool });
+  const emailText = buildEmailBody({ yourName, bossName, company, teamSize, currentTool, previewUrl: previewUrl || undefined });
   const sent = sendState === "sent";
 
   async function handleGenerate(e: React.FormEvent) {
@@ -84,6 +94,7 @@ export default function BossEmailGenerator({
           teamSize: teamSize.trim(),
           currentTool: currentTool.trim(),
           emailBody: emailText,
+          previewUrl: previewUrl || undefined,
         }),
       });
       const data = await res.json() as {

@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { yourName, bossName, bossEmail, company, teamSize, currentTool, emailBody } =
+  const { yourName, bossName, bossEmail, company, teamSize, currentTool, emailBody, previewUrl } =
     body as Record<string, unknown>;
 
   if (typeof bossEmail !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(bossEmail.trim())) {
@@ -52,6 +52,11 @@ export async function POST(req: NextRequest) {
     ? ` We're currently using ${currentToolStr}, but the cost, setup time, and redemption rates aren't where we need them to be.`
     : "";
 
+  const previewUrlStr = typeof previewUrl === "string" && previewUrl.trim() ? previewUrl.trim() : "";
+  const previewLine = previewUrlStr
+    ? `\nI already generated a storefront preview for ${companyStr} — you can see it here:\n→ ${previewUrlStr}\n`
+    : "";
+
   const body_text =
     typeof emailBody === "string" && emailBody.trim()
       ? emailBody.trim()
@@ -63,12 +68,12 @@ Here's the short version of why:
 
 → 8-minute setup: paste our domain, get a live, branded Shopify storefront. No design team or procurement needed.
 → AI-curated catalog: it matches products to our brand identity automatically — no manual browsing.
-→ 85% employee redemption vs. the industry average of 38%. The difference is that employees self-select from a curated store instead of receiving company-chosen items.
+→ Target redemption of 85% through self-selection — employees get what they actually want, vs. 55% for company-chosen programs.
 → $2,400/yr flat, zero markup on merchandise. Comparable platforms charge $6K–$12K/yr plus 15–25% on every order.
-
+${previewLine}
 I already ran our numbers through their ROI calculator — we'd recover the subscription fee within the first swag cycle just from time savings and reduced waste.
 
-Can I forward you an email walkthrough showing exactly what our storefront would look like? No call needed, just a quick look. Let me know if you'd like me to send it over.
+${previewUrlStr ? "Take a look at the preview above and let me know what you think. No call needed — they respond by email." : "Can I forward you an email walkthrough showing exactly what our storefront would look like? No call needed, just a quick look. Let me know if you'd like me to send it over."}
 
 Best,${fromLine}`;
 
